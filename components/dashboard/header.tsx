@@ -57,7 +57,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
           {/* User menu */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="https://github.com/shadcn.png" alt="User" />

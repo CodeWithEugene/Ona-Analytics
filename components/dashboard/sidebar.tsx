@@ -44,17 +44,15 @@ export function Sidebar({ open, onOpenChange }: SidebarProps) {
         {navItems.map((item) => {
           const Icon = item.icon
           return (
-            <Button
-              key={item.label}
-              variant="ghost"
-              className="w-full justify-start gap-3 text-base"
-              asChild
-            >
-              <a href={item.href}>
+            <a key={item.label} href={item.href}>
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-3 text-base"
+              >
                 <Icon className="h-5 w-5" />
                 <span>{item.label}</span>
-              </a>
-            </Button>
+              </Button>
+            </a>
           )
         })}
       </nav>
