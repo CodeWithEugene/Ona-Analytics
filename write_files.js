@@ -1,4 +1,8 @@
-@tailwind base;
+const fs = require('fs');
+const path = require('path');
+
+// 1. globals.css - dark theme
+const globalsCss = `@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -35,4 +39,7 @@
     @apply bg-background text-foreground;
     font-family: var(--font-body), system-ui, sans-serif;
   }
-}
+}`;
+
+fs.writeFileSync(path.join(__dirname, 'app', 'globals.css'), globalsCss);
+console.log('globals.css written');
