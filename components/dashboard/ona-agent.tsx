@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState } from "react"
-import { Sparkles, Send, X } from "lucide-react"
+import React, { useState, useRef, useEffect, useCallback } from "react"
+import { Sparkles, Send, X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -12,63 +12,105 @@ import {
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
+interface Message {
+  id: string
+  role: "user" | "assistant"
+  content: string
+}
+
 interface OnaAgentProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
-interface Message {
-  id: string
-  role: "user" | "agent"
-  content: string
-  timestamp: Date
-}
-
 export function OnaAgent({ open, onOpenChange }: OnaAgentProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: "1",
-      role: "agent",
+      id: "welcome",
+      role: "assistant",
       content:
-        "Hi! I'm Ona Agent. I can help you understand your demand forecasts and supply chain needs. What would you like to know?",
-      timestamp: new Date(),
+        "Hi! I'm Ona Agent. I can analyze your demand forecasts, search camp SOPs, and generate procurement recommendations. What would you like to know?",
     },
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  const handleSendMessage = async () => {
-    if (!input.trim()) return
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      })
+    }
+  }, [messages, isLoading])
 
-    // Add user message
+  const handleSend = useCallback(async () => {
+    if (!input.trim() || isLoading) return
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: input,
-      timestamp: new Date(),
     }
 
     setMessages((prev) => [...prev, userMessage])
     setInput("")
     setIsLoading(true)
+    setError(null)
 
-    // Simulate agent response
-    setTimeout(() => {
-      const agentResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "agent",
-        content:
-          "Based on SOPs and weather forecasts, you need +40kg of fresh produce and 10 gas cylinders. Due to forecasted rain on the Sekenani road, contact Narok suppliers to dispatch the truck 12 hours early on Wednesday.",
-        timestamp: new Date(),
+    try {
+      const res = await fetch("/api/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userMessage.content,
+          orgId: "11111111-1111-1111-1111-111111111111",
+        }),
+      })
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null)
+        throw new Error(errData?.error || `Error ${res.status}`)
       }
-      setMessages((prev) => [...prev, agentResponse])
+
+      const data = await res.json()
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content:
+          data.response || data.error || "I couldn't process that request.",
+      }
+
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (err) {
+      const errMsg =
+        err instanceof Error ? err.message : "An error occurred"
+      setError(errMsg)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          role: "assistant",
+          content: `Error: ${errMsg}. Make sure your API keys are configured correctly.`,
+        },
+      ])
+    } finally {
       setIsLoading(false)
-    }, 800)
+    }
+  }, [input, isLoading])
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
   }
 
   return (
     <>
-      {/* Floating Action Button */}
       <Button
         onClick={() => onOpenChange?.(true)}
         size="lg"
@@ -78,23 +120,37 @@ export function OnaAgent({ open, onOpenChange }: OnaAgentProps) {
         <span className="sr-only">Open Ona Agent</span>
       </Button>
 
-      {/* Agent Sheet */}
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="flex flex-col w-full sm:w-96 p-0">
+        <SheetContent
+          side="right"
+          className="flex flex-col w-full sm:w-96 p-0"
+        >
           <SheetHeader className="border-b border-border p-4">
-            <SheetTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
-              Ona Agent
-            </SheetTitle>
+            <div className="flex items-center justify-between">
+              <SheetTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Ona Agent
+              </SheetTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onOpenChange?.(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </SheetHeader>
 
-          {/* Messages area */}
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea ref={scrollRef} className="flex-1 p-4">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${
+                    message.role === "user"
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
                 >
                   <div
                     className={`max-w-xs px-4 py-3 rounded-lg ${
@@ -103,16 +159,13 @@ export function OnaAgent({ open, onOpenChange }: OnaAgentProps) {
                         : "bg-muted text-foreground rounded-bl-none border border-border"
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
-                    <span className="text-xs opacity-70 mt-1 block">
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+                    <p className="text-sm whitespace-pre-wrap">
+                      {message.content || (isLoading ? "..." : "")}
+                    </p>
                   </div>
                 </div>
               ))}
+
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-muted text-foreground px-4 py-3 rounded-lg border border-border rounded-bl-none">
@@ -124,33 +177,43 @@ export function OnaAgent({ open, onOpenChange }: OnaAgentProps) {
                   </div>
                 </div>
               )}
+
+              {error && !isLoading && (
+                <div className="flex justify-center">
+                  <div className="bg-destructive/10 text-destructive px-4 py-2 rounded-lg text-sm border border-destructive/20">
+                    {error}
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
 
-          {/* Input area */}
           <div className="border-t border-border p-4">
             <div className="flex gap-2">
               <Input
                 placeholder="Ask Ona something..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSendMessage()
-                  }
-                }}
+                onKeyDown={handleKeyDown}
                 disabled={isLoading}
                 className="flex-1"
               />
               <Button
                 size="icon"
-                onClick={handleSendMessage}
+                onClick={handleSend}
                 disabled={!input.trim() || isLoading}
               >
-                <Send className="h-4 w-4" />
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
               </Button>
             </div>
+            <p className="text-[10px] text-muted-foreground mt-2 text-center">
+              Ona Agent can query demand data, search SOPs, and generate
+              procurement lists
+            </p>
           </div>
         </SheetContent>
       </Sheet>

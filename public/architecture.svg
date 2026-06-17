@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="vercel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="aurora" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a3a5c"/>
+      <stop offset="100%" stop-color="#0c2440"/>
+    </linearGradient>
+    <linearGradient id="ai" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2d1b69"/>
+      <stop offset="100%" stop-color="#1a0a3e"/>
+    </linearGradient>
+    <linearGradient id="btn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bg)" rx="16"/>
+
+  <!-- Header -->
+  <text x="600" y="50" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="700" letter-spacing="1">Ona Analytics — Architecture</text>
+  <text x="600" y="72" text-anchor="middle" fill="#64748b" font-size="13">H0: Hack the Zero Stack — Vercel v0 + AWS Databases</text>
+
+  <!-- ===== LAYER 1: Vercel Edge ===== -->
+  <rect x="50" y="100" width="1100" height="140" fill="url(#vercel)" rx="12" stroke="#334155" stroke-width="1.5"/>
+  <text x="600" y="128" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="2">VERCEL EDGE NETWORK</text>
+
+  <!-- Next.js App Box -->
+  <rect x="80" y="145" width="240" height="75" fill="#1e293b" rx="8" stroke="#475569" stroke-width="1" filter="url(#glow)"/>
+  <text x="200" y="173" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Next.js App (Frontend)</text>
+  <text x="200" y="193" text-anchor="middle" fill="#94a3b8" font-size="10">React · Tailwind · shadcn/ui</text>
+  <text x="200" y="208" text-anchor="middle" fill="#64748b" font-size="9">Responsive Dashboard</text>
+
+  <!-- API Routes Box -->
+  <rect x="480" y="145" width="240" height="75" fill="#1e293b" rx="8" stroke="#475569" stroke-width="1" filter="url(#glow)"/>
+  <text x="600" y="173" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Next.js API Routes</text>
+  <text x="600" y="193" text-anchor="middle" fill="#94a3b8" font-size="10">/api/demand · /api/procurement</text>
+  <text x="600" y="208" text-anchor="middle" fill="#64748b" font-size="9">/api/agent · /api/auth</text>
+
+  <!-- Vercel AI SDK Box -->
+  <rect x="880" y="145" width="240" height="75" fill="url(#ai)" rx="8" stroke="#7c3aed" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="1000" y="173" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Vercel AI SDK</text>
+  <text x="1000" y="193" text-anchor="middle" fill="#a78bfa" font-size="10">streamText · Tool Calling</text>
+  <text x="1000" y="208" text-anchor="middle" fill="#7c3aed" font-size="9">GPT-4o Model</text>
+
+  <!-- Arrows between Edge boxes -->
+  <line x1="320" y1="182" x2="480" y2="182" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="475,178 485,182 475,186" fill="#475569"/>
+  <line x1="720" y1="182" x2="880" y2="182" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="875,178 885,182 875,186" fill="#7c3aed"/>
+
+  <!-- ===== LAYER 2: The Ona Agent ===== -->
+  <rect x="50" y="270" width="1100" height="160" fill="url(#ai)" rx="12" stroke="#5b21b6" stroke-width="1.5"/>
+  <text x="600" y="298" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="600" letter-spacing="2">THE ONA AGENT — SPLIT-BRAIN AI PIPELINE</text>
+
+  <!-- Deterministic SQL Tool -->
+  <rect x="140" y="320" width="300" height="90" fill="#2d1b69" rx="8" stroke="#7c3aed" stroke-width="1"/>
+  <text x="290" y="348" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">🔍 Deterministic SQL</text>
+  <text x="290" y="368" text-anchor="middle" fill="#a78bfa" font-size="10">Tool: query_demand_data</text>
+  <text x="290" y="388" text-anchor="middle" fill="#94a3b8" font-size="9">Raw SQL queries against Aurora</text>
+  <text x="290" y="402" text-anchor="middle" fill="#64748b" font-size="9">Prevents hallucination of financial numbers</text>
+
+  <!-- Divider vertical -->
+  <line x1="460" y1="320" x2="460" y2="410" stroke="#5b21b6" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- RAG Tool -->
+  <rect x="480" y="320" width="300" height="90" fill="#2d1b69" rx="8" stroke="#7c3aed" stroke-width="1"/>
+  <text x="630" y="348" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">📄 RAG + pgvector</text>
+  <text x="630" y="368" text-anchor="middle" fill="#a78bfa" font-size="10">Tool: search_context_knowledge</text>
+  <text x="630" y="388" text-anchor="middle" fill="#94a3b8" font-size="9">Semantic search of camp SOPs</text>
+  <text x="630" y="402" text-anchor="middle" fill="#64748b" font-size="9">Cosine distance in 1536-dim vector space</text>
+
+  <!-- Procurement Tool -->
+  <rect x="820" y="320" width="280" height="90" fill="#2d1b69" rx="8" stroke="#7c3aed" stroke-width="1"/>
+  <text x="960" y="348" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">📦 Procurement Gen</text>
+  <text x="960" y="368" text-anchor="middle" fill="#a78bfa" font-size="10">Tool: generate_procurement</text>
+  <text x="960" y="388" text-anchor="middle" fill="#94a3b8" font-size="9">Creates actionable supply lists</text>
+  <text x="960" y="402" text-anchor="middle" fill="#64748b" font-size="9">Written to procurement_items table</text>
+
+  <!-- ===== LAYER 3: AWS Aurora PostgreSQL ===== -->
+  <rect x="50" y="460" width="1100" height="200" fill="url(#aurora)" rx="12" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="600" y="488" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="600" letter-spacing="2">AMAZON AURORA POSTGRESQL SERVERLESS</text>
+
+  <!-- Demand Logs -->
+  <rect x="100" y="510" width="300" height="130" fill="#0c2440" rx="8" stroke="#1d4ed8" stroke-width="1"/>
+  <text x="250" y="538" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">📊 demand_logs</text>
+  <text x="250" y="558" text-anchor="middle" fill="#94a3b8" font-size="10">Relational occupancy metrics</text>
+  <text x="130" y="578" fill="#64748b" font-size="9">org_id UUID</text>
+  <text x="130" y="593" fill="#64748b" font-size="9">log_date DATE</text>
+  <text x="130" y="608" fill="#64748b" font-size="9">actual_value DECIMAL</text>
+  <text x="130" y="623" fill="#64748b" font-size="9">predicted_value DECIMAL</text>
+
+  <!-- Context Knowledge -->
+  <rect x="450" y="510" width="300" height="130" fill="#0c2440" rx="8" stroke="#1d4ed8" stroke-width="1"/>
+  <text x="600" y="538" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">🧠 context_knowledge</text>
+  <text x="600" y="558" text-anchor="middle" fill="#94a3b8" font-size="10">Vector embeddings (1536-d)</text>
+  <text x="480" y="578" fill="#64748b" font-size="9">content TEXT (SOPs)</text>
+  <text x="480" y="593" fill="#64748b" font-size="9">embedding VECTOR(1536)</text>
+  <text x="480" y="608" fill="#60a5fa" font-size="9">HNSW Index (cosine)</text>
+  <text x="480" y="623" fill="#64748b" font-size="9">pgvector extension</text>
+
+  <!-- Procurement -->
+  <rect x="800" y="510" width="300" height="130" fill="#0c2440" rx="8" stroke="#1d4ed8" stroke-width="1"/>
+  <text x="950" y="538" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">📦 procurement_items</text>
+  <text x="950" y="558" text-anchor="middle" fill="#94a3b8" font-size="10">Agent-generated supply lists</text>
+  <text x="830" y="578" fill="#64748b" font-size="9">item_name VARCHAR</text>
+  <text x="830" y="593" fill="#64748b" font-size="9">required_amount DECIMAL</text>
+  <text x="830" y="608" fill="#64748b" font-size="9">urgency (high|medium|low)</text>
+  <text x="830" y="623" fill="#64748b" font-size="9">reason TEXT</text>
+
+  <!-- ===== Flow arrows from API to DB ===== -->
+  <line x1="600" y1="220" x2="600" y2="270" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="596,265 600,275 604,265" fill="#a78bfa"/>
+  <text x="610" y="250" fill="#a78bfa" font-size="9">AI Processing</text>
+
+  <line x1="200" y1="220" x2="200" y2="460" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="196,455 200,465 204,455" fill="#475569"/>
+  <text x="30" y="350" fill="#64748b" font-size="9">SQL Queries</text>
+
+  <line x1="600" y1="430" x2="600" y2="460" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="596,455 600,465 604,455" fill="#60a5fa"/>
+  <text x="610" y="450" fill="#60a5fa" font-size="9">Read/Write</text>
+
+  <line x1="960" y1="430" x2="960" y2="460" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="956,455 960,465 964,455" fill="#60a5fa"/>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="50" y="690" width="1100" height="80" fill="#1e293b" rx="8" stroke="#334155" stroke-width="1"/>
+
+  <rect x="80" y="710" width="16" height="16" fill="#2d1b69" rx="3" stroke="#7c3aed" stroke-width="1"/>
+  <text x="105" y="723" fill="#94a3b8" font-size="11">Vercel AI SDK</text>
+
+  <rect x="220" y="710" width="16" height="16" fill="#0c2440" rx="3" stroke="#1d4ed8" stroke-width="1"/>
+  <text x="245" y="723" fill="#94a3b8" font-size="11">AWS Aurora PostgreSQL</text>
+
+  <rect x="430" y="710" width="16" height="16" fill="#1e293b" rx="3" stroke="#475569" stroke-width="1"/>
+  <text x="455" y="723" fill="#94a3b8" font-size="11">Next.js</text>
+
+  <rect x="540" y="710" width="16" height="16" fill="#1e293b" rx="3" stroke="#475569" stroke-width="1"/>
+  <text x="565" y="723" fill="#94a3b8" font-size="11">OpenAI GPT-4o</text>
+
+  <text x="80" y="755" fill="#64748b" font-size="10">Built for H0: Hack the Zero Stack — June 2026</text>
+  <text x="600" y="755" text-anchor="middle" fill="#64748b" font-size="10">github.com/your-username/ona-analytics</text>
+</svg>
