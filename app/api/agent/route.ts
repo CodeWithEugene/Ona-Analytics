@@ -70,6 +70,13 @@ export async function POST(request: Request) {
           ),
           execute: async (input: unknown) => {
             const { sql } = input as { sql: string }
+            const normalized = sql.trim().toUpperCase()
+            if (!normalized.startsWith("SELECT")) {
+              return JSON.stringify({
+                success: false,
+                error: "Only SELECT queries are permitted",
+              })
+            }
             try {
               const rows = await query(sql)
               return JSON.stringify({ success: true, data: rows })

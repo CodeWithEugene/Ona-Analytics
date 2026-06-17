@@ -3,15 +3,14 @@
 import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState("manager@ona-analytics.com")
-  const [password, setPassword] = useState("ona-demo-2026")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -28,12 +27,17 @@ export default function LoginPage() {
     })
 
     if (result?.error) {
-      setError("Invalid credentials. Try demo@ona-analytics.com / demo1234")
+      setError("Invalid email or password. Use manager@ona-analytics.com / ona-demo-2026")
       setLoading(false)
     } else {
       router.push("/dashboard")
       router.refresh()
     }
+  }
+
+  function fillDemo() {
+    setEmail("manager@ona-analytics.com")
+    setPassword("ona-demo-2026")
   }
 
   return (
@@ -49,17 +53,19 @@ export default function LoginPage() {
                 </span>
               </h1>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4 mt-8">
+            <form onSubmit={handleSubmit} className="space-y-4 mt-8" noValidate>
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-[#1C1816]/70 dark:text-[#FBF8F4]/70">
                   Email
                 </label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="manager@ona-analytics.com"
+                  placeholder="you@camp.com"
+                  autoComplete="email"
                   required
                   className="bg-[#FBF8F4] dark:bg-[#1C1816] border-[#1C1816]/10 dark:border-[#FBF8F4]/10"
                 />
@@ -71,16 +77,19 @@ export default function LoginPage() {
                 <div className="relative">
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
+                    autoComplete="current-password"
                     required
                     className="bg-[#FBF8F4] dark:bg-[#1C1816] border-[#1C1816]/10 dark:border-[#FBF8F4]/10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#1C1816]/40 hover:text-[#1C1816]/70 dark:text-[#FBF8F4]/40"
                   >
                     {showPassword ? (
@@ -92,7 +101,7 @@ export default function LoginPage() {
                 </div>
               </div>
               {error && (
-                <p className="text-sm text-[#C44]">{error}</p>
+                <p className="text-sm text-[#C44]" role="alert">{error}</p>
               )}
               <button
                 type="submit"
@@ -101,7 +110,7 @@ export default function LoginPage() {
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Signing in...
                   </span>
                 ) : (
@@ -109,15 +118,24 @@ export default function LoginPage() {
                 )}
               </button>
             </form>
-            <p className="text-xs text-[#1C1816]/30 dark:text-[#FBF8F4]/30 text-center mt-6">
+            <div className="text-center mt-6">
+              <button
+                type="button"
+                onClick={fillDemo}
+                className="text-xs text-[#D4A853] hover:text-[#D4A853]/80 underline underline-offset-2 transition-colors"
+              >
+                Use demo credentials
+              </button>
+            </div>
+            <p className="text-xs text-[#1C1816]/20 dark:text-[#FBF8F4]/20 text-center mt-2">
               Demo: manager@ona-analytics.com / ona-demo-2026
             </p>
           </div>
         </div>
         <div className="text-center mt-6">
-          <a href="/" className="text-xs text-[#1C1816]/30 dark:text-[#FBF8F4]/30 hover:text-[#1C1816]/60 dark:hover:text-[#FBF8F4]/60 transition-colors">
+          <Link href="/" className="text-xs text-[#1C1816]/30 dark:text-[#FBF8F4]/30 hover:text-[#1C1816]/60 dark:hover:text-[#FBF8F4]/60 transition-colors">
             Back to home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

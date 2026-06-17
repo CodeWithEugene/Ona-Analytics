@@ -21,6 +21,10 @@ export const metadata: Metadata = {
   title: "Ona Analytics — AI-Native Demand Radar for Safari Camps",
   description:
     "Predictive demand intelligence and supply chain optimization for remote safari camps and eco-lodges. Powered by AI.",
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   openGraph: {
     title: "Ona Analytics",
     description:

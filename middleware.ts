@@ -1,22 +1,13 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
+const PUBLIC_PATHS = ["/", "/login"]
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const publicPaths = [
-    "/",
-    "/login",
-    "/api/auth",
-    "/api/migrate",
-    "/_next/static",
-    "/_next/image",
-    "/favicon.ico",
-    "/logo.svg",
-  ]
-
-  const isPublic = publicPaths.some((p) => pathname.startsWith(p))
-  if (isPublic) return NextResponse.next()
+  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/")))
+    return NextResponse.next()
 
   const token =
     request.cookies.get("__Secure-authjs.session-token")?.value ??
@@ -32,5 +23,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api/auth|api/migrate|_next/static|_next/image|favicon.ico|logo.svg).*)"],
+  matcher: ["/((?!api/|_next/static|_next/image|favicon.ico|logo.svg).*)"],
 }
