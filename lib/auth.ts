@@ -1,14 +1,9 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-
-const AUTH_USER = {
-  id: "1",
-  name: "Camp Manager",
-  email: "manager@ona-analytics.com",
-  password: "ona-demo-2026",
-}
+import { authConfig, AUTH_USER } from "./auth.config"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: "credentials",
@@ -31,15 +26,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  pages: {
-    signIn: "/login",
-  },
-  callbacks: {
-    authorized({ auth: session }) {
-      return !!session?.user
-    },
-  },
-  session: {
-    strategy: "jwt",
-  },
 })

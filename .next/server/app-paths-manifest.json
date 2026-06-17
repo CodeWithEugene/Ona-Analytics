@@ -1,11 +1,1 @@
-{
-  "/api/agent/route": "app/api/agent/route.js",
-  "/api/demand/route": "app/api/demand/route.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/procurement/generate/route": "app/api/procurement/generate/route.js",
-  "/api/procurement/route": "app/api/procurement/route.js",
-  "/api/migrate/route": "app/api/migrate/route.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js"
-}
+{}
