@@ -46,11 +46,16 @@ export async function POST(request: Request) {
       )
     }
 
-    const result = await generateText({
-      model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
-      system: SYSTEM_PROMPT,
-      prompt: message,
-      tools: {
+    let messages: any[] = [{ role: "user", content: message }]
+    let finalResult = ""
+    let allToolCalls: any[] = []
+
+    for (let step = 0; step < 5; step++) {
+      const result = await generateText({
+        model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
+        system: SYSTEM_PROMPT,
+        messages,
+        tools: {
         query_demand_data: dynamicTool({
           description:
             "Query occupancy demand data from the database. Accepts a SELECT SQL query against demand_logs.",
@@ -174,15 +179,25 @@ export async function POST(request: Request) {
           },
         }),
       },
-
     })
 
+      if (result.toolCalls && result.toolCalls.length > 0) {
+        allToolCalls.push(
+          ...result.toolCalls.map((tc: any) => ({
+            name: tc.toolName,
+            args: tc.args || tc.input || tc.arguments,
+          }))
+        )
+        messages = result.response.messages
+      } else {
+        finalResult = result.text
+        break
+      }
+    }
+
     return NextResponse.json({
-      response: result.text,
-      toolCalls: result.toolCalls?.map((tc: any) => ({
-        name: tc.toolName,
-        args: tc.args || tc.input || tc.arguments,
-      })),
+      response: finalResult,
+      toolCalls: allToolCalls,
     })
   } catch (error: any) {
     console.error("Agent error:", error)
