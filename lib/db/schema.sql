@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS demand_logs (
   org_id UUID NOT NULL REFERENCES org_profiles(id) ON DELETE CASCADE,
   log_date DATE NOT NULL,
   metric_type VARCHAR(50) NOT NULL DEFAULT 'occupancy_rate',
-  actual_value DECIMAL(12, 4) NOT NULL,
+  actual_value DECIMAL(12, 4),
   predicted_value DECIMAL(12, 4),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
