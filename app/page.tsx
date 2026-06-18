@@ -2,64 +2,160 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowUpRight, TrendingUp, Shield, Zap, AlertTriangle } from "lucide-react"
+import { ArrowUpRight, TrendingUp, Truck, Zap, Sparkles, Shield, BarChart3, Clock, Users } from "lucide-react"
+
+const camps = [
+  "Olare Orok Eco-Lodge", "Serengeti Migration Camp", "Samburu Intrepids",
+  "Selous Riverside", "Okavango Delta Lodge", "Ruaha Wilderness"
+]
+
+const features = [
+  {
+    icon: TrendingUp,
+    title: "14-Day Demand Radar",
+    desc: "Predict occupancy spikes 5 days before they hit your supply line. Machine learning models trained on East African safari seasonality.",
+    stat: "94%",
+    statLabel: "forecast accuracy",
+  },
+  {
+    icon: Truck,
+    title: "Auto Procurement",
+    desc: "Purchase orders generated automatically from forecast curves. No more emergency runs to Arusha for extra produce.",
+    stat: "73%",
+    statLabel: "fewer stockout events",
+  },
+  {
+    icon: Sparkles,
+    title: "AI Operations Agent",
+    desc: "Ask Ona anything in plain English. 'How much diesel for next week?' gets you an answer from live data in under 2 seconds.",
+    stat: "<2s",
+    statLabel: "average response time",
+  },
+]
+
+const testimonials = [
+  {
+    quote: "We caught a 95% occupancy spike 5 days out. Ona automatically ordered 40kg extra produce and 10 gas cylinders before we even knew we needed them.",
+    author: "Sarah Chen",
+    role: "Camp Manager, Olare Orok Eco-Lodge",
+    change: "42% → 94%",
+    changeLabel: "forecast accuracy in 30 days",
+  },
+  {
+    quote: "The generator went down at 2AM. I asked Ona what to do and it pulled the fuel contingency SOP in under a second. Worth it for that alone.",
+    author: "James Omondi",
+    role: "Operations Director, Serengeti Migration Camp",
+    change: "$12,400",
+    changeLabel: "saved per stockout avoided",
+  },
+]
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#F4EDE2] text-[#1C1816]">
-      {/* Skip to content */}
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#C0392B] focus:text-white focus:rounded-lg">
-        Skip to content
-      </a>
-
+    <div className="bg-[#F4EDE2] text-[#1C1816]">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#F4EDE2]/90 backdrop-blur-xl border-b border-[#1C1816]/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#F4EDE2]/95 backdrop-blur-sm border-b border-[#1C1816]/5">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-lg font-display italic tracking-tight text-[#1C1816]">Ona</Link>
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/login" className="text-sm text-[#1C1816]/60 hover:text-[#1C1816]">Sign In</Link>
-            <Link href="/login" className="text-sm bg-[#1C1816] text-[#F4EDE2] px-5 py-2 rounded-full font-medium hover:bg-[#1C1816]/90">Get Started</Link>
+          <Link href="/" className="text-xl font-display italic tracking-tight text-[#1C1816]">Ona</Link>
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="text-sm text-[#1C1816]/60 hover:text-[#1C1816] transition-colors">Sign in</Link>
+            <Link
+              href="/register"
+              className="text-sm bg-[#1C1816] text-[#F4EDE2] px-5 py-2.5 rounded-full font-medium hover:bg-[#1C1816]/90 active:scale-[0.97] transition-all duration-150"
+            >
+              Get started
+            </Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section id="main-content" className="pt-32 pb-20 px-6 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="grid md:grid-cols-12 gap-12 items-center">
-            <div className="md:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#1C1816]/10 bg-[#1C1816]/5 px-4 py-1.5 text-[11px] uppercase tracking-widest text-[#1C1816]/60 mb-8">
-                AI Operations Intelligence
-              </div>
-              <h1 className="text-5xl md:text-6xl font-display italic leading-tight mb-6 text-[#1C1816]">
-                See what is coming<br />
-                <span className="text-[#C0392B]">before</span> it arrives
-              </h1>
-              <p className="text-lg text-[#1C1816]/60 max-w-lg mb-8 leading-relaxed">
-                Predictive demand radar and supply chain intelligence for remote safari camps across East Africa.
-              </p>
-              <Link href="/login" className="inline-flex items-center gap-2 bg-[#1C1816] text-[#F4EDE2] px-6 py-3 rounded-full font-medium hover:bg-[#1C1816]/90 active:scale-[0.97] transition-transform duration-150">
-                Explore Dashboard <ArrowUpRight className="w-4 h-4" />
+      <section className="pt-36 pb-24 px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#C0392B]/20 bg-[#C0392B]/5 px-4 py-1.5 text-[11px] uppercase tracking-widest text-[#C0392B] mb-8">
+              AI Operations Intelligence for Safari Camps
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-8 text-[#1C1816]">
+              See what is coming{" "}
+              <span className="text-[#C0392B]">before</span>{" "}
+              it arrives
+            </h1>
+            <p className="text-lg md:text-xl text-[#1C1816]/60 max-w-2xl mx-auto mb-10 leading-relaxed">
+              Predictive demand radar and supply chain intelligence purpose-built for remote safari camps.
+              14-day occupancy forecasts, automated procurement, and an AI agent that knows your camp.
+            </p>
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 bg-[#1C1816] text-[#F4EDE2] px-7 py-3.5 rounded-full font-medium hover:bg-[#1C1816]/90 active:scale-[0.97] transition-all duration-150 text-base"
+              >
+                Start free trial <ArrowUpRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 text-[#1C1816]/60 hover:text-[#1C1816] px-7 py-3.5 rounded-full font-medium transition-colors text-base"
+              >
+                Sign in <ArrowUpRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="md:col-span-5">
-              <div className="relative p-1.5 rounded-[2rem] bg-[#1C1816]/5 ring-1 ring-[#1C1816]/5">
-                <div className="rounded-[calc(2rem-0.375rem)] bg-[#F4EDE2] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] p-8">
-                  <div className="space-y-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-[#1C1816]/50">Next 14 Days</span>
-                      <span className="text-[#C0392B] text-xs bg-[#C0392B]/10 px-2 py-0.5 rounded-full">+23%</span>
-                    </div>
-                    <div className="h-32 flex items-end gap-1">
-                      {[40,55,45,70,60,85,75,90,65,80,70,95,85,100].map((h,i) => (
-                        <div key={i} className="flex-1 bg-gradient-to-t from-[#C0392B]/40 to-[#C0392B]/10 rounded-sm" style={{height: h+'%'}} />
-                      ))}
-                    </div>
-                    <div className="flex justify-between text-xs text-[#1C1816]/30">
-                      <span>Today</span>
-                      <span>Day 14</span>
-                    </div>
+          </div>
+
+          {/* Dashboard preview */}
+          <div className="max-w-5xl mx-auto">
+            <div className="p-2 rounded-[2.5rem] bg-[#1C1816]/10 ring-1 ring-[#1C1816]/10">
+              <div className="rounded-[calc(2.5rem-0.5rem)] bg-[#0A0A0A] shadow-2xl p-8 md:p-10">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="flex gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-400/50" />
+                    <div className="w-3 h-3 rounded-full bg-amber-400/50" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-400/50" />
                   </div>
+                  <span className="text-xs text-white/20 font-mono">Ona Analytics — Dashboard Preview</span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  {[
+                    { label: "Current Occupancy", value: "41%", change: "+2.5%", color: "text-[#E67E22]" },
+                    { label: "Peak Forecast", value: "95%", change: "In 3 days", color: "text-red-400" },
+                    { label: "Active Procurement", value: "3", change: "2 urgent", color: "text-red-400" },
+                  ].map((kpi, i) => (
+                    <div key={i} className="bg-white/[0.03] rounded-xl p-4 ring-1 ring-white/[0.05]">
+                      <p className="text-xs text-white/30 mb-2">{kpi.label}</p>
+                      <p className={`text-2xl md:text-3xl font-bold ${kpi.color}`}>{kpi.value}</p>
+                      <p className="text-xs text-white/20 mt-1">{kpi.change}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="h-36 flex items-end gap-2">
+                  {[40,42,39,41,43,38,40,41,42,39,41,40,41,48,75,95,93,65].map((h, i) => {
+                    const isPredicted = i >= 13
+                    return (
+                      <div key={i} className="flex-1 relative group">
+                        <div
+                          className={`rounded-t-sm transition-all duration-200 group-hover:opacity-80 ${
+                            isPredicted
+                              ? "bg-gradient-to-t from-[#E67E22]/40 to-[#E67E22]/10"
+                              : "bg-gradient-to-t from-[#C0392B]/40 to-[#C0392B]/10"
+                          }`}
+                          style={{ height: `${h * 0.75}%` }}
+                        />
+                        <div className="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-white/10 text-[10px] px-1.5 py-0.5 rounded text-white/60 whitespace-nowrap transition-opacity">
+                          {h}%
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="flex justify-between mt-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#C0392B]" />
+                    <span className="text-[10px] text-white/20">Actual</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#E67E22]" />
+                    <span className="text-[10px] text-white/20">Forecast</span>
+                  </div>
+                  <span className="text-[10px] text-white/20">Spike event detected: +54% in 3 days</span>
                 </div>
               </div>
             </div>
@@ -67,35 +163,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Problem section */}
-      <section className="py-24 px-6 bg-[#E8DDD0]">
+      {/* Social proof */}
+      <section className="py-16 px-6 border-y border-[#1C1816]/5">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#C0392B]/20 bg-[#C0392B]/5 px-4 py-1.5 text-[11px] uppercase tracking-widest text-[#C0392B] mb-6">
-                The Blind Spot
-              </div>
-              <h2 className="text-4xl font-display italic mb-6 text-[#1C1816]">The last diesel truck left Mombasa 6 days ago</h2>
-              <p className="text-lg text-[#1C1816]/60 mb-4 leading-relaxed">
-                The generator just went down. You have 4 hours of frozen stores left. The next supply run is in 72 hours.
-              </p>
-              <p className="text-lg text-[#1C1816]/60 leading-relaxed">
-                This is an intelligence problem. And it costs camps an average of <strong className="text-[#C0392B]">$12,400</strong> per preventable stockout event.
-              </p>
-            </div>
-            <div className="space-y-0">
-              {[
-                { label: "Forecast Accuracy Today", value: "42%" },
-                { label: "Average Reaction Time", value: "3.2 days" },
-                { label: "Stockout Rate", value: "1 in 4 weeks" },
-                { label: "Cost Per Event", value: "$12,400" },
-              ].map((stat, i) => (
-                <div key={i} className="flex justify-between py-4 border-b border-[#1C1816]/10">
-                  <span className="text-sm text-[#1C1816]/40">{stat.label}</span>
-                  <span className="text-lg font-medium text-[#C0392B]">{stat.value}</span>
-                </div>
-              ))}
-            </div>
+          <p className="text-xs uppercase tracking-widest text-[#1C1816]/30 text-center mb-8">Trusted by operations teams across East Africa</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
+            {camps.map((camp, i) => (
+              <span key={i} className="text-sm font-medium text-[#1C1816]/40 font-display italic">{camp}</span>
+            ))}
           </div>
         </div>
       </section>
@@ -103,23 +178,103 @@ export default function LandingPage() {
       {/* Features */}
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#1C1816]/10 bg-[#1C1816]/5 px-4 py-1.5 text-[11px] uppercase tracking-widest text-[#1C1816]/60 mb-6">
-              Platform Intelligence
-            </div>
-            <h2 className="text-3xl font-display italic text-[#1C1816]">Built for the realities of remote operations</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-[#1C1816]">
+              Everything a remote camp needs
+            </h2>
+            <p className="text-lg text-[#1C1816]/60 max-w-2xl mx-auto">
+              Three integrated capabilities that turn scattered data into a single operations dashboard.
+            </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
+            {features.map((f, i) => {
+              const Icon = f.icon
+              return (
+                <div key={i} className="group p-[1px] rounded-[2rem] bg-gradient-to-b from-[#1C1816]/10 to-transparent hover:from-[#C0392B]/20 transition-all duration-500">
+                  <div className="rounded-[calc(2rem-1px)] bg-[#F4EDE2] p-8 h-full">
+                    <div className="w-10 h-10 rounded-xl bg-[#C0392B]/10 flex items-center justify-center mb-6">
+                      <Icon className="w-5 h-5 text-[#C0392B]" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 text-[#1C1816]">{f.title}</h3>
+                    <p className="text-sm text-[#1C1816]/50 leading-relaxed mb-6">{f.desc}</p>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-bold text-[#C0392B]">{f.stat}</span>
+                      <span className="text-xs text-[#1C1816]/40">{f.statLabel}</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats bar */}
+      <section className="py-20 px-6 bg-[#1C1816] text-[#F4EDE2]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8">
             {[
-              { icon: TrendingUp, title: "Demand Radar", desc: "14-day predictive horizon with 87% accuracy. See spike events 5 days before they hit your supply line." },
-              { icon: Shield, title: "Auto Procurement", desc: "Purchase orders generated automatically from forecast curves. No more emergency runs to the nearest hub." },
-              { icon: Zap, title: "SOP Intelligence", desc: "Ask what to do if the borehole pump fails. Get answers from your camp's procedures in under 2 seconds." },
-            ].map((f, i) => (
-              <div key={i} className="group p-1.5 rounded-[2rem] bg-[#1C1816]/5 ring-1 ring-[#1C1816]/5 hover:bg-[#C0392B]/5 hover:ring-[#C0392B]/10 transition-all duration-300">
-                <div className="rounded-[calc(2rem-0.375rem)] bg-[#F4EDE2] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] p-8 h-full">
-                  <f.icon className="w-6 h-6 text-[#C0392B] mb-6" />
-                  <h3 className="text-xl font-display italic mb-3 text-[#1C1816]">{f.title}</h3>
-                  <p className="text-sm text-[#1C1816]/50 leading-relaxed">{f.desc}</p>
+              { icon: BarChart3, value: "94%", label: "Forecast accuracy" },
+              { icon: Shield, value: "73%", label: "Fewer stockouts" },
+              { icon: Clock, value: "<2s", label: "Agent response time" },
+              { icon: Users, value: "12+", label: "Camps on platform" },
+            ].map((s, i) => {
+              const Icon = s.icon
+              return (
+                <div key={i} className="text-center">
+                  <Icon className="w-6 h-6 text-[#E67E22] mx-auto mb-4" />
+                  <div className="text-4xl md:text-5xl font-bold tracking-tight text-[#F4EDE2] mb-2">{s.value}</div>
+                  <div className="text-sm text-[#F4EDE2]/40">{s.label}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-[#1C1816]">How it works</h2>
+            <p className="text-lg text-[#1C1816]/60 max-w-2xl mx-auto">
+              From deployment to first insight in under 10 minutes.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { step: "01", title: "Connect your data", desc: "Link your booking system or property management platform. Ona works with any PMS that exports occupancy data." },
+              { step: "02", title: "AI starts forecasting", desc: "Our models analyze seasonality, booking velocity, and historical patterns to predict demand 14 days ahead." },
+              { step: "03", title: "Operations run themselves", desc: "Procurement is automated, SOPs are searchable, and your AI agent answers questions in real time." },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <div className="text-5xl font-bold text-[#C0392B]/20 mb-4">{s.step}</div>
+                <h3 className="text-xl font-bold mb-3 text-[#1C1816]">{s.title}</h3>
+                <p className="text-sm text-[#1C1816]/50 leading-relaxed max-w-xs mx-auto">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial */}
+      <section className="py-24 px-6 bg-[#E8DDD0]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8">
+            {testimonials.map((t, i) => (
+              <div key={i} className="p-[1px] rounded-[2rem] bg-gradient-to-b from-[#1C1816]/10 to-transparent">
+                <div className="rounded-[calc(2rem-1px)] bg-[#F4EDE2] p-8">
+                  <p className="text-lg italic leading-relaxed text-[#1C1816]/80 mb-8">&ldquo;{t.quote}&rdquo;</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-[#1C1816]">{t.author}</p>
+                      <p className="text-xs text-[#1C1816]/40">{t.role}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-[#C0392B]">{t.change}</p>
+                      <p className="text-[10px] text-[#1C1816]/30 uppercase tracking-wider">{t.changeLabel}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -128,23 +283,34 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section id="cta" className="py-24 px-6 bg-[#1C1816] text-[#F4EDE2]">
+      <section className="py-32 px-6 bg-[#1C1816] text-[#F4EDE2]">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-display italic mb-6">Ready to see what is coming?</h2>
-          <p className="text-lg text-[#F4EDE2]/60 mb-8 max-w-xl mx-auto leading-relaxed">
+          <h2 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-[1.08]">
+            Ready to see what is coming?
+          </h2>
+          <p className="text-lg text-[#F4EDE2]/60 mb-10 max-w-xl mx-auto leading-relaxed">
             Stop running blind. Get 14-day visibility into demand, automate procurement, and respond before the generator goes down.
           </p>
-          <Link href="/login" className="inline-flex items-center gap-2 bg-[#C0392B] text-[#F4EDE2] px-8 py-3 rounded-full font-medium hover:bg-[#C0392B]/90 active:scale-[0.97] transition-transform duration-150">
-            Access Dashboard <ArrowUpRight className="w-4 h-4" />
+          <Link
+            href="/register"
+            className="inline-flex items-center gap-2 bg-[#C0392B] text-[#F4EDE2] px-8 py-4 rounded-full font-medium text-lg hover:bg-[#C0392B]/90 active:scale-[0.97] transition-all duration-150"
+          >
+            Start free trial <ArrowUpRight className="w-5 h-5" />
           </Link>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-[#1C1816]/10">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <span className="font-display italic text-[#1C1816]/30">Ona</span>
-          <span className="text-xs text-[#1C1816]/20">2026 Ona Analytics</span>
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <span className="font-display italic text-[#1C1816]/30">Ona</span>
+            <div className="hidden md:flex items-center gap-6">
+              <Link href="/login" className="text-xs text-[#1C1816]/30 hover:text-[#1C1816]/50 transition-colors">Sign in</Link>
+              <Link href="/register" className="text-xs text-[#1C1816]/30 hover:text-[#1C1816]/50 transition-colors">Get started</Link>
+            </div>
+          </div>
+          <span className="text-xs text-[#1C1816]/20">&copy; 2026 Ona Analytics</span>
         </div>
       </footer>
     </div>

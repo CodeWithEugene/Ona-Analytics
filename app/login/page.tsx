@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ArrowUpRight, Loader2 } from "lucide-react"
 
 export default function LoginPage() {
@@ -79,6 +80,13 @@ export default function LoginPage() {
                 </>}
               </button>
             </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-xs text-[#F4EDE2]/30">
+                Don't have an account?{" "}
+                <Link href="/register" className="text-[#E67E22] hover:underline">Create one</Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,9 +1,13 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
+import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
-import { LayoutDashboard, TrendingUp, Truck, Calendar, Settings, Sparkles, Menu, X, Send, Loader2, MapPin, Clock, User } from "lucide-react"
+import {
+  LayoutDashboard, TrendingUp, Truck, Calendar, Settings,
+  Sparkles, Menu, X, Send, Loader2, MapPin, Clock, User,
+  LogOut, ChevronDown, CheckCircle, RefreshCw, Save, Eye, EyeOff,
+} from "lucide-react"
 
 const navItems = [
   { id: "overview", icon: LayoutDashboard, label: "Overview" },
@@ -19,6 +23,21 @@ function Card({ children, className }: { children: React.ReactNode; className?: 
       <div className="rounded-[calc(2rem-0.375rem)] bg-[#111] p-6">
         {children}
       </div>
+    </div>
+  )
+}
+
+function Toast({ message, type, onClose }: { message: string; type: "success" | "error"; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000)
+    return () => clearTimeout(timer)
+  }, [onClose])
+
+  return (
+    <div className={`fixed bottom-6 right-6 z-[60] px-5 py-3 rounded-xl shadow-2xl text-sm font-medium animate-in slide-in-from-bottom-2 ${
+      type === "success" ? "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30" : "bg-red-500/20 text-red-300 ring-1 ring-red-500/30"
+    }`}>
+      {message}
     </div>
   )
 }
@@ -48,9 +67,14 @@ function calcChange(data: any[]) {
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const orgId = (session?.user as any)?.orgId
+  const userId = session?.user?.id
+  const userEmail = session?.user?.email
+  const userName = session?.user?.name || "Camp Manager"
+  const initials = userName.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
 
   const [activeTab, setActiveTab] = useState("overview")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [demandData, setDemandData] = useState<any[]>([])
   const [procurementData, setProcurementData] = useState<any[]>([])
   const [orgData, setOrgData] = useState<any>(null)
@@ -59,48 +83,60 @@ export default function DashboardPage() {
   const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([])
   const [chatInput, setChatInput] = useState("")
   const [chatLoading, setChatLoading] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  const showToast = useCallback((message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type })
+  }, [])
+
+  const fetchDashboard = useCallback(async () => {
     if (!orgId) return
-    async function fetchData() {
-      try {
-        const [demandRes, procRes] = await Promise.all([
-          fetch(`/api/demand?orgId=${orgId}&days=30`),
-          fetch(`/api/procurement?orgId=${orgId}`),
-        ])
-        const [demandJson, procJson] = await Promise.all([
-          demandRes.json(),
-          procRes.json(),
-        ])
-        setDemandData(demandJson.data || [])
-        setProcurementData(procJson.data || [])
-      } catch (err) {
-        console.error("Failed to fetch dashboard data", err)
-      } finally {
-        setLoading(false)
-      }
+    try {
+      const [demandRes, procRes] = await Promise.all([
+        fetch(`/api/demand?orgId=${orgId}&days=30`),
+        fetch(`/api/procurement?orgId=${orgId}`),
+      ])
+      const [demandJson, procJson] = await Promise.all([
+        demandRes.json(),
+        procRes.json(),
+      ])
+      setDemandData(demandJson.data || [])
+      setProcurementData(procJson.data || [])
+    } catch (err) {
+      console.error("Failed to fetch dashboard data", err)
+    } finally {
+      setLoading(false)
     }
-    fetchData()
   }, [orgId])
 
-  useEffect(() => {
+  const fetchOrg = useCallback(async () => {
     if (!orgId) return
-    async function fetchOrg() {
-      try {
-        const res = await fetch(`/api/org?orgId=${orgId}`)
-        const json = await res.json()
-        setOrgData(json.data || null)
-      } catch (err) {
-        console.error("Failed to fetch org data", err)
+    try {
+      const res = await fetch(`/api/org?orgId=${orgId}`)
+      const json = await res.json()
+      setOrgData(json.data || null)
+    } catch (err) {
+      console.error("Failed to fetch org data", err)
+    }
+  }, [orgId])
+
+  useEffect(() => { fetchDashboard() }, [fetchDashboard])
+  useEffect(() => { fetchOrg() }, [fetchOrg])
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
       }
     }
-    fetchOrg()
-  }, [orgId])
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   const occupancy = calcOccupancy(demandData)
   const peak = calcForecastPeak(demandData)
   const change = calcChange(demandData)
-  const campName = orgData?.name || "Operations Command Center"
   const isAuthReady = status !== "loading" && !!orgId
 
   async function sendChatMessage(e: React.FormEvent) {
@@ -128,16 +164,27 @@ export default function DashboardPage() {
   async function handleGenerateProcurement() {
     if (!orgId) return
     try {
-      await fetch("/api/procurement/generate", {
+      const res = await fetch("/api/procurement/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orgId }),
       })
-      const procRes = await fetch(`/api/procurement?orgId=${orgId}`)
-      const procJson = await procRes.json()
-      setProcurementData(procJson.data || [])
-    } catch (err) {
-      console.error("Failed to generate procurement", err)
+      if (!res.ok) throw new Error("Failed to generate")
+      await fetchDashboard()
+      showToast("Procurement recommendations generated")
+    } catch {
+      showToast("Failed to generate procurement", "error")
+    }
+  }
+
+  async function handleFulfillItem(itemId: string) {
+    try {
+      const res = await fetch(`/api/procurement/${itemId}/fulfill`, { method: "POST" })
+      if (!res.ok) throw new Error("Failed to fulfill")
+      await fetchDashboard()
+      showToast("Item marked as fulfilled")
+    } catch {
+      showToast("Failed to fulfill item", "error")
     }
   }
 
@@ -151,6 +198,8 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#E8E6E1] flex">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
       <button
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white/10 rounded-lg"
@@ -185,7 +234,7 @@ export default function DashboardPage() {
               )
             })}
           </nav>
-          <div className="p-3 border-t border-white/5">
+          <div className="p-3 border-t border-white/5 space-y-1">
             <button
               onClick={() => setChatOpen(!chatOpen)}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
@@ -193,6 +242,44 @@ export default function DashboardPage() {
               <Sparkles className="w-4 h-4 text-[#E67E22]" />
               <span>Ona Agent</span>
             </button>
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-all duration-200"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#E67E22]/20 flex items-center justify-center">
+                  <span className="text-[10px] font-medium text-[#E67E22]">{initials}</span>
+                </div>
+                <span className="flex-1 text-left truncate">{userName}</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              {userMenuOpen && (
+                <div className="absolute bottom-full left-3 right-3 mb-1 bg-[#1a1a1a] rounded-xl ring-1 ring-white/10 overflow-hidden shadow-2xl">
+                  <button
+                    onClick={() => { setUserMenuOpen(false); setActiveTab("settings") }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => { setUserMenuOpen(false); setActiveTab("settings") }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                    Settings
+                  </button>
+                  <div className="border-t border-white/5" />
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-white/5 transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </aside>
@@ -204,13 +291,22 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-display italic mb-1">{orgData?.name || "Operations Command Center"}</h1>
               <p className="text-sm text-white/40">Real-time demand intelligence</p>
             </div>
-            <button
-              onClick={() => setChatOpen(!chatOpen)}
-              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#E67E22]/10 text-[#E67E22] text-sm ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all"
-            >
-              <Sparkles className="w-4 h-4" />
-              Ona Agent
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => { fetchDashboard(); fetchOrg() }}
+                className="p-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                title="Refresh data"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setChatOpen(!chatOpen)}
+                className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#E67E22]/10 text-[#E67E22] text-sm ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all"
+              >
+                <Sparkles className="w-4 h-4" />
+                Ona Agent
+              </button>
+            </div>
           </div>
           {activeTab === "overview" && (
             <Overview
@@ -220,6 +316,7 @@ export default function DashboardPage() {
               occupancy={occupancy}
               peak={peak}
               change={change}
+              onRefresh={fetchDashboard}
             />
           )}
           {activeTab === "demand" && <Demand demandData={demandData} loading={loading} />}
@@ -228,10 +325,20 @@ export default function DashboardPage() {
               procurementData={procurementData}
               loading={loading}
               onGenerate={handleGenerateProcurement}
+              onFulfill={handleFulfillItem}
             />
           )}
           {activeTab === "forecasting" && <Forecasting demandData={demandData} loading={loading} />}
-          {activeTab === "settings" && <SettingsView orgData={orgData} />}
+          {activeTab === "settings" && (
+            <SettingsView
+              orgData={orgData}
+              userName={userName}
+              userEmail={userEmail}
+              userId={userId}
+              onSaved={showToast}
+              onOrgUpdated={fetchOrg}
+            />
+          )}
         </div>
       </main>
 
@@ -259,9 +366,7 @@ export default function DashboardPage() {
                   ].map((suggestion, i) => (
                     <button
                       key={i}
-                      onClick={() => {
-                        setChatInput(suggestion)
-                      }}
+                      onClick={() => setChatInput(suggestion)}
                       className="block w-full text-left text-xs text-white/30 hover:text-white/60 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       {suggestion}
@@ -306,9 +411,10 @@ export default function DashboardPage() {
   )
 }
 
-function Overview({ demandData, procurementData, loading, occupancy, peak, change }: {
+function Overview({ demandData, procurementData, loading, occupancy, peak, change, onRefresh }: {
   demandData: any[]; procurementData: any[]; loading: boolean;
   occupancy: number | null; peak: number | null; change: number | null;
+  onRefresh: () => void;
 }) {
   const urgentCount = procurementData.filter((p: any) => p.urgency === "High" || p.urgency === "high").length
 
@@ -368,7 +474,12 @@ function Overview({ demandData, procurementData, loading, occupancy, peak, chang
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <Card>
-            <h3 className="text-lg font-display italic mb-6">14-Day Demand Forecast</h3>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-display italic">14-Day Demand Forecast</h3>
+              <button onClick={onRefresh} className="text-xs text-white/30 hover:text-white p-1">
+                <RefreshCw className="w-3 h-3" />
+              </button>
+            </div>
             {loading ? (
               <div className="h-64 bg-white/5 rounded animate-pulse" />
             ) : (
@@ -475,9 +586,18 @@ function Demand({ demandData, loading }: { demandData: any[]; loading: boolean }
   )
 }
 
-function ProcurementView({ procurementData, loading, onGenerate }: {
-  procurementData: any[]; loading: boolean; onGenerate: () => void;
+function ProcurementView({ procurementData, loading, onGenerate, onFulfill }: {
+  procurementData: any[]; loading: boolean;
+  onGenerate: () => void; onFulfill: (id: string) => void;
 }) {
+  const [fulfilling, setFulfilling] = useState<string | null>(null)
+
+  async function handleFulfill(id: string) {
+    setFulfilling(id)
+    await onFulfill(id)
+    setFulfilling(null)
+  }
+
   return (
     <Card>
       <div className="flex items-center justify-between mb-4">
@@ -502,11 +622,12 @@ function ProcurementView({ procurementData, loading, onGenerate }: {
                 <th className="text-left py-3 px-4">Required</th>
                 <th className="text-left py-3 px-4">Action</th>
                 <th className="text-left py-3 px-4">Status</th>
+                <th className="text-right py-3 px-4">Fulfill</th>
               </tr>
             </thead>
             <tbody>
-              {procurementData.map((item: any, i: number) => (
-                <tr key={i} className="border-b border-white/5 last:border-0">
+              {procurementData.map((item: any) => (
+                <tr key={item.id} className="border-b border-white/5 last:border-0">
                   <td className="py-3 px-4">{item.item}</td>
                   <td className="py-3 px-4 text-white/50">{item.requiredAmount}</td>
                   <td className="py-3 px-4 text-white/50">{item.action}</td>
@@ -517,6 +638,16 @@ function ProcurementView({ procurementData, loading, onGenerate }: {
                       "bg-emerald-400/10 text-emerald-400"
                     }`}>{item.urgency}</span>
                   </td>
+                  <td className="py-3 px-4 text-right">
+                    <button
+                      onClick={() => handleFulfill(item.id)}
+                      disabled={fulfilling === item.id}
+                      className="text-xs bg-emerald-400/10 text-emerald-400 px-2.5 py-1 rounded-full ring-1 ring-emerald-400/20 hover:bg-emerald-400/20 transition-all disabled:opacity-50"
+                    >
+                      {fulfilling === item.id ? <Loader2 className="w-3 h-3 animate-spin inline" /> : <CheckCircle className="w-3 h-3 inline" />}
+                      <span className="ml-1">Mark done</span>
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -524,7 +655,7 @@ function ProcurementView({ procurementData, loading, onGenerate }: {
         </div>
       ) : (
         <div className="text-sm text-white/20 text-center py-12">
-          <p>No procurement items</p>
+          <p>No pending procurement items</p>
           <p className="text-xs mt-2">Use the Ona Agent or Generate from Forecast to create procurement recommendations.</p>
         </div>
       )}
@@ -590,35 +721,215 @@ function Forecasting({ demandData, loading }: { demandData: any[]; loading: bool
   )
 }
 
-function SettingsView({ orgData }: { orgData: any }) {
+function SettingsView({ orgData, userName, userEmail, userId, onSaved, onOrgUpdated }: {
+  orgData: any; userName: string; userEmail?: string | null; userId?: string | null;
+  onSaved: (msg: string, type?: "success" | "error") => void;
+  onOrgUpdated: () => void;
+}) {
+  const [campName, setCampName] = useState("")
+  const [location, setLocation] = useState("")
+  const [timezone, setTimezone] = useState("")
+  const [savingOrg, setSavingOrg] = useState(false)
+
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmNewPassword, setConfirmNewPassword] = useState("")
+  const [savingPassword, setSavingPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    if (orgData) {
+      setCampName(orgData.name || "")
+      setLocation(orgData.location || "")
+      setTimezone(orgData.timezone || "Africa/Nairobi")
+    }
+  }, [orgData])
+
+  async function handleSaveOrg(e: React.FormEvent) {
+    e.preventDefault()
+    if (!orgData?.id) return
+    setSavingOrg(true)
+    try {
+      const res = await fetch("/api/org/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orgId: orgData.id, name: campName, location, timezone }),
+      })
+      if (!res.ok) throw new Error("Failed to save")
+      onSaved("Camp settings saved")
+      onOrgUpdated()
+    } catch {
+      onSaved("Failed to save settings", "error")
+    } finally {
+      setSavingOrg(false)
+    }
+  }
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault()
+    if (newPassword !== confirmNewPassword) {
+      onSaved("Passwords do not match", "error")
+      return
+    }
+    if (newPassword.length < 8) {
+      onSaved("Password must be at least 8 characters", "error")
+      return
+    }
+    setSavingPassword(true)
+    try {
+      const res = await fetch("/api/auth/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, currentPassword, newPassword }),
+      })
+      if (!res.ok) {
+        const json = await res.json()
+        throw new Error(json.error || "Failed to change password")
+      }
+      onSaved("Password changed")
+      setCurrentPassword("")
+      setNewPassword("")
+      setConfirmNewPassword("")
+    } catch (err: any) {
+      onSaved(err.message || "Failed to change password", "error")
+    } finally {
+      setSavingPassword(false)
+    }
+  }
+
   return (
-    <Card>
-      <h3 className="text-lg font-display italic mb-4">Camp Settings</h3>
-      {orgData ? (
+    <div className="space-y-6 max-w-2xl">
+      <Card>
+        <h3 className="text-lg font-display italic mb-6">Camp Profile</h3>
+        <form onSubmit={handleSaveOrg} className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-sm text-white/40">Camp Name</label>
+            <input
+              type="text"
+              value={campName}
+              onChange={e => setCampName(e.target.value)}
+              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-white/40">Location</label>
+            <input
+              type="text"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-white/40">Timezone</label>
+            <select
+              value={timezone}
+              onChange={e => setTimezone(e.target.value)}
+              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
+            >
+              <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
+              <option value="Africa/Dar_es_Salaam">Africa/Dar es Salaam (EAT)</option>
+              <option value="Africa/Kampala">Africa/Kampala (EAT)</option>
+              <option value="Africa/Addis_Ababa">Africa/Addis Ababa (EAT)</option>
+              <option value="Africa/Johannesburg">Africa/Johannesburg (SAST)</option>
+              <option value="Africa/Cairo">Africa/Cairo (EET)</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            disabled={savingOrg}
+            className="flex items-center gap-2 bg-[#E67E22]/10 text-[#E67E22] px-5 py-2.5 rounded-full text-sm font-medium ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all disabled:opacity-50"
+          >
+            {savingOrg ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Save changes
+          </button>
+        </form>
+      </Card>
+
+      <Card>
+        <h3 className="text-lg font-display italic mb-6">Profile</h3>
         <div className="space-y-4">
-          <div className="py-3 border-b border-white/5 flex items-center gap-3">
-            <MapPin className="w-4 h-4 text-white/20" />
-            <div>
-              <p className="text-sm font-medium">{orgData.name}</p>
-              <p className="text-xs text-white/40">{orgData.location}</p>
+          <div className="py-3 border-b border-white/5">
+            <p className="text-xs text-white/40 mb-1">Name</p>
+            <p className="text-sm">{userName}</p>
+          </div>
+          <div className="py-3">
+            <p className="text-xs text-white/40 mb-1">Email</p>
+            <p className="text-sm">{userEmail || '—'}</p>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <h3 className="text-lg font-display italic mb-6">Change Password</h3>
+        <form onSubmit={handleChangePassword} className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-sm text-white/40">Current Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
+                required
+                className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 pr-10 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
+              />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40">
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
-          <div className="py-3 border-b border-white/5">
-            <p className="text-xs text-white/40 mb-1">Timezone</p>
-            <p className="text-sm">{orgData.timezone || 'Africa/Nairobi'}</p>
+          <div className="space-y-2">
+            <label className="text-sm text-white/40">New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+              required
+              minLength={8}
+              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+              placeholder="At least 8 characters"
+            />
           </div>
+          <div className="space-y-2">
+            <label className="text-sm text-white/40">Confirm New Password</label>
+            <input
+              type="password"
+              value={confirmNewPassword}
+              onChange={e => setConfirmNewPassword(e.target.value)}
+              required
+              minLength={8}
+              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={savingPassword}
+            className="flex items-center gap-2 bg-[#E67E22]/10 text-[#E67E22] px-5 py-2.5 rounded-full text-sm font-medium ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all disabled:opacity-50"
+          >
+            {savingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Update password
+          </button>
+        </form>
+      </Card>
+
+      <Card>
+        <h3 className="text-lg font-display italic mb-4">Organization</h3>
+        <div className="space-y-3">
           <div className="py-3 border-b border-white/5">
             <p className="text-xs text-white/40 mb-1">Organization ID</p>
-            <p className="text-sm font-mono text-white/30 text-xs">{orgData.id}</p>
+            <p className="text-sm font-mono text-white/30 text-xs">{orgData?.id || '—'}</p>
           </div>
           <div className="py-3">
             <p className="text-xs text-white/40 mb-1">Camp Since</p>
-            <p className="text-sm">{orgData.created_at ? new Date(orgData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—'}</p>
+            <p className="text-sm">
+              {orgData?.created_at
+                ? new Date(orgData.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+                : '—'}
+            </p>
           </div>
         </div>
-      ) : (
-        <div className="text-sm text-white/20 text-center py-8">Loading camp settings...</div>
-      )}
-    </Card>
+      </Card>
+    </div>
   )
 }

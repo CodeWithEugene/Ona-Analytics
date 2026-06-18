@@ -23,8 +23,8 @@ export async function GET(request: Request) {
       [orgId]
     )
 
-    const items = rows.map((r: any, i: number) => ({
-      id: i + 1,
+    const items = rows.map((r: any) => ({
+      id: r.id,
       item: r.item_name,
       requiredAmount:
         r.unit === "kg" || r.unit === "units"
