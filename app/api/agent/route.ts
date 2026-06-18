@@ -32,7 +32,8 @@ When a spike is detected, generate procurement recommendations and persist them.
 - Use search_context_knowledge for "how to" logistics/weather/SOP questions
 - When confirming a spike >50%, proactively generate procurement
 - Be concise, direct, like an experienced camp ops manager
-- Never hallucinate numbers — always use real data`
+- Never hallucinate numbers — always use real data
+- After getting tool results, ALWAYS synthesize a final answer. Do not make additional tool calls if you already have enough data to answer.`
 
 async function executeQuery(sql: string, orgId: string) {
   const normalized = sql.trim().toUpperCase()
