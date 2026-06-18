@@ -23,13 +23,19 @@ describe("LandingPage", () => {
 
   it("renders social proof section", () => {
     render(<LandingPage />)
-    expect(screen.getByText(/Trusted by operations teams/)).toBeInTheDocument()
+    expect(screen.getByText(/Operations teams across East Africa/)).toBeInTheDocument()
   })
 
-  it("renders stats bar", () => {
+  it("renders stat numbers in feature cards", () => {
     render(<LandingPage />)
     expect(screen.getAllByText("94%").length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText("73%").length).toBeGreaterThanOrEqual(1)
+  })
+
+  it("renders forecasting feature", () => {
+    render(<LandingPage />)
+    expect(screen.getByText(/Forecasting that adapts/)).toBeInTheDocument()
+    expect(screen.getByText(/12\+/)).toBeInTheDocument()
   })
 
   it("renders testimonials", () => {
