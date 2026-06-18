@@ -27,7 +27,6 @@ const navItems = [
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
-  const routerRef = useRef<ReturnType<typeof import("next/navigation").useRouter> | null>(null)
   const orgId = (session?.user as any)?.orgId
   const userEmail = session?.user?.email
   const userName = session?.user?.name || "Camp Manager"
@@ -369,7 +368,7 @@ export default function DashboardPage() {
                   ].map((suggestion, i) => (
                     <button
                       key={i}
-                      onClick={() => setChatInput(suggestion)}
+                      onClick={() => { setChatInput(suggestion); document.querySelector<HTMLInputElement>('input[placeholder="Ask Ona..."]')?.focus() }}
                       className="block w-full text-left text-xs text-white/30 hover:text-white/60 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       {suggestion}

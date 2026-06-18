@@ -3,6 +3,7 @@ import { Instrument_Serif, DM_Sans } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
+import { ErrorBoundary } from "@/components/ErrorBoundary"
 
 const display = Instrument_Serif({
   subsets: ["latin"],
@@ -55,7 +56,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider><ErrorBoundary>{children}</ErrorBoundary></AuthProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server"
 import { withConnection } from "@/lib/db"
-import { requireAuth, unauthorized } from "@/lib/api-auth"
+import { requireAuth, unauthorized, getUserId } from "@/lib/api-auth"
+import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
 import fs from "fs"
 import path from "path"
+
+const migrateLimiter = createRateLimiter({ interval: 60000, maxRequests: 2 })
 
 function stripComments(sql: string): string {
   return sql
@@ -16,6 +19,15 @@ export async function POST() {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+
+    const request = new Request("http://localhost")
+    const rl = migrateLimiter(rateLimitKey(request, `migrate:${getUserId(session)}`))
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429, headers: rateLimitHeaders(rl, 2) }
+      )
+    }
 
     const userEmail = session.user?.email || ""
     const allowedEmails = (process.env.ADMIN_EMAILS || "").split(",").filter(Boolean)

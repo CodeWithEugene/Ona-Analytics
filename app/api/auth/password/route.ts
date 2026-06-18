@@ -2,11 +2,22 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
 import { requireAuth, unauthorized, getUserId } from "@/lib/api-auth"
+import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+
+const passwordLimiter = createRateLimiter({ interval: 60000, maxRequests: 5 })
 
 export async function POST(request: Request) {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+
+    const rl = passwordLimiter(rateLimitKey(request, `password:${getUserId(session)}`))
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429, headers: rateLimitHeaders(rl, 5) }
+      )
+    }
 
     const userId = getUserId(session)
     const body = await request.json().catch(() => null)

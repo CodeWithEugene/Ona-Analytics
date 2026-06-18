@@ -3,7 +3,10 @@ import { createOpenAI } from "@ai-sdk/openai"
 import { z } from "zod"
 import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
-import { requireAuth, unauthorized, getOrgId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, getOrgId, getUserId } from "@/lib/api-auth"
+import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+
+const agentLimiter = createRateLimiter({ interval: 60000, maxRequests: 10 })
 
 const nvidia = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
@@ -131,6 +134,14 @@ export async function POST(request: Request) {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+
+    const rl = agentLimiter(rateLimitKey(request, `agent:${getUserId(session)}`))
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429, headers: rateLimitHeaders(rl, 10) }
+      )
+    }
 
     const orgId = getOrgId(session)
     if (!orgId) {

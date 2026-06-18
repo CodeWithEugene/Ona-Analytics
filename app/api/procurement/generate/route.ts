@@ -1,11 +1,22 @@
 import { query, withConnection } from "@/lib/db"
 import { NextResponse } from "next/server"
-import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, forbidden, getOrgId, getUserId } from "@/lib/api-auth"
+import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+
+const generateLimiter = createRateLimiter({ interval: 60000, maxRequests: 10 })
 
 export async function POST(request: Request) {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+
+    const rl = generateLimiter(rateLimitKey(request, `generate:${getUserId(session)}`))
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429, headers: rateLimitHeaders(rl, 10) }
+      )
+    }
 
     const sessionOrgId = getOrgId(session)
     const body = await request.json().catch(() => ({}))

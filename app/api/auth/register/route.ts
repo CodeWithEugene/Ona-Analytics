@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query } from "@/lib/db"
+import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+
+const registerLimiter = createRateLimiter({ interval: 60000, maxRequests: 3 })
 
 export async function POST(request: Request) {
   try {
+    const rl = registerLimiter(rateLimitKey(request, "register"))
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429, headers: rateLimitHeaders(rl, 3) }
+      )
+    }
+
     const body = await request.json().catch(() => null)
     if (!body) {
       return NextResponse.json(
