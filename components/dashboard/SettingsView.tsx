@@ -74,7 +74,8 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
       setNewPassword("")
       setConfirmNewPassword("")
     } catch (err: any) {
-      onSaved(err.message || "Failed to change password", "error")
+      console.error(err)
+      onSaved("Failed to change password", "error")
     } finally {
       setSavingPassword(false)
     }
@@ -155,6 +156,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
                 value={currentPassword}
                 onChange={e => setCurrentPassword(e.target.value)}
                 required
+                autoComplete="current-password"
                 className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 pr-10 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40">
@@ -170,6 +172,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               onChange={e => setNewPassword(e.target.value)}
               required
               minLength={8}
+              autoComplete="new-password"
               className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
               placeholder="At least 8 characters"
             />
@@ -182,6 +185,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               onChange={e => setConfirmNewPassword(e.target.value)}
               required
               minLength={8}
+              autoComplete="new-password"
               className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
             />
           </div>

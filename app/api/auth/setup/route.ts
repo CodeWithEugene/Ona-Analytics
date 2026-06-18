@@ -2,11 +2,26 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
 
-const SETUP_KEY = process.env.SETUP_API_KEY || ""
+const SETUP_KEY = process.env.SETUP_API_KEY
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name, orgId, setupKey } = await request.json()
+    if (!SETUP_KEY) {
+      return NextResponse.json(
+        { error: "Service unavailable" },
+        { status: 503 }
+      )
+    }
+
+    const body = await request.json().catch(() => null)
+    if (!body) {
+      return NextResponse.json(
+        { error: "Invalid JSON body" },
+        { status: 400 }
+      )
+    }
+
+    const { email, password, name, orgId, setupKey } = body
 
     if (!setupKey || setupKey !== SETUP_KEY) {
       return NextResponse.json(
@@ -29,6 +44,13 @@ export async function POST(request: Request) {
       )
     }
 
+    if (!orgId) {
+      return NextResponse.json(
+        { error: "orgId is required" },
+        { status: 400 }
+      )
+    }
+
     const existing = await querySingle<any>(
       "SELECT id FROM camp_users WHERE email = $1",
       [email]
@@ -41,11 +63,9 @@ export async function POST(request: Request) {
       )
     }
 
-    const resolvedOrgId = orgId || "11111111-1111-1111-1111-111111111111"
-
     const orgExists = await querySingle<any>(
       "SELECT id FROM org_profiles WHERE id = $1",
-      [resolvedOrgId]
+      [orgId]
     )
 
     if (!orgExists) {
@@ -60,7 +80,7 @@ export async function POST(request: Request) {
     await query(
       `INSERT INTO camp_users (org_id, email, password_hash, name, role)
        VALUES ($1, $2, $3, $4, 'manager')`,
-      [resolvedOrgId, email, passwordHash, name]
+      [orgId, email, passwordHash, name]
     )
 
     return NextResponse.json({

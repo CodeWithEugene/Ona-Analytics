@@ -4,7 +4,27 @@ import { query } from "@/lib/db"
 
 export async function POST(request: Request) {
   try {
-    const { campName, location, name, email, password } = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body) {
+      return NextResponse.json(
+        { error: "Invalid JSON body" },
+        { status: 400 }
+      )
+    }
+
+    const rawBodyLength = JSON.stringify(body).length
+    if (rawBodyLength > 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Request body too large" },
+        { status: 413 }
+      )
+    }
+
+    const campName = body.campName?.trim()
+    const location = body.location?.trim()
+    const name = body.name?.trim()
+    const email = body.email?.trim()
+    const password = body.password
 
     if (!campName || !location || !name || !email || !password) {
       return NextResponse.json(

@@ -4,9 +4,9 @@ import { Card } from "./Card"
 
 export function Demand({ demandData, loading }: { demandData: any[]; loading: boolean }) {
   const last = demandData.length > 0 ? demandData[demandData.length - 1] : null
-  const today = last ? Math.round(last.actual_value || last.predicted_value || 0) : null
-  const plus3 = demandData.length > 3 ? Math.round(demandData[demandData.length - 3]?.predicted_value || 0) : null
-  const plus7 = demandData.length > 7 ? Math.round(demandData[demandData.length - 7]?.predicted_value || 0) : null
+  const today = last ? Math.round(last.actual_value ?? last.predicted_value ?? 0) : null
+  const threeDaysAgo = demandData.length > 3 ? Math.round(demandData[demandData.length - 3]?.predicted_value ?? 0) : null
+  const sevenDaysAgo = demandData.length > 7 ? Math.round(demandData[demandData.length - 7]?.predicted_value ?? 0) : null
 
   return (
     <div className="space-y-6">
@@ -23,12 +23,12 @@ export function Demand({ demandData, loading }: { demandData: any[]; loading: bo
               <div className="text-2xl font-bold">{today !== null ? `${today}%` : '\u2014'}</div>
             </div>
             <div className="bg-white/5 rounded-xl p-4">
-              <div className="text-sm text-white/40 mb-1">+3 Days</div>
-              <div className="text-2xl font-bold text-[#E67E22]">{plus3 !== null ? `${plus3}%` : '\u2014'}</div>
+              <div className="text-sm text-white/40 mb-1">3 Days Ago</div>
+              <div className="text-2xl font-bold text-[#E67E22]">{threeDaysAgo !== null ? `${threeDaysAgo}%` : '\u2014'}</div>
             </div>
             <div className="bg-white/5 rounded-xl p-4">
-              <div className="text-sm text-white/40 mb-1">+7 Days</div>
-              <div className={`text-2xl font-bold ${plus7 !== null && plus7 > 85 ? 'text-red-400' : 'text-[#E67E22]'}`}>{plus7 !== null ? `${plus7}%` : '\u2014'}</div>
+              <div className="text-sm text-white/40 mb-1">7 Days Ago</div>
+              <div className={`text-2xl font-bold ${sevenDaysAgo !== null && sevenDaysAgo > 85 ? 'text-red-400' : 'text-[#E67E22]'}`}>{sevenDaysAgo !== null ? `${sevenDaysAgo}%` : '\u2014'}</div>
             </div>
           </div>
         )}
@@ -40,9 +40,9 @@ export function Demand({ demandData, loading }: { demandData: any[]; loading: bo
         ) : (
           <div className="h-32 flex items-end gap-2">
             {demandData.length > 0 ? demandData.slice(-14).map((d: any, i: number) => {
-              const val = d.actual_value || d.predicted_value || 0
+              const val = d.actual_value ?? d.predicted_value ?? 0
               return (
-                <div key={i} className="flex-1 bg-[#E67E22]/20 rounded-sm hover:bg-[#E67E22]/40 transition-colors" style={{ height: val + "%" }} />
+                <div key={i} className="flex-1 bg-[#E67E22]/20 rounded-sm hover:bg-[#E67E22]/40 transition-colors" style={{ height: Math.min(val, 100) + "%" }} />
               )
             }) : (
               <div className="flex items-center justify-center w-full h-full text-white/20 text-sm">No data</div>

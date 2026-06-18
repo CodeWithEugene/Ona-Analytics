@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowUpRight, TrendingUp, Truck, Zap, Sparkles, Shield, BarChart3, Clock, Users } from "lucide-react"
+import { ArrowUpRight, TrendingUp, Truck, Sparkles, Shield, BarChart3, Clock, Users } from "lucide-react"
 
 const camps = [
   "Olare Orok Eco-Lodge", "Serengeti Migration Camp", "Samburu Intrepids",

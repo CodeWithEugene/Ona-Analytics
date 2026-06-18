@@ -21,11 +21,11 @@ CREATE TABLE IF NOT EXISTS camp_users (
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
-  role VARCHAR(20) NOT NULL DEFAULT 'manager',
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  role VARCHAR(20) NOT NULL DEFAULT 'manager' CHECK (role IN ('admin', 'manager', 'viewer')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_camp_users_email ON camp_users(email);
 CREATE INDEX IF NOT EXISTS idx_camp_users_org ON camp_users(org_id);
 
 -- 4. Relational demand data (occupancy metrics)
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS demand_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id UUID NOT NULL REFERENCES org_profiles(id) ON DELETE CASCADE,
   log_date DATE NOT NULL,
-  metric_type VARCHAR(50) NOT NULL DEFAULT 'occupancy_rate',
+  metric_type VARCHAR(50) NOT NULL DEFAULT 'occupancy_rate' CHECK (metric_type IN ('occupancy_rate', 'arrivals', 'departures', 'revpar', 'adr')),
   actual_value DECIMAL(12, 4),
   predicted_value DECIMAL(12, 4),
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS context_knowledge (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id UUID NOT NULL REFERENCES org_profiles(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
-  embedding VECTOR(10) NOT NULL,
+  embedding VECTOR(1536) NOT NULL,
   -- Note: In production, use VECTOR(1536) for text-embedding-3-small
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS context_knowledge (
 CREATE INDEX IF NOT EXISTS idx_context_knowledge_org
   ON context_knowledge(org_id);
 
+-- Tune HNSW parameters (m, ef_construction) for production recall/latency requirements
 CREATE INDEX IF NOT EXISTS idx_context_knowledge_embedding
   ON context_knowledge USING hnsw (embedding vector_cosine_ops);
 

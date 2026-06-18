@@ -21,18 +21,26 @@ function getSigner(): Signer {
   return signer
 }
 
+function getPassword(): () => Promise<string> {
+  if (process.env.VERCEL_OIDC_TOKEN) {
+    return () => getSigner().getAuthToken()
+  }
+  return () => Promise.resolve(process.env.PGPASSWORD || "")
+}
+
 function getPool(): Pool {
   if (!pool) {
     pool = new Pool({
       host: process.env.PGHOST,
       user: process.env.PGUSER,
       database: process.env.PGDATABASE || "postgres",
-      password: () => getSigner().getAuthToken(),
+      password: getPassword(),
       port: Number(process.env.PGPORT) || 5432,
       ssl: { rejectUnauthorized: true },
-      max: 20,
+      max: 3,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
+      statement_timeout: 30000,
     })
   }
   return pool

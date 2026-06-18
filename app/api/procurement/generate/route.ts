@@ -1,4 +1,4 @@
-import { query } from "@/lib/db"
+import { query, withConnection } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
 
@@ -26,9 +26,7 @@ export async function POST(request: Request) {
 
     const peakPrediction = latest.length > 0 ? parseFloat(latest[0].predicted_value) : 0
 
-    await query("DELETE FROM procurement_items WHERE org_id = $1", [orgId])
-
-    const items = []
+    const items: any[] = []
 
     if (peakPrediction > 60) {
       items.push({
@@ -69,13 +67,23 @@ export async function POST(request: Request) {
       })
     }
 
-    for (const item of items) {
-      await query(
-        `INSERT INTO procurement_items (org_id, item_name, required_amount, unit, urgency, reason)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [orgId, item.item_name, item.required_amount, item.unit, item.urgency, item.reason]
-      )
-    }
+    await withConnection(async (client) => {
+      await client.query("BEGIN")
+      try {
+        await client.query("DELETE FROM procurement_items WHERE org_id = $1", [orgId])
+        for (const item of items) {
+          await client.query(
+            `INSERT INTO procurement_items (org_id, item_name, required_amount, unit, urgency, reason)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [orgId, item.item_name, item.required_amount, item.unit, item.urgency, item.reason]
+          )
+        }
+        await client.query("COMMIT")
+      } catch (e) {
+        await client.query("ROLLBACK")
+        throw e
+      }
+    })
 
     return NextResponse.json({
       success: true,

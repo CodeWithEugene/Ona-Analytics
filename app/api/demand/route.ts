@@ -2,6 +2,8 @@ import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
 
+const ALLOWED_METRICS = ["occupancy_rate", "arrivals", "departures", "revpar", "adr"]
+
 export async function GET(request: Request) {
   try {
     const session = await requireAuth()
@@ -15,6 +17,13 @@ export async function GET(request: Request) {
 
     const days = Math.min(Math.max(parseInt(searchParams.get("days") || "30"), 1), 365)
     const metricType = searchParams.get("metric") || "occupancy_rate"
+
+    if (!ALLOWED_METRICS.includes(metricType)) {
+      return NextResponse.json(
+        { error: "Invalid metric type" },
+        { status: 400 }
+      )
+    }
 
     const rows = await query<any>(
       `SELECT

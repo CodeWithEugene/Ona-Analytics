@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
 
 const PUBLIC_PATHS = ["/", "/login", "/register"]
+const SESSION_COOKIE = "__Secure-authjs.session-token"
+const INSECURE_SESSION_COOKIE = "authjs.session-token"
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+export default function middleware(request: Request) {
+  const { pathname } = new URL(request.url)
 
-  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/")))
+  if (PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     return NextResponse.next()
+  }
 
-  const token =
-    request.cookies.get("__Secure-authjs.session-token")?.value ??
-    request.cookies.get("authjs.session-token")?.value
+  const hasSession = request.headers.get("cookie")?.split(";").some((c) => {
+    const trimmed = c.trim()
+    return trimmed.startsWith(SESSION_COOKIE + "=") || trimmed.startsWith(INSECURE_SESSION_COOKIE + "=")
+  })
 
-  if (!token) {
+  if (!hasSession) {
     const url = new URL("/login", request.url)
     url.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(url)

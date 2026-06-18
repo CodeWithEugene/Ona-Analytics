@@ -77,12 +77,12 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
             ) : (
               <div className="h-64 flex items-end gap-2">
                 {demandData.length > 0 ? demandData.slice(-14).map((d: any, i: number) => {
-                  const val = d.actual_value || d.predicted_value || 0
+                  const val = d.actual_value ?? d.predicted_value ?? 0
                   return (
                     <div key={i} className="flex-1 relative group cursor-pointer">
                       <div
                         className="bg-gradient-to-t from-[#E67E22]/30 to-[#E67E22]/10 rounded-t-sm transition-all duration-200 hover:from-[#E67E22]/50 hover:to-[#E67E22]/20"
-                        style={{ height: val + "%" }}
+                        style={{ height: Math.min(val, 100) + "%" }}
                       />
                       <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-white/10 text-xs px-2 py-1 rounded whitespace-nowrap transition-opacity">
                         {Math.round(val)}%

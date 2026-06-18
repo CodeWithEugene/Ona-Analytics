@@ -2,15 +2,40 @@ import { NextResponse } from "next/server"
 import { query } from "@/lib/db"
 import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
 
+const VALID_TIMEZONES = [
+  "Africa/Nairobi",
+  "Africa/Dar_es_Salaam",
+  "Africa/Kampala",
+  "Africa/Addis_Ababa",
+  "Africa/Johannesburg",
+  "Africa/Cairo",
+  "UTC",
+]
+
 export async function POST(request: Request) {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
 
     const sessionOrgId = getOrgId(session)
-    const { orgId, name, location, timezone } = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body) {
+      return NextResponse.json(
+        { error: "Invalid JSON body" },
+        { status: 400 }
+      )
+    }
+
+    const { orgId, name, location, timezone } = body
 
     if (!orgId || orgId !== sessionOrgId) return forbidden()
+
+    if (timezone && !VALID_TIMEZONES.includes(timezone)) {
+      return NextResponse.json(
+        { error: "Invalid timezone" },
+        { status: 400 }
+      )
+    }
 
     const updates: string[] = []
     const values: any[] = []

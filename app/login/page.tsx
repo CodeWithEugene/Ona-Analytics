@@ -45,30 +45,34 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Email</label>
+                <label htmlFor="email" className="text-sm text-[#F4EDE2]/40">Email</label>
                 <input
+                  id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="camp@ona-analytics.com"
+                  autoComplete="email"
                   required
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Password</label>
+                <label htmlFor="password" className="text-sm text-[#F4EDE2]/40">Password</label>
                 <input
+                  id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
+                  autoComplete="current-password"
                   required
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
 
-              {error && <p className="text-sm text-[#C0392B]">{error}</p>}
+              {error && <p role="alert" className="text-sm text-[#C0392B]">{error}</p>}
 
               <button
                 type="submit"

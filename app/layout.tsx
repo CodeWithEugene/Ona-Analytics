@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "Ona Analytics — AI-Native Demand Radar for Safari Camps",
   description:
     "Predictive demand intelligence and supply chain optimization for remote safari camps and eco-lodges. Powered by AI.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   icons: {
     icon: "/favicon.svg",
     apple: "/favicon.svg",

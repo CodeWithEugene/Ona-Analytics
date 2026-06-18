@@ -9,7 +9,15 @@ export async function POST(request: Request) {
     if (!session) return unauthorized()
 
     const userId = getUserId(session)
-    const { currentPassword, newPassword } = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body) {
+      return NextResponse.json(
+        { error: "Invalid JSON body" },
+        { status: 400 }
+      )
+    }
+
+    const { currentPassword, newPassword } = body
 
     if (!currentPassword || !newPassword) {
       return NextResponse.json(

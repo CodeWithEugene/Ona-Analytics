@@ -23,4 +23,11 @@ export const authConfig: NextAuthConfig = {
   session: {
     strategy: "jwt",
   },
+  cookies: {
+    sessionToken: {
+      options: {
+        sameSite: "strict",
+      },
+    },
+  },
 }

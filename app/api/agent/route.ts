@@ -137,10 +137,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Account not associated with an organization" }, { status: 403 })
     }
 
-    const { message } = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body) {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    }
+
+    const { message } = body
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required" }, { status: 400 })
+    }
+
+    if (message.length > 4000) {
+      return NextResponse.json({ error: "Message too long" }, { status: 413 })
     }
 
     let messages: any[] = [{ role: "user", content: message }]

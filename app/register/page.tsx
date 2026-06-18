@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowUpRight, Loader2, CheckCircle } from "lucide-react"
@@ -16,13 +16,20 @@ export default function RegisterPage() {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const redirectTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimeout.current) clearTimeout(redirectTimeout.current)
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError("")
 
-    if (password !== confirmPassword) {
+    if (password.trim() !== confirmPassword.trim()) {
       setError("Passwords do not match")
       setLoading(false)
       return
@@ -32,14 +39,21 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campName, location, name, email, password }),
+        body: JSON.stringify({
+          campName: campName.trim(),
+          location: location.trim(),
+          name: name.trim(),
+          email: email.trim(),
+          password: password.trim(),
+        }),
       })
-      const json = await res.json()
+
       if (!res.ok) {
+        const json = await res.json()
         setError(json.error || "Registration failed")
       } else {
         setSuccess(true)
-        setTimeout(() => router.push("/login"), 2000)
+        redirectTimeout.current = setTimeout(() => router.push("/login"), 2000)
       }
     } catch {
       setError("Network error. Please try again.")
@@ -72,75 +86,87 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Camp Name</label>
+                <label htmlFor="campName" className="text-sm text-[#F4EDE2]/40">Camp Name</label>
                 <input
+                  id="campName"
                   type="text"
                   value={campName}
                   onChange={(e) => setCampName(e.target.value)}
                   placeholder="e.g. Olare Orok Eco-Lodge"
+                  autoComplete="organization"
                   required
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Location</label>
+                <label htmlFor="location" className="text-sm text-[#F4EDE2]/40">Location</label>
                 <input
+                  id="location"
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. Maasai Mara, Kenya"
+                  autoComplete="country-name"
                   required
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Your Name</label>
+                <label htmlFor="name" className="text-sm text-[#F4EDE2]/40">Your Name</label>
                 <input
+                  id="name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Sarah Chen"
+                  autoComplete="name"
                   required
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Email</label>
+                <label htmlFor="email" className="text-sm text-[#F4EDE2]/40">Email</label>
                 <input
+                  id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="manager@camp.com"
+                  autoComplete="email"
                   required
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Password</label>
+                <label htmlFor="password" className="text-sm text-[#F4EDE2]/40">Password</label>
                 <input
+                  id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
+                  autoComplete="new-password"
                   required
                   minLength={8}
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#F4EDE2]/40">Confirm Password</label>
+                <label htmlFor="confirmPassword" className="text-sm text-[#F4EDE2]/40">Confirm Password</label>
                 <input
+                  id="confirmPassword"
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repeat your password"
+                  autoComplete="new-password"
                   required
                   minLength={8}
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
               </div>
 
-              {error && <p className="text-sm text-[#C0392B]">{error}</p>}
+              {error && <p role="alert" className="text-sm text-[#C0392B]">{error}</p>}
 
               <button
                 type="submit"

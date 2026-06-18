@@ -20,7 +20,7 @@ export async function POST() {
     const userEmail = session.user?.email || ""
     const allowedEmails = (process.env.ADMIN_EMAILS || "").split(",").filter(Boolean)
 
-    if (allowedEmails.length > 0 && !allowedEmails.includes(userEmail)) {
+    if (allowedEmails.length === 0 || !allowedEmails.includes(userEmail)) {
       return NextResponse.json(
         { error: "Forbidden" },
         { status: 403 }
@@ -46,10 +46,11 @@ export async function POST() {
           await client.query(stmt + ";")
           results.push(`OK: ${stmt.substring(0, 80)}`)
         } catch (err: any) {
-          if (err.message?.includes("already exists")) {
+          if (err.code === "42710") {
             results.push(`SKIP (exists): ${stmt.substring(0, 80)}`)
           } else {
-            results.push(`ERR: ${err.message} — ${stmt.substring(0, 80)}`)
+            console.error("Migration statement error:", err)
+            results.push(`ERR: ${stmt.substring(0, 80)}`)
           }
         }
       }
@@ -58,7 +59,7 @@ export async function POST() {
         await client.query(`ALTER TABLE demand_logs ALTER COLUMN actual_value DROP NOT NULL;`)
         results.push("OK: ALTER TABLE demand_logs ALTER actual_value DROP NOT NULL")
       } catch (err: any) {
-        results.push(`NOTE: ${err.message} — ALTER actual_value`)
+        results.push(`NOTE: ALTER actual_value`)
       }
 
       const seedStatements = seedSQL
@@ -71,10 +72,11 @@ export async function POST() {
           await client.query(stmt + ";")
           results.push(`OK: ${stmt.substring(0, 80)}`)
         } catch (err: any) {
-          if (err.message?.includes("already exists") || err.message?.includes("duplicate key")) {
+          if (err.code === "42710" || err.code === "23505") {
             results.push(`SKIP (exists): ${stmt.substring(0, 80)}`)
           } else {
-            results.push(`ERR: ${err.message} — ${stmt.substring(0, 80)}`)
+            console.error("Migration seed error:", err)
+            results.push(`ERR: ${stmt.substring(0, 80)}`)
           }
         }
       }
@@ -82,9 +84,10 @@ export async function POST() {
 
     return NextResponse.json({ success: true, results })
   } catch (error: any) {
+    console.error("Migration error:", error)
     return NextResponse.json({
       success: false,
-      error: error.message || "Migration failed",
+      error: "Migration failed",
     })
   }
 }

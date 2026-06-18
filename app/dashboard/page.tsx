@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import {
   LayoutDashboard, TrendingUp, Truck, Calendar, Settings,
-  Sparkles, Menu, X, Send, Loader2, MapPin, Clock, User,
+  Sparkles, Menu, X, Send, Loader2, User,
   LogOut, ChevronDown, RefreshCw,
 } from "lucide-react"
 import { Toast } from "@/components/dashboard/Toast"
@@ -27,6 +27,7 @@ const navItems = [
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
+  const routerRef = useRef<ReturnType<typeof import("next/navigation").useRouter> | null>(null)
   const orgId = (session?.user as any)?.orgId
   const userEmail = session?.user?.email
   const userName = session?.user?.name || "Camp Manager"
@@ -46,6 +47,13 @@ export default function DashboardPage() {
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const chatAbortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      window.location.href = "/login"
+    }
+  }, [status])
 
   const showToast = useCallback((message: string, type: "success" | "error" = "success") => {
     setToast({ message, type })
@@ -53,20 +61,29 @@ export default function DashboardPage() {
 
   const fetchDashboard = useCallback(async () => {
     if (!orgId) return
+    setLoading(true)
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
     try {
-      const [demandRes, procRes] = await Promise.all([
+      const [demandRes, procRes] = await Promise.allSettled([
         fetch(`/api/demand?orgId=${orgId}&days=30`, { signal: controller.signal }),
         fetch(`/api/procurement?orgId=${orgId}`, { signal: controller.signal }),
       ])
-      const [demandJson, procJson] = await Promise.all([
-        demandRes.json(),
-        procRes.json(),
-      ])
-      setDemandData(demandJson.data || [])
-      setProcurementData(procJson.data || [])
+
+      if (demandRes.status === "fulfilled" && demandRes.value.ok) {
+        const json = await demandRes.value.json()
+        setDemandData(json.data || [])
+      } else if (demandRes.status === "fulfilled") {
+        throw new Error(await demandRes.value.text())
+      }
+
+      if (procRes.status === "fulfilled" && procRes.value.ok) {
+        const json = await procRes.value.json()
+        setProcurementData(json.data || [])
+      } else if (procRes.status === "fulfilled") {
+        throw new Error(await procRes.value.text())
+      }
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
         console.error("Failed to fetch dashboard data", err)
@@ -78,13 +95,18 @@ export default function DashboardPage() {
 
   const fetchOrg = useCallback(async () => {
     if (!orgId) return
+    const controller = new AbortController()
     try {
-      const res = await fetch(`/api/org?orgId=${orgId}`)
+      const res = await fetch(`/api/org?orgId=${orgId}`, { signal: controller.signal })
+      if (!res.ok) throw new Error(await res.text())
       const json = await res.json()
       setOrgData(json.data || null)
     } catch (err) {
-      console.error("Failed to fetch org data", err)
+      if (err instanceof Error && err.name !== "AbortError") {
+        console.error("Failed to fetch org data", err)
+      }
     }
+    return () => controller.abort()
   }, [orgId])
 
   useEffect(() => { fetchDashboard() }, [fetchDashboard])
@@ -100,8 +122,8 @@ export default function DashboardPage() {
         setUserMenuOpen(false)
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    document.addEventListener("click", handleClickOutside)
+    return () => document.removeEventListener("click", handleClickOutside)
   }, [])
 
   const occupancy = calcOccupancy(demandData)
@@ -115,17 +137,26 @@ export default function DashboardPage() {
     setChatInput("")
     setChatMessages(prev => [...prev, { role: "user", content: userMsg }])
     setChatLoading(true)
+
+    chatAbortRef.current?.abort()
+    const controller = new AbortController()
+    chatAbortRef.current = controller
+    const timeout = setTimeout(() => controller.abort(), 30000)
+
     try {
       const res = await fetch("/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg }),
+        signal: controller.signal,
       })
+      if (!res.ok) throw new Error(await res.text())
       const json = await res.json()
       setChatMessages(prev => [...prev, { role: "assistant", content: json.response || "Agent unavailable." }])
     } catch {
       setChatMessages(prev => [...prev, { role: "assistant", content: "Agent unavailable." }])
     } finally {
+      clearTimeout(timeout)
       setChatLoading(false)
     }
   }
@@ -163,6 +194,10 @@ export default function DashboardPage() {
         <Loader2 className="w-6 h-6 animate-spin text-white/30" />
       </div>
     )
+  }
+
+  if (status === "unauthenticated") {
+    return null
   }
 
   return (
