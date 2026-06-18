@@ -32,9 +32,9 @@ describe("LandingPage", () => {
     expect(screen.getAllByText("73%").length).toBeGreaterThanOrEqual(1)
   })
 
-  it("renders forecasting feature", () => {
+  it("renders integrations section", () => {
     render(<LandingPage />)
-    expect(screen.getByText(/Forecasting that adapts/)).toBeInTheDocument()
+    expect(screen.getByText(/Works with what you already have/)).toBeInTheDocument()
     expect(screen.getByText(/12\+/)).toBeInTheDocument()
   })
 
