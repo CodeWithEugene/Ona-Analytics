@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
+import { requireAuth, unauthorized, getUserId } from "@/lib/api-auth"
 
 export async function POST(request: Request) {
   try {
-    const { userId, currentPassword, newPassword } = await request.json()
+    const session = await requireAuth()
+    if (!session) return unauthorized()
 
-    if (!userId || !currentPassword || !newPassword) {
+    const userId = getUserId(session)
+    const { currentPassword, newPassword } = await request.json()
+
+    if (!currentPassword || !newPassword) {
       return NextResponse.json(
-        { error: "userId, currentPassword, and newPassword are required" },
+        { error: "currentPassword and newPassword are required" },
         { status: 400 }
       )
     }
@@ -27,7 +32,7 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "Account not found" },
         { status: 404 }
       )
     }
@@ -50,7 +55,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Password change error:", error)
     return NextResponse.json(
-      { error: error.message || "Password change failed" },
+      { error: "Password change failed" },
       { status: 500 }
     )
   }

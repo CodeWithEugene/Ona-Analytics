@@ -1,12 +1,31 @@
 import { NextResponse } from "next/server"
-import { execute } from "@/lib/db"
+import { execute, querySingle } from "@/lib/db"
+import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
 
 export async function POST(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await requireAuth()
+    if (!session) return unauthorized()
+
+    const sessionOrgId = getOrgId(session)
     const { id } = await params
+
+    const item = await querySingle<any>(
+      "SELECT org_id FROM procurement_items WHERE id = $1",
+      [id]
+    )
+
+    if (!item) {
+      return NextResponse.json(
+        { error: "Item not found" },
+        { status: 404 }
+      )
+    }
+
+    if (item.org_id !== sessionOrgId) return forbidden()
 
     const result = await execute(
       `UPDATE procurement_items
@@ -17,8 +36,8 @@ export async function POST(
 
     if (result.rowCount === 0) {
       return NextResponse.json(
-        { error: "Item not found or already fulfilled" },
-        { status: 404 }
+        { error: "Item already fulfilled" },
+        { status: 409 }
       )
     }
 
@@ -26,7 +45,7 @@ export async function POST(
   } catch (error: any) {
     console.error("Fulfill error:", error)
     return NextResponse.json(
-      { error: error.message || "Failed to fulfill item" },
+      { error: "Failed to fulfill item" },
       { status: 500 }
     )
   }

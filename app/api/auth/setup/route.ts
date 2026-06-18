@@ -2,9 +2,18 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
 
+const SETUP_KEY = process.env.SETUP_API_KEY || ""
+
 export async function POST(request: Request) {
   try {
     const { email, password, name, orgId, setupKey } = await request.json()
+
+    if (!setupKey || setupKey !== SETUP_KEY) {
+      return NextResponse.json(
+        { error: "Invalid setup key" },
+        { status: 403 }
+      )
+    }
 
     if (!email || !password || !name) {
       return NextResponse.json(
@@ -61,7 +70,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Setup error:", error)
     return NextResponse.json(
-      { error: error.message || "Setup failed" },
+      { error: "Setup failed" },
       { status: 500 }
     )
   }

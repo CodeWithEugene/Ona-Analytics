@@ -29,8 +29,10 @@ function getPool(): Pool {
       database: process.env.PGDATABASE || "postgres",
       password: () => getSigner().getAuthToken(),
       port: Number(process.env.PGPORT) || 5432,
-      ssl: { rejectUnauthorized: false },
+      ssl: { rejectUnauthorized: true },
       max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000,
     })
   }
   return pool

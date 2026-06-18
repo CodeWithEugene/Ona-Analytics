@@ -1,26 +1,26 @@
 import { NextResponse } from "next/server"
 import { query } from "@/lib/db"
+import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
 
 export async function POST(request: Request) {
   try {
+    const session = await requireAuth()
+    if (!session) return unauthorized()
+
+    const sessionOrgId = getOrgId(session)
     const { orgId, name, location, timezone } = await request.json()
 
-    if (!orgId) {
-      return NextResponse.json(
-        { error: "orgId is required" },
-        { status: 400 }
-      )
-    }
+    if (!orgId || orgId !== sessionOrgId) return forbidden()
 
     const updates: string[] = []
     const values: any[] = []
     let paramIndex = 1
 
-    if (name) {
+    if (name && name.length <= 255) {
       updates.push(`name = $${paramIndex++}`)
       values.push(name)
     }
-    if (location) {
+    if (location && location.length <= 255) {
       updates.push(`location = $${paramIndex++}`)
       values.push(location)
     }
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
     if (updates.length === 0) {
       return NextResponse.json(
-        { error: "No fields to update" },
+        { error: "No valid fields to update" },
         { status: 400 }
       )
     }
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Org update error:", error)
     return NextResponse.json(
-      { error: error.message || "Update failed" },
+      { error: "Update failed" },
       { status: 500 }
     )
   }

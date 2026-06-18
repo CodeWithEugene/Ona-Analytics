@@ -3,6 +3,7 @@ import { createOpenAI } from "@ai-sdk/openai"
 import { z } from "zod"
 import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
+import { requireAuth, unauthorized, getOrgId } from "@/lib/api-auth"
 
 const nvidia = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
@@ -16,10 +17,8 @@ Your role is to help camp managers understand demand forecasts and optimize thei
 ## Tools Available
 
 ### 1. query_demand_data
-Execute SQL SELECT queries against the demand_logs table to retrieve occupancy metrics.
-Only use SELECT queries. Never modify data.
-Schema: demand_logs(id UUID, org_id UUID, log_date DATE, metric_type VARCHAR, actual_value DECIMAL, predicted_value DECIMAL)
-The metric_type column uses values like 'occupancy_rate'. Always use the correct column name.
+Query occupancy demand metrics from the database.
+Parameters: metric_type (e.g. 'occupancy_rate'), limit (number of records), days_back (history window).
 
 ### 2. search_context_knowledge
 Search the camp's Standard Operating Procedures (SOPs) using text similarity search.
@@ -33,15 +32,20 @@ When a spike is detected, generate procurement recommendations and persist them.
 - When confirming a spike >50%, proactively generate procurement
 - Be concise, direct, like an experienced camp ops manager
 - Never hallucinate numbers — always use real data
-- After getting tool results, ALWAYS synthesize a final answer. Do not make additional tool calls if you already have enough data to answer.`
+- After getting tool results, synthesize a final answer`
 
-async function executeQuery(sql: string, orgId: string) {
-  const normalized = sql.trim().toUpperCase()
-  if (!normalized.startsWith("SELECT")) {
-    return { success: false, error: "Only SELECT queries are permitted" }
-  }
+async function queryDemandData(metricType: string, limit: number, daysBack: number, orgId: string) {
   try {
-    const rows = await query(sql)
+    const rows = await query<any>(
+      `SELECT log_date, actual_value, predicted_value
+       FROM demand_logs
+       WHERE org_id = $1
+         AND metric_type = $2
+         AND log_date >= CURRENT_DATE - ($3::int || ' days')::INTERVAL
+       ORDER BY log_date DESC
+       LIMIT $4`,
+      [orgId, metricType, Math.min(daysBack, 365), Math.min(limit, 100)]
+    )
     return { success: true, data: rows }
   } catch (err: any) {
     return { success: false, error: err.message }
@@ -90,22 +94,21 @@ async function generateProcurement(items: any[], orgId: string) {
 
 const TOOLS = {
   query_demand_data: tool({
-    description:
-      "Query occupancy demand data from the database. Accepts a SELECT SQL query against demand_logs. The metric_type column uses values like 'occupancy_rate'.",
+    description: "Query occupancy demand metrics. Returns recent actual and predicted values.",
     inputSchema: z.object({
-      sql: z.string().describe("SELECT SQL query against demand_logs table. Must be SELECT only."),
+      metric_type: z.string().default("occupancy_rate").describe("The metric to query (e.g. occupancy_rate)"),
+      limit: z.number().default(10).describe("Number of records to return (max 100)"),
+      days_back: z.number().default(30).describe("How many days of history to look back (max 365)"),
     }),
   }),
   search_context_knowledge: tool({
-    description:
-      "Search camp SOPs and logistics knowledge. Uses full-text search. Returns relevant procedures.",
+    description: "Search camp SOPs and logistics knowledge. Uses full-text search. Returns relevant procedures.",
     inputSchema: z.object({
       search_term: z.string().describe("What logistics info to search for"),
     }),
   }),
   generate_procurement: tool({
-    description:
-      "Generate procurement recommendations based on demand spike data. Call when you confirm a significant occupancy increase.",
+    description: "Generate procurement recommendations based on demand spike data. Call when you confirm a significant occupancy increase.",
     inputSchema: z.object({
       items: z.array(
         z.object({
@@ -120,13 +123,21 @@ const TOOLS = {
   }),
 }
 
+function extractInput(tc: any): any {
+  return tc.input || tc.args || {}
+}
+
 export async function POST(request: Request) {
   try {
-    const { message, orgId } = await request.json()
+    const session = await requireAuth()
+    if (!session) return unauthorized()
 
+    const orgId = getOrgId(session)
     if (!orgId) {
-      return NextResponse.json({ error: "orgId is required" }, { status: 400 })
+      return NextResponse.json({ error: "Account not associated with an organization" }, { status: 403 })
     }
+
+    const { message } = await request.json()
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required" }, { status: 400 })
@@ -147,12 +158,17 @@ export async function POST(request: Request) {
 
       if (result.toolCalls && result.toolCalls.length > 0) {
         for (const tc of result.toolCalls) {
-          const tcArgs = (tc as any).input || (tc as any).args
+          const tcArgs = extractInput(tc)
           allToolCalls.push({ name: tc.toolName, args: tcArgs })
 
           let toolResult: any
           if (tc.toolName === "query_demand_data") {
-            toolResult = await executeQuery(tcArgs.sql, orgId)
+            toolResult = await queryDemandData(
+              tcArgs.metric_type || "occupancy_rate",
+              tcArgs.limit || 10,
+              tcArgs.days_back || 30,
+              orgId
+            )
           } else if (tc.toolName === "search_context_knowledge") {
             toolResult = await searchContext(tcArgs.search_term, orgId)
           } else if (tc.toolName === "generate_procurement") {
@@ -188,14 +204,23 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({
-      response: finalText || "Analysis complete. Check the dashboard for updated data.",
-      toolCalls: allToolCalls,
-    })
+    const response = finalText || "Analysis complete. Check the dashboard for updated data."
+
+    try {
+      await query(
+        `INSERT INTO agent_conversations (org_id, user_message, agent_response, tool_calls)
+         VALUES ($1, $2, $3, $4)`,
+        [orgId, message, response, JSON.stringify(allToolCalls)]
+      )
+    } catch (err) {
+      console.error("Failed to log conversation:", err)
+    }
+
+    return NextResponse.json({ response, toolCalls: allToolCalls })
   } catch (error: any) {
     console.error("Agent error:", error)
     return NextResponse.json(
-      { error: error.message || "Internal server error" },
+      { error: "Agent request failed" },
       { status: 500 }
     )
   }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
-import { query, querySingle } from "@/lib/db"
+import { query } from "@/lib/db"
 
 export async function POST(request: Request) {
   try {
@@ -20,38 +20,39 @@ export async function POST(request: Request) {
       )
     }
 
-    const existingUser = await querySingle<any>(
-      "SELECT id FROM camp_users WHERE email = $1",
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email format" },
+        { status: 400 }
+      )
+    }
+
+    if (campName.length > 255 || location.length > 255 || name.length > 255) {
+      return NextResponse.json(
+        { error: "Fields exceed maximum length" },
+        { status: 400 }
+      )
+    }
+
+    const existingUser = await query(
+      "SELECT id FROM camp_users WHERE email = $1 LIMIT 1",
       [email]
     )
-    if (existingUser) {
+    if (existingUser.length > 0) {
       return NextResponse.json(
-        { error: "A user with this email already exists" },
+        { error: "Registration failed" },
         { status: 409 }
       )
     }
 
-    const defaultOrg = await querySingle<any>(
-      "SELECT id FROM org_profiles WHERE id = $1",
-      ["11111111-1111-1111-1111-111111111111"]
+    const orgResult = await query<{ id: string }>(
+      `INSERT INTO org_profiles (name, location, timezone)
+       VALUES ($1, $2, 'Africa/Nairobi')
+       RETURNING id`,
+      [campName, location]
     )
-
-    let orgId: string
-    if (defaultOrg) {
-      orgId = "11111111-1111-1111-1111-111111111111"
-      await query(
-        "UPDATE org_profiles SET name = $1, location = $2, updated_at = NOW() WHERE id = $3",
-        [campName, location, orgId]
-      )
-    } else {
-      const result = await query<{ id: string }>(
-        `INSERT INTO org_profiles (name, location, timezone)
-         VALUES ($1, $2, 'Africa/Nairobi')
-         RETURNING id`,
-        [campName, location]
-      )
-      orgId = result[0].id
-    }
+    const orgId = orgResult[0].id
 
     const passwordHash = await bcrypt.hash(password, 12)
     await query(
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Registration error:", error)
     return NextResponse.json(
-      { error: error.message || "Registration failed" },
+      { error: "Registration failed" },
       { status: 500 }
     )
   }

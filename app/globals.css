@@ -57,6 +57,9 @@
     @apply bg-background text-foreground;
     font-family: var(--font-body), system-ui, sans-serif;
   }
+  .font-mono, [class*="font-mono"] {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

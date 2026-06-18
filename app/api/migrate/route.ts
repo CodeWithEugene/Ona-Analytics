@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { withConnection } from "@/lib/db"
+import { requireAuth, unauthorized } from "@/lib/api-auth"
 import fs from "fs"
 import path from "path"
 
@@ -12,9 +13,22 @@ function stripComments(sql: string): string {
 }
 
 export async function POST() {
-  const results: string[] = []
-
   try {
+    const session = await requireAuth()
+    if (!session) return unauthorized()
+
+    const userEmail = session.user?.email || ""
+    const allowedEmails = (process.env.ADMIN_EMAILS || "").split(",").filter(Boolean)
+
+    if (allowedEmails.length > 0 && !allowedEmails.includes(userEmail)) {
+      return NextResponse.json(
+        { error: "Forbidden" },
+        { status: 403 }
+      )
+    }
+
+    const results: string[] = []
+
     const schemaPath = path.join(process.cwd(), "lib/db/schema.sql")
     const seedPath = path.join(process.cwd(), "lib/db/seed.sql")
 
@@ -40,7 +54,6 @@ export async function POST() {
         }
       }
 
-      // Fix: make actual_value nullable in case schema was previously applied with NOT NULL
       try {
         await client.query(`ALTER TABLE demand_logs ALTER COLUMN actual_value DROP NOT NULL;`)
         results.push("OK: ALTER TABLE demand_logs ALTER actual_value DROP NOT NULL")
@@ -72,7 +85,6 @@ export async function POST() {
     return NextResponse.json({
       success: false,
       error: error.message || "Migration failed",
-      results,
     })
   }
 }

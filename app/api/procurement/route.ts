@@ -1,10 +1,17 @@
 import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
+import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
 
 export async function GET(request: Request) {
   try {
+    const session = await requireAuth()
+    if (!session) return unauthorized()
+
+    const sessionOrgId = getOrgId(session)
     const { searchParams } = new URL(request.url)
-    const orgId = searchParams.get("orgId") || "11111111-1111-1111-1111-111111111111"
+    const orgId = searchParams.get("orgId")
+
+    if (!orgId || orgId !== sessionOrgId) return forbidden()
 
     const rows = await query<any>(
       `SELECT

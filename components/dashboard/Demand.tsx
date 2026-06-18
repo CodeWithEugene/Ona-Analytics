@@ -1,0 +1,55 @@
+"use client"
+
+import { Card } from "./Card"
+
+export function Demand({ demandData, loading }: { demandData: any[]; loading: boolean }) {
+  const last = demandData.length > 0 ? demandData[demandData.length - 1] : null
+  const today = last ? Math.round(last.actual_value || last.predicted_value || 0) : null
+  const plus3 = demandData.length > 3 ? Math.round(demandData[demandData.length - 3]?.predicted_value || 0) : null
+  const plus7 = demandData.length > 7 ? Math.round(demandData[demandData.length - 7]?.predicted_value || 0) : null
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <h3 className="text-lg font-display italic mb-4">Demand Radar</h3>
+        {loading ? (
+          <div className="grid grid-cols-3 gap-4">
+            {[1,2,3].map(i => <div key={i} className="h-24 bg-white/5 rounded-xl animate-pulse" />)}
+          </div>
+        ) : (
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            <div className="bg-white/5 rounded-xl p-4">
+              <div className="text-sm text-white/40 mb-1">Today</div>
+              <div className="text-2xl font-bold">{today !== null ? `${today}%` : '\u2014'}</div>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4">
+              <div className="text-sm text-white/40 mb-1">+3 Days</div>
+              <div className="text-2xl font-bold text-[#E67E22]">{plus3 !== null ? `${plus3}%` : '\u2014'}</div>
+            </div>
+            <div className="bg-white/5 rounded-xl p-4">
+              <div className="text-sm text-white/40 mb-1">+7 Days</div>
+              <div className={`text-2xl font-bold ${plus7 !== null && plus7 > 85 ? 'text-red-400' : 'text-[#E67E22]'}`}>{plus7 !== null ? `${plus7}%` : '\u2014'}</div>
+            </div>
+          </div>
+        )}
+      </Card>
+      <Card>
+        <h3 className="text-lg font-display italic mb-4">Booking Velocity</h3>
+        {loading ? (
+          <div className="h-32 bg-white/5 rounded animate-pulse" />
+        ) : (
+          <div className="h-32 flex items-end gap-2">
+            {demandData.length > 0 ? demandData.slice(-14).map((d: any, i: number) => {
+              const val = d.actual_value || d.predicted_value || 0
+              return (
+                <div key={i} className="flex-1 bg-[#E67E22]/20 rounded-sm hover:bg-[#E67E22]/40 transition-colors" style={{ height: val + "%" }} />
+              )
+            }) : (
+              <div className="flex items-center justify-center w-full h-full text-white/20 text-sm">No data</div>
+            )}
+          </div>
+        )}
+      </Card>
+    </div>
+  )
+}
