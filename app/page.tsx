@@ -1,8 +1,42 @@
 "use client"
 
-import React from "react"
+import React, { useRef, useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight, TrendingUp, Truck, Sparkles, Shield, BarChart3, Clock, Users } from "lucide-react"
+
+function useInView(threshold = 0.15): [React.RefObject<HTMLElement | null>, boolean] {
+  const ref = useRef<HTMLElement | null>(null)
+  const [inView, setInView] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setInView(true)
+      return
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.disconnect() } },
+      { threshold }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold])
+  return [ref, inView]
+}
+
+function FadeIn({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const [ref, inView] = useInView()
+  return (
+    <section
+      ref={ref as React.RefObject<HTMLElement>}
+      className={`transition-all duration-700 ease-out ${
+        inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      } ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </section>
+  )
+}
 
 const camps = [
   "Olare Orok Eco-Lodge", "Serengeti Migration Camp", "Samburu Intrepids",
@@ -70,7 +104,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="pt-36 pb-24 px-6 overflow-hidden">
+      <FadeIn className="pt-36 pb-24 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#C0392B]/20 bg-[#C0392B]/5 px-4 py-1.5 text-[11px] uppercase tracking-widest text-[#C0392B] mb-8">
@@ -161,10 +195,10 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </FadeIn>
 
       {/* Social proof */}
-      <section className="py-16 px-6 border-y border-[#1C1816]/5">
+      <FadeIn delay={100} className="py-16 px-6 border-y border-[#1C1816]/5">
         <div className="max-w-7xl mx-auto">
           <p className="text-xs uppercase tracking-widest text-[#1C1816]/30 text-center mb-8">Trusted by operations teams across East Africa</p>
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
@@ -173,10 +207,10 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </FadeIn>
 
       {/* Features */}
-      <section className="py-24 px-6">
+      <FadeIn delay={200} className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-[#1C1816]">
@@ -207,10 +241,10 @@ export default function LandingPage() {
             })}
           </div>
         </div>
-      </section>
+      </FadeIn>
 
       {/* Stats bar */}
-      <section className="py-20 px-6 bg-[#1C1816] text-[#F4EDE2]">
+      <FadeIn delay={300} className="py-20 px-6 bg-[#1C1816] text-[#F4EDE2]">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             {[
@@ -230,10 +264,10 @@ export default function LandingPage() {
             })}
           </div>
         </div>
-      </section>
+      </FadeIn>
 
       {/* How it works */}
-      <section className="py-24 px-6">
+      <FadeIn delay={400} className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-[#1C1816]">How it works</h2>
@@ -255,10 +289,10 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </FadeIn>
 
       {/* Testimonial */}
-      <section className="py-24 px-6 bg-[#E8DDD0]">
+      <FadeIn delay={500} className="py-24 px-6 bg-[#E8DDD0]">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
             {testimonials.map((t, i) => (
@@ -280,10 +314,10 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </FadeIn>
 
       {/* CTA */}
-      <section className="py-32 px-6 bg-[#1C1816] text-[#F4EDE2]">
+      <FadeIn delay={600} className="py-32 px-6 bg-[#1C1816] text-[#F4EDE2]">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-[1.08]">
             Ready to see what is coming?
@@ -298,7 +332,7 @@ export default function LandingPage() {
             Start free trial <ArrowUpRight className="w-5 h-5" />
           </Link>
         </div>
-      </section>
+      </FadeIn>
 
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-[#1C1816]/10">
