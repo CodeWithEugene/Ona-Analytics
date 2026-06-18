@@ -170,6 +170,20 @@ export async function POST(request: Request) {
       }
     }
 
+    if (!finalText && allToolCalls.length > 0) {
+      try {
+        const synthesisResult = await generateText({
+          model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
+          system: SYSTEM_PROMPT,
+          maxRetries: 1,
+          messages,
+        })
+        finalText = synthesisResult.text
+      } catch {
+        finalText = "Analysis complete. Check the dashboard for updated data."
+      }
+    }
+
     return NextResponse.json({
       response: finalText || "Analysis complete. Check the dashboard for updated data.",
       toolCalls: allToolCalls,
