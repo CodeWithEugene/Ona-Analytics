@@ -2,9 +2,8 @@
 
 <img src="public/logo.svg" alt="Ona Analytics Logo" width="500">
 
-# ⚡ Ona Analytics
 
-> **Ona** (*verb, Swahili*): To see, perceive, or understand.
+ **Ona** (*verb, Swahili*): To See, Perceive, or Understand.
 
 Ona Analytics is a serverless, AI-native demand radar built specifically for remote safari camps and eco-lodges to predict occupancy surges and secure isolated supply chains.
 

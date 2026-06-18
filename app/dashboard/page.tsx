@@ -1,8 +1,9 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { LayoutDashboard, TrendingUp, Truck, Calendar, Settings, Sparkles, Menu, X, Send, Loader2 } from "lucide-react"
+import { LayoutDashboard, TrendingUp, Truck, Calendar, Settings, Sparkles, Menu, X, Send, Loader2, MapPin, Clock, User } from "lucide-react"
 
 const navItems = [
   { id: "overview", icon: LayoutDashboard, label: "Overview" },
@@ -23,32 +24,36 @@ function Card({ children, className }: { children: React.ReactNode; className?: 
 }
 
 function calcOccupancy(data: any[]) {
-  if (!data || data.length === 0) return 67
+  if (!data || data.length === 0) return null
   const last = data[data.length - 1]
   return last.actual_value !== null ? Math.round(last.actual_value) : Math.round(last.predicted_value)
 }
 
 function calcForecastPeak(data: any[]) {
-  if (!data || data.length === 0) return 94
+  if (!data || data.length === 0) return null
   const peaks = data.map(d => d.predicted_value || d.actual_value || 0)
   return Math.round(Math.max(...peaks))
 }
 
 function calcChange(data: any[]) {
-  if (!data || data.length < 7) return 23
+  if (!data || data.length < 14) return null
   const recent = data.slice(-7)
   const old = data.slice(-14, -7)
-  if (old.length === 0) return 23
+  if (old.length === 0) return null
   const avgRecent = recent.reduce((s, d) => s + (d.actual_value || d.predicted_value || 0), 0) / recent.length
   const avgOld = old.reduce((s, d) => s + (d.actual_value || d.predicted_value || 0), 0) / old.length
   return Math.round(((avgRecent - avgOld) / avgOld) * 100)
 }
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession()
+  const orgId = (session?.user as any)?.orgId
+
   const [activeTab, setActiveTab] = useState("overview")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [demandData, setDemandData] = useState<any[]>([])
   const [procurementData, setProcurementData] = useState<any[]>([])
+  const [orgData, setOrgData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [chatOpen, setChatOpen] = useState(false)
   const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([])
@@ -56,14 +61,17 @@ export default function DashboardPage() {
   const [chatLoading, setChatLoading] = useState(false)
 
   useEffect(() => {
+    if (!orgId) return
     async function fetchData() {
       try {
         const [demandRes, procRes] = await Promise.all([
-          fetch("/api/demand?days=30"),
-          fetch("/api/procurement"),
+          fetch(`/api/demand?orgId=${orgId}&days=30`),
+          fetch(`/api/procurement?orgId=${orgId}`),
         ])
-        const demandJson = await demandRes.json()
-        const procJson = await procRes.json()
+        const [demandJson, procJson] = await Promise.all([
+          demandRes.json(),
+          procRes.json(),
+        ])
         setDemandData(demandJson.data || [])
         setProcurementData(procJson.data || [])
       } catch (err) {
@@ -73,15 +81,31 @@ export default function DashboardPage() {
       }
     }
     fetchData()
-  }, [])
+  }, [orgId])
+
+  useEffect(() => {
+    if (!orgId) return
+    async function fetchOrg() {
+      try {
+        const res = await fetch(`/api/org?orgId=${orgId}`)
+        const json = await res.json()
+        setOrgData(json.data || null)
+      } catch (err) {
+        console.error("Failed to fetch org data", err)
+      }
+    }
+    fetchOrg()
+  }, [orgId])
 
   const occupancy = calcOccupancy(demandData)
   const peak = calcForecastPeak(demandData)
   const change = calcChange(demandData)
+  const campName = orgData?.name || "Operations Command Center"
+  const isAuthReady = status !== "loading" && !!orgId
 
   async function sendChatMessage(e: React.FormEvent) {
     e.preventDefault()
-    if (!chatInput.trim() || chatLoading) return
+    if (!chatInput.trim() || chatLoading || !orgId) return
     const userMsg = chatInput.trim()
     setChatInput("")
     setChatMessages(prev => [...prev, { role: "user", content: userMsg }])
@@ -90,15 +114,39 @@ export default function DashboardPage() {
       const res = await fetch("/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg }),
+        body: JSON.stringify({ message: userMsg, orgId }),
       })
       const json = await res.json()
-      setChatMessages(prev => [...prev, { role: "assistant", content: json.response || "No response." }])
+      setChatMessages(prev => [...prev, { role: "assistant", content: json.response || "Agent unavailable." }])
     } catch {
       setChatMessages(prev => [...prev, { role: "assistant", content: "Agent unavailable." }])
     } finally {
       setChatLoading(false)
     }
+  }
+
+  async function handleGenerateProcurement() {
+    if (!orgId) return
+    try {
+      await fetch("/api/procurement/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orgId }),
+      })
+      const procRes = await fetch(`/api/procurement?orgId=${orgId}`)
+      const procJson = await procRes.json()
+      setProcurementData(procJson.data || [])
+    } catch (err) {
+      console.error("Failed to generate procurement", err)
+    }
+  }
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-[#E8E6E1] flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-white/30" />
+      </div>
+    )
   }
 
   return (
@@ -115,7 +163,7 @@ export default function DashboardPage() {
         <div className="flex flex-col h-full">
           <div className="p-6">
             <Link href="/" className="text-xl font-display italic">Ona</Link>
-            <p className="text-xs text-white/30 mt-1">Safari Camp Operations</p>
+            <p className="text-xs text-white/30 mt-1">{orgData?.name || "Safari Camp Operations"}</p>
           </div>
           <nav className="flex-1 px-3 space-y-1">
             {navItems.map((item) => {
@@ -153,7 +201,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-display italic mb-1">Operations Command Center</h1>
+              <h1 className="text-2xl font-display italic mb-1">{orgData?.name || "Operations Command Center"}</h1>
               <p className="text-sm text-white/40">Real-time demand intelligence</p>
             </div>
             <button
@@ -164,11 +212,26 @@ export default function DashboardPage() {
               Ona Agent
             </button>
           </div>
-          {activeTab === "overview" && <Overview demandData={demandData} procurementData={procurementData} loading={loading} occupancy={occupancy} peak={peak} change={change} />}
+          {activeTab === "overview" && (
+            <Overview
+              demandData={demandData}
+              procurementData={procurementData}
+              loading={loading}
+              occupancy={occupancy}
+              peak={peak}
+              change={change}
+            />
+          )}
           {activeTab === "demand" && <Demand demandData={demandData} loading={loading} />}
-          {activeTab === "procurement" && <ProcurementView procurementData={procurementData} loading={loading} />}
+          {activeTab === "procurement" && (
+            <ProcurementView
+              procurementData={procurementData}
+              loading={loading}
+              onGenerate={handleGenerateProcurement}
+            />
+          )}
           {activeTab === "forecasting" && <Forecasting demandData={demandData} loading={loading} />}
-          {activeTab === "settings" && <SettingsView />}
+          {activeTab === "settings" && <SettingsView orgData={orgData} />}
         </div>
       </main>
 
@@ -185,7 +248,27 @@ export default function DashboardPage() {
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {chatMessages.length === 0 && (
-              <p className="text-sm text-white/40 text-center mt-8">Ask about occupancy, forecasts, or camp operations.</p>
+              <div className="text-center mt-8">
+                <Sparkles className="w-8 h-8 text-[#E67E22]/30 mx-auto mb-3" />
+                <p className="text-sm text-white/40">Ask about occupancy, forecasts, or camp operations.</p>
+                <div className="mt-4 space-y-2">
+                  {[
+                    "What is the current occupancy?",
+                    "How much fresh produce do we need?",
+                    "Explain the demand forecast trend",
+                  ].map((suggestion, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setChatInput(suggestion)
+                      }}
+                      className="block w-full text-left text-xs text-white/30 hover:text-white/60 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
             {chatMessages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -225,7 +308,7 @@ export default function DashboardPage() {
 
 function Overview({ demandData, procurementData, loading, occupancy, peak, change }: {
   demandData: any[]; procurementData: any[]; loading: boolean;
-  occupancy: number; peak: number; change: number;
+  occupancy: number | null; peak: number | null; change: number | null;
 }) {
   const urgentCount = procurementData.filter((p: any) => p.urgency === "High" || p.urgency === "high").length
 
@@ -239,11 +322,15 @@ function Overview({ demandData, procurementData, loading, occupancy, peak, chang
           </div>
           {loading ? (
             <div className="h-10 w-16 bg-white/5 rounded animate-pulse" />
-          ) : (
+          ) : occupancy !== null ? (
             <>
               <div className="text-3xl font-bold mb-1">{occupancy}%</div>
-              <p className="text-xs text-white/30">{change > 0 ? `+${change}% vs last week` : `${change}% vs last week`}</p>
+              {change !== null && (
+                <p className="text-xs text-white/30">{change > 0 ? `+${change}% vs last week` : `${change}% vs last week`}</p>
+              )}
             </>
+          ) : (
+            <div className="text-sm text-white/20">No data</div>
           )}
         </Card>
         <Card>
@@ -253,11 +340,13 @@ function Overview({ demandData, procurementData, loading, occupancy, peak, chang
           </div>
           {loading ? (
             <div className="h-10 w-16 bg-white/5 rounded animate-pulse" />
-          ) : (
+          ) : peak !== null ? (
             <>
               <div className={`text-3xl font-bold mb-1 ${peak > 85 ? 'text-red-400' : 'text-[#E67E22]'}`}>{peak}%</div>
               <p className="text-xs text-white/30">{peak > 85 ? 'High demand alert' : 'Normal range'}</p>
             </>
+          ) : (
+            <div className="text-sm text-white/20">No forecast data</div>
           )}
         </Card>
         <Card>
@@ -335,9 +424,10 @@ function Overview({ demandData, procurementData, loading, occupancy, peak, chang
 }
 
 function Demand({ demandData, loading }: { demandData: any[]; loading: boolean }) {
-  const today = demandData.length > 0 ? Math.round(demandData[demandData.length - 1]?.actual_value || demandData[demandData.length - 1]?.predicted_value || 0) : 67
-  const plus3 = demandData.length > 3 ? Math.round(demandData[demandData.length - 3]?.predicted_value || 0) : 85
-  const plus7 = demandData.length > 7 ? Math.round(demandData[demandData.length - 7]?.predicted_value || 0) : 94
+  const last = demandData.length > 0 ? demandData[demandData.length - 1] : null
+  const today = last ? Math.round(last.actual_value || last.predicted_value || 0) : null
+  const plus3 = demandData.length > 3 ? Math.round(demandData[demandData.length - 3]?.predicted_value || 0) : null
+  const plus7 = demandData.length > 7 ? Math.round(demandData[demandData.length - 7]?.predicted_value || 0) : null
 
   return (
     <div className="space-y-6">
@@ -351,15 +441,15 @@ function Demand({ demandData, loading }: { demandData: any[]; loading: boolean }
           <div className="mt-4 grid grid-cols-3 gap-4">
             <div className="bg-white/5 rounded-xl p-4">
               <div className="text-sm text-white/40 mb-1">Today</div>
-              <div className="text-2xl font-bold">{today}%</div>
+              <div className="text-2xl font-bold">{today !== null ? `${today}%` : '—'}</div>
             </div>
             <div className="bg-white/5 rounded-xl p-4">
               <div className="text-sm text-white/40 mb-1">+3 Days</div>
-              <div className="text-2xl font-bold text-[#E67E22]">{plus3}%</div>
+              <div className="text-2xl font-bold text-[#E67E22]">{plus3 !== null ? `${plus3}%` : '—'}</div>
             </div>
             <div className="bg-white/5 rounded-xl p-4">
               <div className="text-sm text-white/40 mb-1">+7 Days</div>
-              <div className={`text-2xl font-bold ${plus7 > 85 ? 'text-red-400' : 'text-[#E67E22]'}`}>{plus7}%</div>
+              <div className={`text-2xl font-bold ${plus7 !== null && plus7 > 85 ? 'text-red-400' : 'text-[#E67E22]'}`}>{plus7 !== null ? `${plus7}%` : '—'}</div>
             </div>
           </div>
         )}
@@ -385,10 +475,20 @@ function Demand({ demandData, loading }: { demandData: any[]; loading: boolean }
   )
 }
 
-function ProcurementView({ procurementData, loading }: { procurementData: any[]; loading: boolean }) {
+function ProcurementView({ procurementData, loading, onGenerate }: {
+  procurementData: any[]; loading: boolean; onGenerate: () => void;
+}) {
   return (
     <Card>
-      <h3 className="text-lg font-display italic mb-4">Procurement List</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-display italic">Procurement List</h3>
+        <button
+          onClick={onGenerate}
+          className="text-xs bg-[#E67E22]/10 text-[#E67E22] px-3 py-1.5 rounded-full ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all"
+        >
+          Generate from Forecast
+        </button>
+      </div>
       {loading ? (
         <div className="space-y-3">
           {[1,2,3,4,5,6].map(i => <div key={i} className="h-12 bg-white/5 rounded animate-pulse" />)}
@@ -423,13 +523,18 @@ function ProcurementView({ procurementData, loading }: { procurementData: any[];
           </table>
         </div>
       ) : (
-        <div className="text-sm text-white/20 text-center py-8">No procurement items</div>
+        <div className="text-sm text-white/20 text-center py-12">
+          <p>No procurement items</p>
+          <p className="text-xs mt-2">Use the Ona Agent or Generate from Forecast to create procurement recommendations.</p>
+        </div>
       )}
     </Card>
   )
 }
 
 function Forecasting({ demandData, loading }: { demandData: any[]; loading: boolean }) {
+  const peakVal = demandData.length > 0 ? Math.round(Math.max(...demandData.map(d => d.predicted_value || 0))) : null
+
   return (
     <div className="space-y-6">
       <Card>
@@ -460,34 +565,60 @@ function Forecasting({ demandData, loading }: { demandData: any[]; loading: bool
       <Card>
         <h3 className="text-lg font-display italic mb-4">AI-Generated Insights</h3>
         <div className="space-y-3">
-          <div className="flex items-start gap-3 p-3 bg-white/5 rounded-lg">
-            <Sparkles className="w-5 h-5 text-[#E67E22] mt-0.5" />
-            <div>
-              <p className="text-sm font-medium">Spike Detected</p>
-              <p className="text-xs text-white/40">
-                {demandData.length > 0
-                  ? `Peak demand forecast at ${Math.round(Math.max(...demandData.map(d => d.predicted_value || 0)))}% in the next 14 days.`
-                  : 'Weekend demand will peak at 94% occupancy.'}
-              </p>
+          {peakVal !== null ? (
+            <div className="flex items-start gap-3 p-3 bg-white/5 rounded-lg">
+              <Sparkles className="w-5 h-5 text-[#E67E22] mt-0.5" />
+              <div>
+                <p className="text-sm font-medium">Spike Detected</p>
+                <p className="text-xs text-white/40">
+                  Peak demand forecast at {peakVal}% in the next 14 days.
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-start gap-3 p-3 bg-white/5 rounded-lg">
+              <Sparkles className="w-5 h-5 text-[#E67E22] mt-0.5" />
+              <div>
+                <p className="text-sm font-medium">Insufficient Data</p>
+                <p className="text-xs text-white/40">Collect more demand data to generate AI insights.</p>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     </div>
   )
 }
 
-function SettingsView() {
+function SettingsView({ orgData }: { orgData: any }) {
   return (
     <Card>
       <h3 className="text-lg font-display italic mb-4">Camp Settings</h3>
-      <div className="space-y-4">
-        {["Serengeti Camp", "Camp Capacity: 48 rooms", "Location: Northern Serengeti", "Manager: Sarah Chen"].map((s, i) => (
-          <div key={i} className="py-3 border-b border-white/5 last:border-0">
-            <span className="text-sm">{s}</span>
+      {orgData ? (
+        <div className="space-y-4">
+          <div className="py-3 border-b border-white/5 flex items-center gap-3">
+            <MapPin className="w-4 h-4 text-white/20" />
+            <div>
+              <p className="text-sm font-medium">{orgData.name}</p>
+              <p className="text-xs text-white/40">{orgData.location}</p>
+            </div>
           </div>
-        ))}
-      </div>
+          <div className="py-3 border-b border-white/5">
+            <p className="text-xs text-white/40 mb-1">Timezone</p>
+            <p className="text-sm">{orgData.timezone || 'Africa/Nairobi'}</p>
+          </div>
+          <div className="py-3 border-b border-white/5">
+            <p className="text-xs text-white/40 mb-1">Organization ID</p>
+            <p className="text-sm font-mono text-white/30 text-xs">{orgData.id}</p>
+          </div>
+          <div className="py-3">
+            <p className="text-xs text-white/40 mb-1">Camp Since</p>
+            <p className="text-sm">{orgData.created_at ? new Date(orgData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—'}</p>
+          </div>
+        </div>
+      ) : (
+        <div className="text-sm text-white/20 text-center py-8">Loading camp settings...</div>
+      )}
     </Card>
   )
 }

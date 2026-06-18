@@ -3,7 +3,6 @@
 import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { ArrowUpRight, Loader2 } from "lucide-react"
 
 export default function LoginPage() {
@@ -25,17 +24,12 @@ export default function LoginPage() {
     })
 
     if (result?.error) {
-      setError("Invalid credentials.")
+      setError("Invalid email or password.")
       setLoading(false)
     } else {
       router.push("/dashboard")
       router.refresh()
     }
-  }
-
-  function fillDemo() {
-    setEmail("manager@ona-analytics.com")
-    setPassword("ona-demo-2026")
   }
 
   return (
@@ -55,7 +49,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="manager@camp.com"
+                  placeholder="camp@ona-analytics.com"
                   required
                   className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
                 />
@@ -85,18 +79,7 @@ export default function LoginPage() {
                 </>}
               </button>
             </form>
-
-            <div className="mt-6 text-center">
-              <button onClick={fillDemo} className="text-sm text-[#E67E22] hover:underline">
-                Use demo credentials
-              </button>
-              <p className="text-xs text-[#F4EDE2]/20 mt-2">manager@ona-analytics.com / ona-demo-2026</p>
-            </div>
           </div>
-        </div>
-
-        <div className="text-center mt-6">
-          <Link href="/" className="text-xs text-[#F4EDE2]/20 hover:text-[#F4EDE2]/40">Back to home</Link>
         </div>
       </div>
     </div>

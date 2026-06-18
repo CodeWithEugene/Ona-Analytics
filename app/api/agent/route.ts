@@ -122,7 +122,11 @@ const TOOLS = {
 
 export async function POST(request: Request) {
   try {
-    const { message, orgId = "11111111-1111-1111-1111-111111111111" } = await request.json()
+    const { message, orgId } = await request.json()
+
+    if (!orgId) {
+      return NextResponse.json({ error: "orgId is required" }, { status: 400 })
+    }
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required" }, { status: 400 })

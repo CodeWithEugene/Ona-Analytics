@@ -2,7 +2,7 @@ import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { testConnection } from "@/lib/db"
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const isConnected = await testConnection()
     if (!isConnected) {
@@ -12,7 +12,15 @@ export async function POST() {
       )
     }
 
-    const orgId = "11111111-1111-1111-1111-111111111111"
+    const body = await request.json().catch(() => ({}))
+    const orgId = body.orgId
+
+    if (!orgId) {
+      return NextResponse.json(
+        { error: "orgId is required" },
+        { status: 400 }
+      )
+    }
 
     await query("DELETE FROM procurement_items WHERE org_id = $1", [orgId])
 

@@ -14,7 +14,21 @@ CREATE TABLE IF NOT EXISTS org_profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Relational demand data (occupancy metrics)
+-- 3. Camp users (authentication)
+CREATE TABLE IF NOT EXISTS camp_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id UUID NOT NULL REFERENCES org_profiles(id) ON DELETE CASCADE,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'manager',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_camp_users_email ON camp_users(email);
+CREATE INDEX IF NOT EXISTS idx_camp_users_org ON camp_users(org_id);
+
+-- 4. Relational demand data (occupancy metrics)
 CREATE TABLE IF NOT EXISTS demand_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id UUID NOT NULL REFERENCES org_profiles(id) ON DELETE CASCADE,

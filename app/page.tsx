@@ -18,7 +18,7 @@ export default function LandingPage() {
           <Link href="/" className="text-lg font-display italic tracking-tight text-[#1C1816]">Ona</Link>
           <div className="hidden md:flex items-center gap-8">
             <Link href="/login" className="text-sm text-[#1C1816]/60 hover:text-[#1C1816]">Sign In</Link>
-            <Link href="#cta" className="text-sm bg-[#1C1816] text-[#F4EDE2] px-5 py-2 rounded-full font-medium hover:bg-[#1C1816]/90">Get Early Access</Link>
+            <Link href="/login" className="text-sm bg-[#1C1816] text-[#F4EDE2] px-5 py-2 rounded-full font-medium hover:bg-[#1C1816]/90">Get Started</Link>
           </div>
         </div>
       </nav>
