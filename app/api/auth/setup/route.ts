@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+import { logger } from "@/lib/log"
+import { logAudit } from "@/lib/api-auth"
 
 const SETUP_KEY = process.env.SETUP_API_KEY
 const setupLimiter = createRateLimiter({ interval: 60000, maxRequests: 5 })
@@ -87,18 +89,22 @@ export async function POST(request: Request) {
 
     const passwordHash = await bcrypt.hash(password, 12)
 
-    await query(
+    const userResult = await query<{ id: string }>(
       `INSERT INTO camp_users (org_id, email, password_hash, name, role)
-       VALUES ($1, $2, $3, $4, 'manager')`,
+       VALUES ($1, $2, $3, $4, 'manager')
+       RETURNING id`,
       [orgId, email, passwordHash, name]
     )
+    const userId = userResult[0].id
+
+    await logAudit("setup_user", { email, orgId }, request, orgId, userId)
 
     return NextResponse.json({
       success: true,
       message: "User created successfully. You can now sign in.",
     })
   } catch (error: any) {
-    console.error("Setup error:", error)
+    logger.error("setup_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Setup failed" },
       { status: 500 }

@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS camp_users (
   password_hash VARCHAR(255) NOT NULL,
   name VARCHAR(255) NOT NULL,
   role VARCHAR(20) NOT NULL DEFAULT 'manager' CHECK (role IN ('admin', 'manager', 'viewer')),
+  must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -94,3 +95,33 @@ CREATE TABLE IF NOT EXISTS agent_conversations (
 
 CREATE INDEX IF NOT EXISTS idx_agent_conversations_org
   ON agent_conversations(org_id, created_at DESC);
+
+-- 8. Password reset tokens
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES camp_users(id) ON DELETE CASCADE,
+  token_hash VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_token
+  ON password_reset_tokens(token_hash);
+
+-- 9. Audit log for security-sensitive actions
+CREATE TABLE IF NOT EXISTS audit_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id UUID REFERENCES org_profiles(id) ON DELETE SET NULL,
+  user_id UUID REFERENCES camp_users(id) ON DELETE SET NULL,
+  action VARCHAR(100) NOT NULL,
+  details JSONB,
+  ip_address VARCHAR(45),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_org
+  ON audit_log(org_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_user
+  ON audit_log(user_id, created_at DESC);

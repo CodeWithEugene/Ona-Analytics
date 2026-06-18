@@ -1,36 +1,55 @@
 "use client"
 
-import { signIn } from "next-auth/react"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowUpRight, Loader2 } from "lucide-react"
+import { ArrowUpRight, Loader2, CheckCircle } from "lucide-react"
 
-export default function LoginPage() {
-  const router = useRouter()
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError("")
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    })
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      })
 
-    if (result?.error) {
-      setError("Invalid email or password.")
+      if (!res.ok) {
+        const json = await res.json()
+        setError(json.error || "Request failed")
+      } else {
+        setSent(true)
+      }
+    } catch {
+      setError("Network error. Please try again.")
+    } finally {
       setLoading(false)
-    } else {
-      router.push("/dashboard")
-      router.refresh()
     }
+  }
+
+  if (sent) {
+    return (
+      <div className="min-h-screen bg-[#1C1816] text-[#F4EDE2] flex items-center justify-center p-4">
+        <div className="text-center">
+          <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
+          <h2 className="text-xl font-display italic mb-2">Check your email</h2>
+          <p className="text-sm text-[#F4EDE2]/40 max-w-sm">
+            If an account with that email exists, a reset link has been sent.
+          </p>
+          <Link href="/login" className="inline-block mt-6 text-sm text-[#E67E22] hover:underline">
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -40,7 +59,7 @@ export default function LoginPage() {
           <div className="rounded-[calc(2rem-0.375rem)] bg-[#1C1816] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-display italic text-[#F4EDE2]">Ona</h1>
-              <p className="text-sm text-[#F4EDE2]/40 mt-2">Operations Command Center</p>
+              <p className="text-sm text-[#F4EDE2]/40 mt-2">Reset your password</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -58,25 +77,6 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-sm text-[#F4EDE2]/40">Password</label>
-                  <Link href="/forgot-password" className="text-xs text-[#F4EDE2]/30 hover:text-[#E67E22] hover:underline transition-colors">
-                    Forgot?
-                  </Link>
-                </div>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                  required
-                  className="w-full bg-[#0A0A0A] border border-[#F4EDE2]/10 rounded-lg px-4 py-3 text-sm text-[#F4EDE2] focus:ring-2 focus:ring-[#C0392B]/50 outline-none placeholder:text-[#F4EDE2]/20"
-                />
-              </div>
-
               {error && <p role="alert" className="text-sm text-[#C0392B]">{error}</p>}
 
               <button
@@ -85,15 +85,15 @@ export default function LoginPage() {
                 className="w-full bg-[#C0392B] text-[#F4EDE2] py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-[#C0392B]/90 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>
-                  Sign In <ArrowUpRight className="w-4 h-4" />
+                  Send Reset Link <ArrowUpRight className="w-4 h-4" />
                 </>}
               </button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-xs text-[#F4EDE2]/30">
-                {"Don't have an account? "}
-                <Link href="/register" className="text-[#E67E22] hover:underline">Create one</Link>
+                Remember your password?{" "}
+                <Link href="/login" className="text-[#E67E22] hover:underline">Sign in</Link>
               </p>
             </div>
           </div>

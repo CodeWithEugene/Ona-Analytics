@@ -18,7 +18,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         try {
           const user = await querySingle<any>(
-            `SELECT id, org_id, email, password_hash, name
+            `SELECT id, org_id, email, password_hash, name, must_change_password
              FROM camp_users
              WHERE email = $1`,
             [credentials.email as string]
@@ -38,6 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             name: user.name,
             email: user.email,
             orgId: user.org_id,
+            mustChangePassword: user.must_change_password,
           }
         } catch (error) {
           console.error("Auth DB error:", error)

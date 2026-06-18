@@ -1,6 +1,7 @@
 import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
+import { logger } from "@/lib/log"
 
 export async function GET(request: Request) {
   try {
@@ -43,7 +44,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ data: items })
   } catch (error) {
-    console.error("Error fetching procurement data:", error)
+    logger.error("procurement_fetch_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Failed to fetch procurement data" },
       { status: 500 }

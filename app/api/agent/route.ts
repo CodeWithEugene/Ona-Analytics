@@ -3,7 +3,7 @@ import { createOpenAI } from "@ai-sdk/openai"
 import { z } from "zod"
 import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
-import { requireAuth, unauthorized, getOrgId, getUserId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, getOrgId, getUserId, logAudit } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
 import { logger } from "@/lib/log"
 
@@ -194,6 +194,10 @@ export async function POST(request: Request) {
             toolResult = await searchContext(tcArgs.search_term, orgId)
           } else if (tc.toolName === "generate_procurement") {
             toolResult = await generateProcurement(tcArgs.items, orgId)
+            if (toolResult.success) {
+              const userId = getUserId(session)
+              await logAudit("agent_procurement_generated", { itemCount: toolResult.count, items: tcArgs.items }, request, orgId, userId).catch(() => {})
+            }
           }
 
           messages.push({
@@ -234,7 +238,7 @@ export async function POST(request: Request) {
         [orgId, message, response, JSON.stringify(allToolCalls)]
       )
     } catch (err) {
-      console.error("Failed to log conversation:", err)
+      logger.error("conversation_log_failed", { error: String(err) })
     }
 
     return NextResponse.json({ response, toolCalls: allToolCalls })

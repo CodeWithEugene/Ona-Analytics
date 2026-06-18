@@ -14,6 +14,7 @@ export interface RateLimitResult {
 export function createRateLimiter(config: RateLimitConfig) {
   const { interval, maxRequests } = config
 
+  // Cleanup expired entries periodically
   if (typeof setInterval !== "undefined") {
     const cleanup = setInterval(() => {
       const now = Date.now()

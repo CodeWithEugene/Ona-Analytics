@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server"
 import { execute, querySingle } from "@/lib/db"
-import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, forbidden, getOrgId, getUserId, logAudit } from "@/lib/api-auth"
+import { logger } from "@/lib/log"
 
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  let itemId: string | null = null
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
 
     const sessionOrgId = getOrgId(session)
     const { id } = await params
+    itemId = id
 
     const item = await querySingle<any>(
       "SELECT org_id FROM procurement_items WHERE id = $1",
@@ -41,9 +44,11 @@ export async function POST(
       )
     }
 
+    await logAudit("procurement_fulfilled", { itemId }, request, sessionOrgId, getUserId(session))
+
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error("Fulfill error:", error)
+    logger.error("fulfill_failed", { error: String(error), itemId })
     return NextResponse.json(
       { error: "Failed to fulfill item" },
       { status: 500 }

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
 import { withConnection } from "@/lib/db"
-import { requireAuth, unauthorized, getUserId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, getUserId, getOrgId, logAudit } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
 import fs from "fs"
 import path from "path"
+import { logger } from "@/lib/log"
 
 const migrateLimiter = createRateLimiter({ interval: 60000, maxRequests: 2 })
 
@@ -61,7 +62,7 @@ export async function POST() {
           if (err.code === "42710") {
             results.push(`SKIP (exists): ${stmt.substring(0, 80)}`)
           } else {
-            console.error("Migration statement error:", err)
+            logger.error("migration_statement_error", { error: String(err), statement: stmt.substring(0, 80) })
             results.push(`ERR: ${stmt.substring(0, 80)}`)
           }
         }
@@ -87,16 +88,19 @@ export async function POST() {
           if (err.code === "42710" || err.code === "23505") {
             results.push(`SKIP (exists): ${stmt.substring(0, 80)}`)
           } else {
-            console.error("Migration seed error:", err)
+            logger.error("migration_seed_error", { error: String(err), statement: stmt.substring(0, 80) })
             results.push(`ERR: ${stmt.substring(0, 80)}`)
           }
         }
       }
     })
 
+    const orgId = getOrgId(session)
+    await logAudit("migration", { resultCount: results.length }, request, orgId, getUserId(session))
+
     return NextResponse.json({ success: true, results })
   } catch (error: any) {
-    console.error("Migration error:", error)
+    logger.error("migration_failed", { error: String(error) })
     return NextResponse.json({
       success: false,
       error: "Migration failed",

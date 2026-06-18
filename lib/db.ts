@@ -1,19 +1,30 @@
 import { Pool, ClientBase } from "pg"
 import { awsCredentialsProvider } from "@vercel/functions/oidc"
 import { Signer } from "@aws-sdk/rds-signer"
+import { logger } from "./log"
 
 let pool: Pool | null = null
 let signer: Signer | null = null
 
+function requireEnv(name: string): string {
+  const value = process.env[name]
+  if (!value) {
+    const msg = `Missing required environment variable: ${name}`
+    logger.error("env_missing", { variable: name })
+    throw new Error(msg)
+  }
+  return value
+}
+
 function getSigner(): Signer {
   if (!signer) {
     signer = new Signer({
-      hostname: process.env.PGHOST!,
+      hostname: requireEnv("PGHOST"),
       port: Number(process.env.PGPORT) || 5432,
-      username: process.env.PGUSER!,
+      username: requireEnv("PGUSER"),
       region: process.env.AWS_REGION || "us-east-1",
       credentials: awsCredentialsProvider({
-        roleArn: process.env.AWS_ROLE_ARN!,
+        roleArn: requireEnv("AWS_ROLE_ARN"),
         clientConfig: { region: process.env.AWS_REGION || "us-east-1" },
       }),
     })
@@ -25,7 +36,8 @@ function getPassword(): () => Promise<string> {
   if (process.env.VERCEL_OIDC_TOKEN) {
     return () => getSigner().getAuthToken()
   }
-  return () => Promise.resolve(process.env.PGPASSWORD || "")
+  const localPassword = process.env.PGPASSWORD || ""
+  return () => Promise.resolve(localPassword)
 }
 
 function getPool(): Pool {

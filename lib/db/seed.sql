@@ -37,14 +37,15 @@ VALUES
 ON CONFLICT (org_id, log_date, metric_type) DO NOTHING;
 
 -- 3. Seed admin user
-INSERT INTO camp_users (id, org_id, email, password_hash, name, role)
+INSERT INTO camp_users (id, org_id, email, password_hash, name, role, must_change_password)
 VALUES (
   gen_random_uuid(),
   '11111111-1111-1111-1111-111111111111',
   'admin@ona-analytics.com',
   '$2b$12$LJ3m4ys3Lg3YOCwLTI3tYe3VqZ5wYKGzKmR0GqBnKLMnXKJx8jQy',
   'Admin User',
-  'admin'
+  'admin',
+  TRUE
 )
 ON CONFLICT (email) DO NOTHING;
 

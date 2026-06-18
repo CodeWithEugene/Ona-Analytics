@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
-import { requireAuth, unauthorized, getUserId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, getUserId, getOrgId, logAudit } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+import { logger } from "@/lib/log"
 
 const passwordLimiter = createRateLimiter({ interval: 60000, maxRequests: 5 })
 
@@ -70,9 +71,12 @@ export async function POST(request: Request) {
       [newHash, userId]
     )
 
+    const orgId = getOrgId(session)
+    await logAudit("password_change", { userId }, request, orgId, userId)
+
     return NextResponse.json({ success: true, message: "Password updated" })
   } catch (error: any) {
-    console.error("Password change error:", error)
+    logger.error("password_change_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Password change failed" },
       { status: 500 }

@@ -27,6 +27,7 @@ const navItems = [
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
+  const mustChangePassword = (session?.user as any)?.mustChangePassword
   const orgId = (session?.user as any)?.orgId
   const userEmail = session?.user?.email
   const userName = session?.user?.name || "Camp Manager"
@@ -57,6 +58,13 @@ export default function DashboardPage() {
   const showToast = useCallback((message: string, type: "success" | "error" = "success") => {
     setToast({ message, type })
   }, [])
+
+  useEffect(() => {
+    if (mustChangePassword) {
+      setActiveTab("settings")
+      showToast("Please change your password before continuing.", "error")
+    }
+  }, [mustChangePassword, showToast])
 
   const fetchDashboard = useCallback(async () => {
     if (!orgId) return

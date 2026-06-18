@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { query } from "@/lib/db"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+import { logger } from "@/lib/log"
+import { logAudit } from "@/lib/api-auth"
 
 const registerLimiter = createRateLimiter({ interval: 60000, maxRequests: 3 })
 
@@ -86,18 +88,22 @@ export async function POST(request: Request) {
     const orgId = orgResult[0].id
 
     const passwordHash = await bcrypt.hash(password, 12)
-    await query(
+    const userResult = await query<{ id: string }>(
       `INSERT INTO camp_users (org_id, email, password_hash, name, role)
-       VALUES ($1, $2, $3, $4, 'manager')`,
+       VALUES ($1, $2, $3, $4, 'manager')
+       RETURNING id`,
       [orgId, email, passwordHash, name]
     )
+    const userId = userResult[0].id
+
+    await logAudit("registration", { email, campName, location }, request, orgId, userId)
 
     return NextResponse.json({
       success: true,
       message: "Account created. You can now sign in.",
     })
   } catch (error: any) {
-    console.error("Registration error:", error)
+    logger.error("register_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Registration failed" },
       { status: 500 }

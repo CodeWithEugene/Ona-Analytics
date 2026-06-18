@@ -1,6 +1,7 @@
 import { querySingle } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
+import { logger } from "@/lib/log"
 
 export async function GET(request: Request) {
   try {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ data: org })
   } catch (error) {
-    console.error("Error fetching org:", error)
+    logger.error("org_fetch_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Failed to fetch organization data" },
       { status: 500 }

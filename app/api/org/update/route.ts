@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 import { query } from "@/lib/db"
-import { requireAuth, unauthorized, forbidden, getOrgId, getUserId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, forbidden, getOrgId, getUserId, logAudit } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+import { logger } from "@/lib/log"
 
 const orgUpdateLimiter = createRateLimiter({ interval: 60000, maxRequests: 10 })
 
@@ -80,9 +81,11 @@ export async function POST(request: Request) {
       values
     )
 
+    await logAudit("org_update", { orgId, fields: updates.map(u => u.split(" = ")[0]) }, request, sessionOrgId, getUserId(session))
+
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error("Org update error:", error)
+    logger.error("org_update_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Update failed" },
       { status: 500 }

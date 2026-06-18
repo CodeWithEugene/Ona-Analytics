@@ -1,7 +1,8 @@
 import { query, withConnection } from "@/lib/db"
 import { NextResponse } from "next/server"
-import { requireAuth, unauthorized, forbidden, getOrgId, getUserId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, forbidden, getOrgId, getUserId, logAudit } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+import { logger } from "@/lib/log"
 
 const generateLimiter = createRateLimiter({ interval: 60000, maxRequests: 10 })
 
@@ -96,13 +97,15 @@ export async function POST(request: Request) {
       }
     })
 
+    await logAudit("procurement_generated", { itemCount: items.length, orgId, peakPrediction }, request, orgId, getUserId(session))
+
     return NextResponse.json({
       success: true,
       message: `Generated ${items.length} procurement recommendations`,
       items,
     })
   } catch (error) {
-    console.error("Error generating procurement:", error)
+    logger.error("procurement_generate_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Failed to generate procurement recommendations" },
       { status: 500 }
