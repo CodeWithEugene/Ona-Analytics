@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { query } from "@/lib/db"
-import { requireAuth, unauthorized, forbidden, getOrgId } from "@/lib/api-auth"
+import { requireAuth, unauthorized, forbidden, getOrgId, getUserId } from "@/lib/api-auth"
+import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+
+const orgUpdateLimiter = createRateLimiter({ interval: 60000, maxRequests: 10 })
 
 const VALID_TIMEZONES = [
   "Africa/Nairobi",
@@ -16,6 +19,14 @@ export async function POST(request: Request) {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+
+    const rl = orgUpdateLimiter(rateLimitKey(request, `org:${getUserId(session)}`))
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429, headers: rateLimitHeaders(rl, 10) }
+      )
+    }
 
     const sessionOrgId = getOrgId(session)
     const body = await request.json().catch(() => null)

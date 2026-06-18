@@ -5,6 +5,7 @@ import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { requireAuth, unauthorized, getOrgId, getUserId } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+import { logger } from "@/lib/log"
 
 const agentLimiter = createRateLimiter({ interval: 60000, maxRequests: 10 })
 
@@ -238,7 +239,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ response, toolCalls: allToolCalls })
   } catch (error: any) {
-    console.error("Agent error:", error)
+    logger.error("agent_request_failed", { error: String(error) })
     return NextResponse.json(
       { error: "Agent request failed" },
       { status: 500 }
