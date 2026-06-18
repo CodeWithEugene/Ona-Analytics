@@ -46,165 +46,153 @@ export async function POST(request: Request) {
       )
     }
 
-    let messages: any[] = [{ role: "user", content: message }]
-    let finalResult = ""
-    let allToolCalls: any[] = []
-
-    for (let step = 0; step < 5; step++) {
-      const result = await generateText({
-        model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
-        system: SYSTEM_PROMPT,
-        messages,
-        tools: {
-        query_demand_data: dynamicTool({
-          description:
-            "Query occupancy demand data from the database. Accepts a SELECT SQL query against demand_logs.",
-          inputSchema: zodSchema(
-            z.object({
-              sql: z
-                .string()
-                .describe(
-                  "SELECT SQL query against demand_logs table. Must be SELECT only."
-                ),
-            })
-          ),
-          execute: async (input: unknown) => {
-            const { sql } = input as { sql: string }
-            const normalized = sql.trim().toUpperCase()
-            if (!normalized.startsWith("SELECT")) {
-              return JSON.stringify({
-                success: false,
-                error: "Only SELECT queries are permitted",
-              })
-            }
-            try {
-              const rows = await query(sql)
-              return JSON.stringify({ success: true, data: rows })
-            } catch (err: any) {
-              return JSON.stringify({ success: false, error: err.message })
-            }
-          },
-        }),
-
-        search_context_knowledge: dynamicTool({
-          description:
-            "Search camp SOPs and logistics knowledge. Uses pgvector cosine similarity and text search. Returns relevant procedures.",
-          inputSchema: zodSchema(
-            z.object({
-              search_term: z
-                .string()
-                .describe("What logistics info to search for"),
-            })
-          ),
-          execute: async (input: unknown) => {
-            const { search_term } = input as { search_term: string }
-            try {
-              const rows = await query<any>(
-                `SELECT content,
-                        ts_rank(to_tsvector('english', content), plainto_tsquery('english', $2)) AS rank
-                 FROM context_knowledge
-                 WHERE org_id = $1
-                   AND to_tsvector('english', content) @@ plainto_tsquery('english', $2)
-                 ORDER BY rank DESC
-                 LIMIT 5`,
-                [orgId, search_term]
-              )
-              if (rows.length === 0) {
-                const fallbackRows = await query<any>(
-                  `SELECT content FROM context_knowledge
-                   WHERE org_id = $1
-                   AND content ILIKE $2
-                   LIMIT 3`,
-                  [orgId, `%${search_term}%`]
-                )
-                return JSON.stringify({
-                  success: true,
-                  results: fallbackRows.map((r: any) => ({
-                    content: r.content,
-                  })),
-                })
-              }
-              return JSON.stringify({
-                success: true,
-                results: rows.map((r: any) => ({ content: r.content })),
-              })
-            } catch (err: any) {
-              return JSON.stringify({ success: false, error: err.message })
-            }
-          },
-        }),
-
-        generate_procurement: dynamicTool({
-          description:
-            "Generate procurement recommendations based on demand spike data. Call when you confirm a significant occupancy increase.",
-          inputSchema: zodSchema(
-            z.object({
-              items: z.array(
-                z.object({
-                  item_name: z.string(),
-                  required_amount: z.number(),
-                  unit: z.string(),
-                  urgency: z.enum(["high", "medium", "low"]),
-                  reason: z.string(),
-                })
+    const result = await generateText({
+      model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
+      system: SYSTEM_PROMPT,
+      maxSteps: 3,
+      maxRetries: 2,
+      messages: [{ role: "user", content: message }],
+      tools: {
+      query_demand_data: dynamicTool({
+        description:
+          "Query occupancy demand data from the database. Accepts a SELECT SQL query against demand_logs.",
+        inputSchema: zodSchema(
+          z.object({
+            sql: z
+              .string()
+              .describe(
+                "SELECT SQL query against demand_logs table. Must be SELECT only."
               ),
+          })
+        ),
+        execute: async (input: unknown) => {
+          const { sql } = input as { sql: string }
+          const normalized = sql.trim().toUpperCase()
+          if (!normalized.startsWith("SELECT")) {
+            return JSON.stringify({
+              success: false,
+              error: "Only SELECT queries are permitted",
             })
-          ),
-          execute: async (input: unknown) => {
-            const { items } = input as {
-              items: Array<{
-                item_name: string
-                required_amount: number
-                unit: string
-                urgency: "high" | "medium" | "low"
-                reason: string
-              }>
-            }
-            try {
-              for (const item of items) {
-                await query(
-                  `INSERT INTO procurement_items (org_id, item_name, required_amount, unit, urgency, reason)
-                   VALUES ($1, $2, $3, $4, $5, $6)`,
-                  [
-                    orgId,
-                    item.item_name,
-                    item.required_amount,
-                    item.unit,
-                    item.urgency,
-                    item.reason,
-                  ]
-                )
-              }
+          }
+          try {
+            const rows = await query(sql)
+            return JSON.stringify({ success: true, data: rows })
+          } catch (err: any) {
+            return JSON.stringify({ success: false, error: err.message })
+          }
+        },
+      }),
+
+      search_context_knowledge: dynamicTool({
+        description:
+          "Search camp SOPs and logistics knowledge. Uses pgvector cosine similarity and text search. Returns relevant procedures.",
+        inputSchema: zodSchema(
+          z.object({
+            search_term: z
+              .string()
+              .describe("What logistics info to search for"),
+          })
+        ),
+        execute: async (input: unknown) => {
+          const { search_term } = input as { search_term: string }
+          try {
+            const rows = await query<any>(
+              `SELECT content,
+                      ts_rank(to_tsvector('english', content), plainto_tsquery('english', $2)) AS rank
+               FROM context_knowledge
+               WHERE org_id = $1
+                 AND to_tsvector('english', content) @@ plainto_tsquery('english', $2)
+               ORDER BY rank DESC
+               LIMIT 5`,
+              [orgId, search_term]
+            )
+            if (rows.length === 0) {
+              const fallbackRows = await query<any>(
+                `SELECT content FROM context_knowledge
+                 WHERE org_id = $1
+                 AND content ILIKE $2
+                 LIMIT 3`,
+                [orgId, `%${search_term}%`]
+              )
               return JSON.stringify({
                 success: true,
-                count: items.length,
-                message: `Generated ${items.length} procurement recommendations`,
+                results: fallbackRows.map((r: any) => ({
+                  content: r.content,
+                })),
               })
-            } catch (err: any) {
-              return JSON.stringify({ success: false, error: err.message })
             }
-          },
-        }),
-      },
-    })
+            return JSON.stringify({
+              success: true,
+              results: rows.map((r: any) => ({ content: r.content })),
+            })
+          } catch (err: any) {
+            return JSON.stringify({ success: false, error: err.message })
+          }
+        },
+      }),
 
-      if (result.toolCalls && result.toolCalls.length > 0) {
-        allToolCalls.push(
-          ...result.toolCalls.map((tc: any) => ({
-            name: tc.toolName,
-            args: tc.args || tc.input || tc.arguments,
-          }))
-        )
-        messages = result.response.messages
-      } else {
-        finalResult = result.text
-        break
-      }
-    }
+      generate_procurement: dynamicTool({
+        description:
+          "Generate procurement recommendations based on demand spike data. Call when you confirm a significant occupancy increase.",
+        inputSchema: zodSchema(
+          z.object({
+            items: z.array(
+              z.object({
+                item_name: z.string(),
+                required_amount: z.number(),
+                unit: z.string(),
+                urgency: z.enum(["high", "medium", "low"]),
+                reason: z.string(),
+              })
+            ),
+          })
+        ),
+        execute: async (input: unknown) => {
+          const { items } = input as {
+            items: Array<{
+              item_name: string
+              required_amount: number
+              unit: string
+              urgency: "high" | "medium" | "low"
+              reason: string
+            }>
+          }
+          try {
+            for (const item of items) {
+              await query(
+                `INSERT INTO procurement_items (org_id, item_name, required_amount, unit, urgency, reason)
+                 VALUES ($1, $2, $3, $4, $5, $6)`,
+                [
+                  orgId,
+                  item.item_name,
+                  item.required_amount,
+                  item.unit,
+                  item.urgency,
+                  item.reason,
+                ]
+              )
+            }
+            return JSON.stringify({
+              success: true,
+              count: items.length,
+              message: `Generated ${items.length} procurement recommendations`,
+            })
+          } catch (err: any) {
+            return JSON.stringify({ success: false, error: err.message })
+          }
+        },
+      }),
+    },
+  })
+
+    const toolCalls = (result.toolCalls || []).map((tc: any) => ({
+      name: tc.toolName,
+      args: tc.args || tc.input || tc.arguments,
+    }))
 
     return NextResponse.json({
-      response: finalResult,
-      toolCalls: allToolCalls,
+      response: result.text || "Analysis complete.",
+      toolCalls,
     })
   } catch (error: any) {
     console.error("Agent error:", error)
