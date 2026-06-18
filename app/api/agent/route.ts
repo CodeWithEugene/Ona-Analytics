@@ -49,7 +49,6 @@ export async function POST(request: Request) {
     const result = await generateText({
       model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
       system: SYSTEM_PROMPT,
-      maxSteps: 3,
       maxRetries: 2,
       messages: [{ role: "user", content: message }],
       tools: {
@@ -190,8 +189,14 @@ export async function POST(request: Request) {
       args: tc.args || tc.input || tc.arguments,
     }))
 
+    const response = result.text || (
+      toolCalls.length > 0
+        ? `Queried ${toolCalls.map(t => t.name).join(', ')}. Check the dashboard for updated data.`
+        : "I'm not sure how to answer that. Try asking about occupancy, forecasts, or procurement."
+    )
+
     return NextResponse.json({
-      response: result.text || "Analysis complete.",
+      response,
       toolCalls,
     })
   } catch (error: any) {
