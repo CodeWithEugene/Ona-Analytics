@@ -26,6 +26,29 @@ const navItems = [
   { id: "settings", icon: Settings, label: "Settings" },
 ]
 
+const ONBOARDING_STEPS = [
+  {
+    title: "Safari Operations Command Center",
+    description: "Welcome to Ona Analytics. This command center coordinates remote safari camp demand and supply. Let's walk through how to predict occupancy surges and optimize isolated logistics.",
+    target: "header",
+  },
+  {
+    title: "14-Day Demand Forecast",
+    description: "This radar displays your camp's predicted occupancy (dotted lines) versus actual check-ins (solid lines) computed by our serverless demand intelligence model. Watch for high-demand spikes to prepare kitchen supplies and staff.",
+    target: "chart",
+  },
+  {
+    title: "Automated Procurement Recommendations",
+    description: "Here, our AI estimates the diesel, fresh produce, dry ingredients, and linen supplies required to sustain the predicted surges, proposing bulk orders that sync with the next isolated truck schedule.",
+    target: "procurement_view",
+  },
+  {
+    title: "Ona Intelligent Field Agent",
+    description: "Meet the Ona AI Agent. It is trained on camp operation logs, standard operating procedures, and local supplier lead times. Ask it to generate orders, assess inventory risk, or answer questions directly.",
+    target: "agent",
+  },
+]
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const mustChangePassword = (session?.user as any)?.mustChangePassword
@@ -39,6 +62,19 @@ export default function DashboardPage() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [onboardingStep, setOnboardingStep] = useState(0)
+  const onboardingBtnRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (mounted) {
+      const completed = localStorage.getItem("ona_onboarding_completed") === "true"
+      if (!completed) {
+        setShowOnboarding(true)
+      }
+    }
+  }, [mounted])
 
   const [activeTab, setActiveTab] = useState("overview")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -72,6 +108,31 @@ export default function DashboardPage() {
       showToast("Please change your password before continuing.", "error")
     }
   }, [mustChangePassword, showToast])
+
+  useEffect(() => {
+    if (!showOnboarding) return
+
+    const step = ONBOARDING_STEPS[onboardingStep]
+    if (!step) return
+
+    if (step.target === "procurement_view") {
+      setActiveTab("procurement")
+    } else {
+      setActiveTab("overview")
+    }
+
+    if (step.target === "agent") {
+      setChatOpen(true)
+    } else {
+      setChatOpen(false)
+    }
+  }, [onboardingStep, showOnboarding])
+
+  useEffect(() => {
+    if (showOnboarding) {
+      onboardingBtnRef.current?.focus()
+    }
+  }, [onboardingStep, showOnboarding])
 
   const fetchDashboard = useCallback(async () => {
     if (!orgId) return
@@ -257,7 +318,11 @@ export default function DashboardPage() {
           <div className="p-3 border-t border-border space-y-1">
             <button
               onClick={() => setChatOpen(!chatOpen)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground/50 hover:text-foreground hover:bg-[#1C1816]/5 dark:hover:bg-white/5 transition-all duration-200"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-500 ${
+                showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "agent"
+                  ? "ring-2 ring-[#E67E22] ring-offset-2 dark:ring-offset-card scale-[1.03] shadow-[0_0_15px_rgba(230,126,34,0.35)] text-[#E67E22] bg-[#E67E22]/10"
+                  : "text-foreground/50 hover:text-foreground hover:bg-[#1C1816]/5 dark:hover:bg-white/5"
+              }`}
             >
               <Sparkles className="w-4 h-4 text-[#E67E22]" />
               <span>Ona Agent</span>
@@ -283,7 +348,7 @@ export default function DashboardPage() {
                 <ChevronDown className="w-3 h-3" />
               </button>
               {userMenuOpen && (
-                <div className="absolute bottom-full left-3 right-3 mb-1 bg-popover rounded-xl ring-1 ring-border overflow-hidden shadow-2xl">
+                <div className="absolute bottom-full left-3 right-3 mb-1 bg-[#F4EDE2] dark:bg-[#0A0A0A] border border-border z-50 rounded-xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-1 duration-200">
                   <button
                     onClick={() => { setUserMenuOpen(false); setActiveTab("settings") }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
@@ -297,6 +362,18 @@ export default function DashboardPage() {
                   >
                     <Settings className="w-3.5 h-3.5" />
                     Settings
+                  </button>
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false)
+                      setOnboardingStep(0)
+                      setShowOnboarding(true)
+                      localStorage.setItem("ona_onboarding_completed", "false")
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 text-[#E67E22]" />
+                    Restart Tour
                   </button>
                   <div className="border-t border-border" />
                   <button
@@ -315,7 +392,11 @@ export default function DashboardPage() {
 
       <main className="flex-1 min-h-screen p-6 pt-20 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8 flex items-center justify-between">
+          <div className={`mb-8 flex items-center justify-between p-4 rounded-2xl transition-all duration-500 ${
+            showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "header"
+              ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] bg-[#E67E22]/5 shadow-[0_0_25px_rgba(230,126,34,0.25)] scale-[1.01]"
+              : ""
+          }`}>
             <div>
               <h1 className="text-2xl font-display italic mb-1">{orgData?.name || "Operations Command Center"}</h1>
               <p className="text-sm text-foreground/40">Real-time demand intelligence</p>
@@ -330,7 +411,11 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setChatOpen(!chatOpen)}
-                className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#E67E22]/10 text-[#E67E22] text-sm ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all"
+                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#E67E22]/10 text-[#E67E22] text-sm ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all duration-500 ${
+                  showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "agent"
+                    ? "ring-2 ring-[#E67E22] ring-offset-2 dark:ring-offset-[#0A0A0A] scale-[1.03] shadow-[0_0_15px_rgba(230,126,34,0.35)]"
+                    : ""
+                }`}
               >
                 <Sparkles className="w-4 h-4" />
                 Ona Agent
@@ -346,16 +431,23 @@ export default function DashboardPage() {
               peak={peak}
               change={change}
               onRefresh={fetchDashboard}
+              activeOnboardingTarget={showOnboarding ? ONBOARDING_STEPS[onboardingStep]?.target : undefined}
             />
           )}
           {activeTab === "demand" && <Demand demandData={demandData} loading={loading} />}
           {activeTab === "procurement" && (
-            <ProcurementView
-              procurementData={procurementData}
-              loading={loading}
-              onGenerate={handleGenerateProcurement}
-              onFulfill={handleFulfillItem}
-            />
+            <div className={`transition-all duration-500 rounded-2xl ${
+              showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "procurement_view"
+                ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] scale-[1.01] shadow-[0_0_25px_rgba(230,126,34,0.25)] bg-[#E67E22]/5"
+                : ""
+            }`}>
+              <ProcurementView
+                procurementData={procurementData}
+                loading={loading}
+                onGenerate={handleGenerateProcurement}
+                onFulfill={handleFulfillItem}
+              />
+            </div>
           )}
           {activeTab === "forecasting" && <Forecasting demandData={demandData} loading={loading} />}
           {activeTab === "settings" && (
@@ -371,7 +463,11 @@ export default function DashboardPage() {
       </main>
 
       {chatOpen && (
-        <div className="fixed inset-y-0 right-0 z-50 w-96 bg-card border-l border-border flex flex-col shadow-2xl">
+        <div className={`fixed inset-y-0 right-0 z-50 w-96 bg-card border-l border-border flex flex-col shadow-2xl transition-all duration-500 ${
+          showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "agent"
+            ? "ring-2 ring-[#E67E22] ring-inset"
+            : ""
+        }`}>
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div className="flex items-center gap-3">
               <Sparkles className="w-5 h-5 text-[#E67E22]" />
@@ -433,6 +529,79 @@ export default function DashboardPage() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {showOnboarding && ONBOARDING_STEPS[onboardingStep] && (
+        <div 
+          role="dialog" 
+          aria-labelledby="onboarding-title" 
+          className="fixed bottom-6 right-6 z-50 max-w-sm w-[calc(100vw-3rem)] md:w-96 bg-[#F4EDE2] dark:bg-[#0A0A0A] border border-[#D6CFC5] dark:border-white/10 rounded-2xl shadow-2xl p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_0_30px_rgba(230,126,34,0.15)] text-foreground"
+        >
+          <div className="flex items-center justify-between">
+            <h2 id="onboarding-title" className="font-display italic text-xl text-[#1C1816] dark:text-white">
+              {ONBOARDING_STEPS[onboardingStep].title}
+            </h2>
+            <button 
+              onClick={() => {
+                setShowOnboarding(false)
+                localStorage.setItem("ona_onboarding_completed", "true")
+              }}
+              className="p-1 hover:bg-foreground/5 rounded text-[#1C1816]/40 dark:text-white/40 hover:text-[#1C1816] dark:hover:text-white transition-colors"
+              aria-label="Close onboarding tour"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-sm text-[#1C1816]/75 dark:text-white/70 leading-relaxed font-body">
+            {ONBOARDING_STEPS[onboardingStep].description}
+          </p>
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center gap-1.5" aria-label={`Step ${onboardingStep + 1} of ${ONBOARDING_STEPS.length}`}>
+              {ONBOARDING_STEPS.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    i === onboardingStep ? "bg-[#E67E22] w-4" : "bg-[#D6CFC5] dark:bg-white/20"
+                  }`} 
+                />
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              {onboardingStep > 0 ? (
+                <button
+                  onClick={() => setOnboardingStep(prev => prev - 1)}
+                  className="text-xs text-[#1C1816]/50 dark:text-white/40 hover:text-[#1C1816] dark:hover:text-white font-medium px-3 py-1.5 rounded-full transition-all"
+                >
+                  Back
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setShowOnboarding(false)
+                    localStorage.setItem("ona_onboarding_completed", "true")
+                  }}
+                  className="text-xs text-[#1C1816]/40 dark:text-white/30 hover:text-[#1C1816] dark:hover:text-white font-medium px-3 py-1.5 rounded-full transition-all"
+                >
+                  Skip
+                </button>
+              )}
+              <button
+                ref={onboardingBtnRef}
+                onClick={() => {
+                  if (onboardingStep < ONBOARDING_STEPS.length - 1) {
+                    setOnboardingStep(prev => prev + 1)
+                  } else {
+                    setShowOnboarding(false)
+                    localStorage.setItem("ona_onboarding_completed", "true")
+                  }
+                }}
+                className="text-xs bg-[#E67E22]/10 text-[#E67E22] ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 px-4 py-1.5 rounded-full font-semibold transition-all"
+              >
+                {onboardingStep === ONBOARDING_STEPS.length - 1 ? "Finish" : "Next"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

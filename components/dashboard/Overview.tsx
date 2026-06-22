@@ -13,10 +13,11 @@ import {
 } from "recharts"
 import { Card } from "./Card"
 
-export function Overview({ demandData, procurementData, loading, occupancy, peak, change, onRefresh }: {
+export function Overview({ demandData, procurementData, loading, occupancy, peak, change, onRefresh, activeOnboardingTarget }: {
   demandData: any[]; procurementData: any[]; loading: boolean;
   occupancy: number | null; peak: number | null; change: number | null;
   onRefresh: () => void;
+  activeOnboardingTarget?: string;
 }) {
   const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -91,7 +92,11 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
 
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <Card>
+          <Card className={`transition-all duration-500 ${
+            activeOnboardingTarget === "chart"
+              ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] scale-[1.01] shadow-[0_0_25px_rgba(230,126,34,0.25)] bg-[#E67E22]/5"
+              : ""
+          }`}>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-display italic">14-Day Demand Forecast</h3>
               <button onClick={onRefresh} className="text-xs text-foreground/30 hover:text-foreground p-1">

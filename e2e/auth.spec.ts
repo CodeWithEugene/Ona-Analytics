@@ -29,6 +29,26 @@ test("full end-to-end registration, login, dashboard, and logout flow", async ({
   // Wait for transition to Dashboard
   await expect(page).toHaveURL(/\/dashboard/, { timeout: 6000 })
 
+  // Verify Onboarding Walkthrough is visible on first login
+  await expect(page.locator("#onboarding-title")).toContainText("Command Center")
+  
+  // Navigate through the tour steps
+  // Step 1 -> Step 2
+  await page.click("button:has-text('Next')")
+  await expect(page.locator("#onboarding-title")).toContainText("14-Day Demand Forecast")
+  
+  // Step 2 -> Step 3
+  await page.click("button:has-text('Next')")
+  await expect(page.locator("#onboarding-title")).toContainText("Automated Procurement")
+  
+  // Step 3 -> Step 4
+  await page.click("button:has-text('Next')")
+  await expect(page.locator("#onboarding-title")).toContainText("Field Agent")
+  
+  // Finish the tour
+  await page.click("button:has-text('Finish')")
+  await expect(page.locator("#onboarding-title")).not.toBeVisible()
+
   // 3. Verify Dashboard content
   // Check that the camp name is displayed in the sidebar/main header
   await expect(page.locator("aside")).toContainText(campName)
@@ -37,8 +57,17 @@ test("full end-to-end registration, login, dashboard, and logout flow", async ({
   // Verify Dashboard elements like widgets and "Ona Agent" button are present
   await expect(page.getByRole("button", { name: /Ona Agent/i }).first()).toBeVisible()
 
-  // 4. Logout
+  // 4. Test Restart Tour
   // Click user profile menu to expand it
+  await page.click("button:has-text('Chalo Omondi')")
+  await page.click("button:has-text('Restart Tour')")
+  await expect(page.locator("#onboarding-title")).toContainText("Command Center")
+  
+  // Skip the restarted tour
+  await page.click("button:has-text('Skip')")
+  await expect(page.locator("#onboarding-title")).not.toBeVisible()
+
+  // Click user profile menu to expand it again
   await page.click("button:has-text('Chalo Omondi')")
   
   // Click Sign Out
