@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import crypto from "crypto"
-import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
 import { logger } from "@/lib/log"
@@ -35,7 +34,7 @@ export async function POST(request: Request) {
 
     if (user) {
       const token = crypto.randomBytes(32).toString("hex")
-      const tokenHash = await bcrypt.hash(token, 10)
+      const tokenHash = crypto.createHash("sha256").update(token).digest("hex")
 
       // Expire in 1 hour
       await query(

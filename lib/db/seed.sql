@@ -42,7 +42,7 @@ VALUES (
   gen_random_uuid(),
   '11111111-1111-1111-1111-111111111111',
   'admin@ona-analytics.com',
-  '$2b$12$LJ3m4ys3Lg3YOCwLTI3tYe3VqZ5wYKGzKmR0GqBnKLMnXKJx8jQy',
+  '$2b$12$LJ3m4ys3Lg3YOCwLTI3tYe3VqZ5wYKGzKmR0GqBnKLMnXKJx8jQy.',
   'Admin User',
   'admin',
   TRUE
@@ -57,13 +57,13 @@ ON CONFLICT (email) DO NOTHING;
 -- 5. Procurement items
 INSERT INTO procurement_items (id, org_id, item_name, required_amount, unit, urgency, reason)
 SELECT * FROM (VALUES
-  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111', 'Fresh Produce', 40, 'kg', 'high',
+  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid, 'Fresh Produce', 40, 'kg', 'high',
    'Weekend surge to 95% occupancy requires +40kg additional fresh produce per SOP'),
-  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111', 'Gas Cylinders', 10, 'units', 'high',
+  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid, 'Gas Cylinders', 10, 'units', 'high',
    'Occupancy spike above 80% triggers 50% increase in propane supply per Gas SOP'),
-  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111', 'Linens & Bedding', 25, 'sets', 'medium',
+  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid, 'Linens & Bedding', 25, 'sets', 'medium',
    'Additional 25 linen sets needed for 3-set rotation at peak occupancy')
 ) AS v
 WHERE NOT EXISTS (
-  SELECT 1 FROM procurement_items WHERE org_id = '11111111-1111-1111-1111-111111111111'
+  SELECT 1 FROM procurement_items WHERE org_id = '11111111-1111-1111-1111-111111111111'::uuid
 );

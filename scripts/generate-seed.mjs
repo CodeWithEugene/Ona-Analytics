@@ -28,8 +28,8 @@ let sql = ""
 for (let i = 0; i < 4; i++) {
   const vec = makeVectorSQL(vectors[i])
   sql +=
-    "  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111',\n" +
-    "   " + JSON.stringify(contents[i]) + ",\n" +
+    "  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid,\n" +
+    "   '" + contents[i].replace(/'/g, "''") + "',\n" +
     vec +
     ")"
   if (i < 3) sql += ",\n\n"

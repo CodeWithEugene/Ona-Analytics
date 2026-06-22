@@ -1,9 +1,9 @@
-import { generateText, tool } from "ai"
+import { generateText, tool, embed } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
 import { z } from "zod"
 import { query } from "@/lib/db"
 import { NextResponse } from "next/server"
-import { requireAuth, unauthorized, getOrgId, getUserId, logAudit } from "@/lib/api-auth"
+import { requireAuth, unauthorized, forbidden, getOrgId, getUserId, logAudit } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
 import { logger } from "@/lib/log"
 
@@ -12,6 +12,17 @@ const agentLimiter = createRateLimiter({ interval: 60000, maxRequests: 10 })
 const nvidia = createOpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
   apiKey: process.env.NVIDIA_API_KEY,
+  fetch: async (url, options) => {
+    const urlString = typeof url === "string" ? url : (url as any).url || (url as any).href || ""
+    if (urlString.endsWith("/embeddings") && options?.body) {
+      try {
+        const body = JSON.parse(options.body as string)
+        body.input_type = "query"
+        options.body = JSON.stringify(body)
+      } catch {}
+    }
+    return fetch(url, options)
+  }
 })
 
 const SYSTEM_PROMPT = `You are Ona Agent, an autonomous operations analyst for remote safari camps and eco-lodges.
@@ -25,7 +36,7 @@ Query occupancy demand metrics from the database.
 Parameters: metric_type (e.g. 'occupancy_rate'), limit (number of records), days_back (history window).
 
 ### 2. search_context_knowledge
-Search the camp's Standard Operating Procedures (SOPs) using text similarity search.
+Search the camp's Standard Operating Procedures (SOPs) using semantic similarity search.
 
 ### 3. generate_procurement
 When a spike is detected, generate procurement recommendations and persist them.
@@ -58,15 +69,39 @@ async function queryDemandData(metricType: string, limit: number, daysBack: numb
 
 async function searchContext(searchTerm: string, orgId: string) {
   try {
+    let embeddingResult: number[]
+    try {
+      const res = await embed({
+        model: nvidia.embedding("nvidia/embed-qa-4"),
+        value: searchTerm,
+      })
+      embeddingResult = res.embedding
+    } catch {
+      // Fallback if embed-qa-4 fails/404s
+      const res = await embed({
+        model: nvidia.embedding("nvidia/nv-embedqa-e5-v5"),
+        value: searchTerm,
+      })
+      embeddingResult = res.embedding
+    }
+
+    let vector = embeddingResult
+    if (vector.length < 1536) {
+      const pad = new Array(1536 - vector.length).fill(0)
+      vector = vector.concat(pad)
+    } else if (vector.length > 1536) {
+      vector = vector.slice(0, 1536)
+    }
+
+    const vectorStr = `[${vector.join(",")}]`
     const rows = await query<any>(
       `SELECT content,
-              ts_rank(to_tsvector('english', content), plainto_tsquery('english', $2)) AS rank
+              embedding <=> $2::vector AS distance
        FROM context_knowledge
        WHERE org_id = $1
-         AND to_tsvector('english', content) @@ plainto_tsquery('english', $2)
-       ORDER BY rank DESC
+       ORDER BY distance ASC
        LIMIT 5`,
-      [orgId, searchTerm]
+      [orgId, vectorStr]
     )
     if (rows.length === 0) {
       const fallback = await query<any>(
@@ -96,45 +131,13 @@ async function generateProcurement(items: any[], orgId: string) {
   }
 }
 
-const TOOLS = {
-  query_demand_data: tool({
-    description: "Query occupancy demand metrics. Returns recent actual and predicted values.",
-    inputSchema: z.object({
-      metric_type: z.string().default("occupancy_rate").describe("The metric to query (e.g. occupancy_rate)"),
-      limit: z.number().default(10).describe("Number of records to return (max 100)"),
-      days_back: z.number().default(30).describe("How many days of history to look back (max 365)"),
-    }),
-  }),
-  search_context_knowledge: tool({
-    description: "Search camp SOPs and logistics knowledge. Uses full-text search. Returns relevant procedures.",
-    inputSchema: z.object({
-      search_term: z.string().describe("What logistics info to search for"),
-    }),
-  }),
-  generate_procurement: tool({
-    description: "Generate procurement recommendations based on demand spike data. Call when you confirm a significant occupancy increase.",
-    inputSchema: z.object({
-      items: z.array(
-        z.object({
-          item_name: z.string(),
-          required_amount: z.number(),
-          unit: z.string(),
-          urgency: z.enum(["high", "medium", "low"]),
-          reason: z.string(),
-        })
-      ),
-    }),
-  }),
-}
-
-function extractInput(tc: any): any {
-  return tc.input || tc.args || {}
-}
-
 export async function POST(request: Request) {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+    if (session.user.mustChangePassword) {
+      return forbidden("Password change required")
+    }
 
     const rl = agentLimiter(rateLimitKey(request, `agent:${getUserId(session)}`))
     if (!rl.success) {
@@ -150,92 +153,73 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json().catch(() => null)
-    if (!body) {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    if (!body || !body.message || typeof body.message !== "string") {
+      return NextResponse.json({ error: "Invalid message" }, { status: 400 })
     }
 
-    const { message } = body
-
-    if (!message || typeof message !== "string") {
-      return NextResponse.json({ error: "Message is required" }, { status: 400 })
-    }
-
-    if (message.length > 4000) {
+    if (body.message.length > 4000) {
       return NextResponse.json({ error: "Message too long" }, { status: 413 })
     }
 
-    let messages: any[] = [{ role: "user", content: message }]
-    let finalText = ""
-    let allToolCalls: any[] = []
+    const messages: any[] = [{ role: "user", content: body.message }]
 
-    for (let step = 0; step < 5; step++) {
-      const result = await generateText({
-        model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
-        system: SYSTEM_PROMPT,
-        maxRetries: 2,
-        messages,
-        tools: TOOLS,
-      })
-
-      if (result.toolCalls && result.toolCalls.length > 0) {
-        for (const tc of result.toolCalls) {
-          const tcArgs = extractInput(tc)
-          allToolCalls.push({ name: tc.toolName, args: tcArgs })
-
-          let toolResult: any
-          if (tc.toolName === "query_demand_data") {
-            toolResult = await queryDemandData(
-              tcArgs.metric_type || "occupancy_rate",
-              tcArgs.limit || 10,
-              tcArgs.days_back || 30,
-              orgId
-            )
-          } else if (tc.toolName === "search_context_knowledge") {
-            toolResult = await searchContext(tcArgs.search_term, orgId)
-          } else if (tc.toolName === "generate_procurement") {
-            toolResult = await generateProcurement(tcArgs.items, orgId)
-            if (toolResult.success) {
-              const userId = getUserId(session)
-              await logAudit("agent_procurement_generated", { itemCount: toolResult.count, items: tcArgs.items }, request, orgId, userId).catch(() => {})
-            }
+    const tools = {
+      query_demand_data: tool({
+        description: "Query occupancy demand metrics. Returns recent actual and predicted values.",
+        inputSchema: z.object({
+          metric_type: z.string().default("occupancy_rate"),
+          limit: z.number().default(10),
+          days_back: z.number().default(30),
+        }),
+        execute: async (args) => queryDemandData(args.metric_type, args.limit, args.days_back, orgId),
+      }),
+      search_context_knowledge: tool({
+        description: "Search camp SOPs and logistics knowledge using semantic similarity search.",
+        inputSchema: z.object({
+          search_term: z.string(),
+        }),
+        execute: async (args) => searchContext(args.search_term, orgId),
+      }),
+      generate_procurement: tool({
+        description: "Generate procurement recommendations. Call when significant occupancy increase is confirmed.",
+        inputSchema: z.object({
+          items: z.array(z.object({
+            item_name: z.string(),
+            required_amount: z.number(),
+            unit: z.string(),
+            urgency: z.enum(["high", "medium", "low"]),
+            reason: z.string(),
+          })),
+        }),
+        execute: async (args) => {
+          const result = await generateProcurement(args.items, orgId)
+          if (result.success) {
+            await logAudit("agent_procurement_generated", { itemCount: result.count, items: args.items }, request, orgId, getUserId(session)).catch(() => {})
           }
-
-          messages.push({
-            role: "assistant",
-            content: [{ type: "tool-call", toolCallId: tc.toolCallId, toolName: tc.toolName, input: tcArgs }],
-          })
-          messages.push({
-            role: "tool",
-            content: [{ type: "tool-result", toolCallId: tc.toolCallId, toolName: tc.toolName, output: { type: "text" as const, value: JSON.stringify(toolResult) } }],
-          })
-        }
-      } else {
-        finalText = result.text
-        break
-      }
+          return result
+        },
+      }),
     }
 
-    if (!finalText && allToolCalls.length > 0) {
-      try {
-        const synthesisResult = await generateText({
-          model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
-          system: SYSTEM_PROMPT,
-          maxRetries: 1,
-          messages,
-        })
-        finalText = synthesisResult.text
-      } catch {
-        finalText = "Analysis complete. Check the dashboard for updated data."
-      }
-    }
+    const result = await generateText({
+      model: nvidia("nvidia/nemotron-3-ultra-550b-a55b"),
+      system: SYSTEM_PROMPT,
+      messages,
+      tools,
+      maxSteps: 5,
+    } as any)
 
-    const response = finalText || "Analysis complete. Check the dashboard for updated data."
+    const allToolCalls = (result.steps || []).flatMap(step =>
+      (step.toolCalls || []).map((tc: any) => ({ name: tc.toolName, args: tc.args }))
+    )
+
+    const response = result.text || "Analysis complete. Check the dashboard for updated data."
 
     try {
       await query(
         `INSERT INTO agent_conversations (org_id, user_message, agent_response, tool_calls)
          VALUES ($1, $2, $3, $4)`,
-        [orgId, message, response, JSON.stringify(allToolCalls)]
+        [orgId, body.message, response, JSON.stringify(allToolCalls)]
       )
     } catch (err) {
       logger.error("conversation_log_failed", { error: String(err) })
@@ -244,9 +228,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ response, toolCalls: allToolCalls })
   } catch (error: any) {
     logger.error("agent_request_failed", { error: String(error) })
-    return NextResponse.json(
-      { error: "Agent request failed" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Agent request failed" }, { status: 500 })
   }
 }

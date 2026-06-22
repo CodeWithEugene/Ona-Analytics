@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import crypto from "crypto"
 import bcrypt from "bcryptjs"
 import { query, querySingle } from "@/lib/db"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
@@ -37,30 +38,16 @@ export async function POST(request: Request) {
       )
     }
 
-    // Find all valid, unused tokens
-    const tokens = await query<any>(
-      `SELECT id, user_id, token_hash, expires_at
+    // Calculate SHA-256 hash of the received token
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex")
+
+    // Lookup token directly in the database
+    const matchedToken = await querySingle<any>(
+      `SELECT id, user_id, expires_at
        FROM password_reset_tokens
-       WHERE used = FALSE AND expires_at > NOW()
-       ORDER BY created_at DESC`
+       WHERE token_hash = $1 AND used = FALSE AND expires_at > NOW()`,
+      [tokenHash]
     )
-
-    if (tokens.length === 0) {
-      return NextResponse.json(
-        { error: "Invalid or expired reset token" },
-        { status: 400 }
-      )
-    }
-
-    // Find matching token
-    let matchedToken: any = null
-    for (const t of tokens) {
-      const isValid = await bcrypt.compare(token, t.token_hash)
-      if (isValid) {
-        matchedToken = t
-        break
-      }
-    }
 
     if (!matchedToken) {
       return NextResponse.json(

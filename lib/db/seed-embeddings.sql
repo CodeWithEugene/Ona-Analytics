@@ -5,8 +5,8 @@
 INSERT INTO context_knowledge (id, org_id, content, embedding)
 VALUES
 
-  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111',
-   "Weather SOP: If heavy rain is forecasted, supply trucks must depart 12 hours earlier due to severe mud on the Sekenani gate road.",
+  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid,
+   'Weather SOP: If heavy rain is forecasted, supply trucks must depart 12 hours earlier due to severe mud on the Sekenani gate road.',
   ARRAY[
     0.1012,0.0513,-0.0214,0.1515,-0.0816,0.1217,-0.0318,0.0719,0.012,-0.0621,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
@@ -138,8 +138,8 @@ VALUES
     0,0,0,0,0,0,0,0,0,0,0,0
   ]::vector),
 
-  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111',
-   "Fresh Supply SOP: Each occupied tent requires 4kg of fresh produce daily. For 25 tents at full occupancy, procure 100kg of mixed vegetables and fruits every 3 days.",
+  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid,
+   'Fresh Supply SOP: Each occupied tent requires 4kg of fresh produce daily. For 25 tents at full occupancy, procure 100kg of mixed vegetables and fruits every 3 days.',
   ARRAY[
     0.0822,0.1223,-0.0524,0.0225,0.1026,-0.0127,0.1528,-0.0729,0.033,0.0931,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
@@ -271,8 +271,8 @@ VALUES
     0,0,0,0,0,0,0,0,0,0,0,0
   ]::vector),
 
-  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111',
-   "Gas and Fuel SOP: Each gas cylinder serves 5 tented suites for 7 days. During high occupancy (>80%), increase propane delivery by 50% and schedule bi-weekly refills.",
+  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid,
+   'Gas and Fuel SOP: Each gas cylinder serves 5 tented suites for 7 days. During high occupancy (>80%), increase propane delivery by 50% and schedule bi-weekly refills.',
   ARRAY[
     0.1532,-0.0333,0.0834,-0.1035,0.0536,0.1237,-0.0638,0.0239,0.114,-0.0441,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
@@ -404,8 +404,8 @@ VALUES
     0,0,0,0,0,0,0,0,0,0,0,0
   ]::vector),
 
-  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111',
-   "Linens SOP: Laundry turnaround requires 24 hours. At >90% occupancy, maintain 3 full sets of linens per tent (one on bed, one in laundry, one in storage).",
+  (gen_random_uuid(), '11111111-1111-1111-1111-111111111111'::uuid,
+   'Linens SOP: Laundry turnaround requires 24 hours. At >90% occupancy, maintain 3 full sets of linens per tent (one on bed, one in laundry, one in storage).',
   ARRAY[
     0.0542,0.1543,-0.0844,0.0345,-0.0246,0.1047,0.0748,-0.1249,0.045,0.0151,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,

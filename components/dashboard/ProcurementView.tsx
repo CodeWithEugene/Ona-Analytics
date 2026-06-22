@@ -29,13 +29,13 @@ export function ProcurementView({ procurementData, loading, onGenerate, onFulfil
       </div>
       {loading ? (
         <div className="space-y-3">
-          {[1,2,3,4,5,6].map(i => <div key={i} className="h-12 bg-white/5 rounded animate-pulse" />)}
+          {[1,2,3,4,5,6].map(i => <div key={i} className="h-12 bg-foreground/5 rounded animate-pulse" />)}
         </div>
       ) : procurementData.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5 text-white/40">
+              <tr className="border-b border-foreground/5 text-foreground/40">
                 <th className="text-left py-3 px-4">Item</th>
                 <th className="text-left py-3 px-4">Required</th>
                 <th className="text-left py-3 px-4">Action</th>
@@ -45,10 +45,10 @@ export function ProcurementView({ procurementData, loading, onGenerate, onFulfil
             </thead>
             <tbody>
               {procurementData.map((item: any) => (
-                <tr key={item.id} className="border-b border-white/5 last:border-0">
+                <tr key={item.id} className="border-b border-foreground/5 last:border-0">
                   <td className="py-3 px-4">{item.item}</td>
-                  <td className="py-3 px-4 text-white/50">{item.requiredAmount}</td>
-                  <td className="py-3 px-4 text-white/50">{item.action}</td>
+                  <td className="py-3 px-4 text-foreground/50">{item.requiredAmount}</td>
+                  <td className="py-3 px-4 text-foreground/50">{item.action}</td>
                   <td className="py-3 px-4">
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       item.urgency === "High" || item.urgency === "high" ? "bg-red-400/10 text-red-400" :
@@ -72,7 +72,7 @@ export function ProcurementView({ procurementData, loading, onGenerate, onFulfil
           </table>
         </div>
       ) : (
-        <div className="text-sm text-white/20 text-center py-12">
+        <div className="text-sm text-foreground/20 text-center py-12">
           <p>No pending procurement items</p>
           <p className="text-xs mt-2">Use the Ona Agent or Generate from Forecast to create procurement recommendations.</p>
         </div>

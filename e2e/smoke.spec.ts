@@ -3,8 +3,8 @@ import { test, expect } from "@playwright/test"
 test("landing page loads and shows key content", async ({ page }) => {
   await page.goto("/")
   await expect(page.locator("h1")).toContainText("before")
-  await expect(page.locator("text=Start free trial")).toBeVisible()
-  await expect(page.locator("text=Ona Analytics")).toBeVisible()
+  await expect(page.locator("text=Start 14-Day Trial")).toBeVisible()
+  await expect(page.locator("text=Ona Analytics").first()).toBeVisible()
 })
 
 test("login page has form fields", async ({ page }) => {

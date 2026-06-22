@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { withConnection } from "@/lib/db"
-import { requireAuth, unauthorized, getUserId, getOrgId, logAudit } from "@/lib/api-auth"
+import { requireAuth, unauthorized, forbidden, getUserId, getOrgId, logAudit } from "@/lib/api-auth"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
 import fs from "fs"
 import path from "path"
@@ -20,6 +20,9 @@ export async function POST() {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+    if (session.user.mustChangePassword) {
+      return forbidden("Password change required")
+    }
 
     const request = new Request("http://localhost")
     const rl = migrateLimiter(rateLimitKey(request, `migrate:${getUserId(session)}`))
@@ -44,9 +47,11 @@ export async function POST() {
 
     const schemaPath = path.join(process.cwd(), "lib/db/schema.sql")
     const seedPath = path.join(process.cwd(), "lib/db/seed.sql")
+    const seedEmbeddingsPath = path.join(process.cwd(), "lib/db/seed-embeddings.sql")
 
     const schemaSQL = fs.readFileSync(schemaPath, "utf-8")
     const seedSQL = fs.readFileSync(seedPath, "utf-8")
+    const seedEmbeddingsSQL = fs.readFileSync(seedEmbeddingsPath, "utf-8")
 
     await withConnection(async (client) => {
       const schemaStatements = schemaSQL
@@ -89,6 +94,25 @@ export async function POST() {
             results.push(`SKIP (exists): ${stmt.substring(0, 80)}`)
           } else {
             logger.error("migration_seed_error", { error: String(err), statement: stmt.substring(0, 80) })
+            results.push(`ERR: ${stmt.substring(0, 80)}`)
+          }
+        }
+      }
+
+      const seedEmbeddingsStatements = seedEmbeddingsSQL
+        .split(";")
+        .map((s) => stripComments(s))
+        .filter((s) => s.length > 0)
+
+      for (const stmt of seedEmbeddingsStatements) {
+        try {
+          await client.query(stmt + ";")
+          results.push(`OK: ${stmt.substring(0, 80)}`)
+        } catch (err: any) {
+          if (err.code === "42710" || err.code === "23505") {
+            results.push(`SKIP (exists): ${stmt.substring(0, 80)}`)
+          } else {
+            logger.error("migration_seed_embeddings_error", { error: String(err), statement: stmt.substring(0, 80) })
             results.push(`ERR: ${stmt.substring(0, 80)}`)
           }
         }

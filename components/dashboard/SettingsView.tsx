@@ -87,29 +87,29 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
         <h3 className="text-lg font-display italic mb-6">Camp Profile</h3>
         <form onSubmit={handleSaveOrg} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm text-white/40">Camp Name</label>
+            <label className="text-sm text-foreground/40">Camp Name</label>
             <input
               type="text"
               value={campName}
               onChange={e => setCampName(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-white/40">Location</label>
+            <label className="text-sm text-foreground/40">Location</label>
             <input
               type="text"
               value={location}
               onChange={e => setLocation(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-white/40">Timezone</label>
+            <label className="text-sm text-foreground/40">Timezone</label>
             <select
               value={timezone}
               onChange={e => setTimezone(e.target.value)}
-              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
             >
               <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
               <option value="Africa/Dar_es_Salaam">Africa/Dar es Salaam (EAT)</option>
@@ -134,12 +134,12 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
       <Card>
         <h3 className="text-lg font-display italic mb-6">Profile</h3>
         <div className="space-y-4">
-          <div className="py-3 border-b border-white/5">
-            <p className="text-xs text-white/40 mb-1">Name</p>
+          <div className="py-3 border-b border-border">
+            <p className="text-xs text-foreground/40 mb-1">Name</p>
             <p className="text-sm">{userName}</p>
           </div>
           <div className="py-3">
-            <p className="text-xs text-white/40 mb-1">Email</p>
+            <p className="text-xs text-foreground/40 mb-1">Email</p>
             <p className="text-sm">{userEmail || '\u2014'}</p>
           </div>
         </div>
@@ -149,7 +149,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
         <h3 className="text-lg font-display italic mb-6">Change Password</h3>
         <form onSubmit={handleChangePassword} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-sm text-white/40">Current Password</label>
+            <label className="text-sm text-foreground/40">Current Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -157,15 +157,15 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
                 onChange={e => setCurrentPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 pr-10 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
+                className="w-full bg-background border border-border rounded-lg px-4 py-3 pr-10 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
               />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40">
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/20 hover:text-foreground/40">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-white/40">New Password</label>
+            <label className="text-sm text-foreground/40">New Password</label>
             <input
               type="password"
               value={newPassword}
@@ -173,12 +173,12 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
               placeholder="At least 8 characters"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-white/40">Confirm New Password</label>
+            <label className="text-sm text-foreground/40">Confirm New Password</label>
             <input
               type="password"
               value={confirmNewPassword}
@@ -186,7 +186,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full bg-[#0A0A0A] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-white/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
             />
           </div>
           <button
@@ -203,12 +203,12 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
       <Card>
         <h3 className="text-lg font-display italic mb-4">Organization</h3>
         <div className="space-y-3">
-          <div className="py-3 border-b border-white/5">
-            <p className="text-xs text-white/40 mb-1">Organization ID</p>
-            <p className="text-sm font-mono text-white/30 text-xs">{orgData?.id || '\u2014'}</p>
+          <div className="py-3 border-b border-border">
+            <p className="text-xs text-foreground/40 mb-1">Organization ID</p>
+            <p className="text-sm font-mono text-foreground/30 text-xs">{orgData?.id || '\u2014'}</p>
           </div>
           <div className="py-3">
-            <p className="text-xs text-white/40 mb-1">Camp Since</p>
+            <p className="text-xs text-foreground/40 mb-1">Camp Since</p>
             <p className="text-sm">
               {orgData?.created_at
                 ? new Date(orgData.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })

@@ -16,26 +16,27 @@ describe("LandingPage", () => {
 
   it("renders features section", () => {
     render(<LandingPage />)
-    expect(screen.getByText("14-Day Demand Radar")).toBeInTheDocument()
+    expect(screen.getByText("DEMAND RADAR")).toBeInTheDocument()
     expect(screen.getByText("Auto Procurement")).toBeInTheDocument()
-    expect(screen.getByText("AI Operations Agent")).toBeInTheDocument()
+    expect(screen.getByText("The Ona Agent")).toBeInTheDocument()
   })
 
   it("renders social proof section", () => {
     render(<LandingPage />)
-    expect(screen.getByText(/Operations teams across East Africa/)).toBeInTheDocument()
+    expect(screen.getByText(/Securing supply lines across East African operations/i)).toBeInTheDocument()
   })
 
   it("renders stat numbers in feature cards", () => {
     render(<LandingPage />)
-    expect(screen.getAllByText("94%").length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText("94.2%").length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText("73%").length).toBeGreaterThanOrEqual(1)
   })
 
-  it("renders integrations section", () => {
+  it("renders Split-Brain AI section", () => {
     render(<LandingPage />)
-    expect(screen.getByText(/Works with what you already have/)).toBeInTheDocument()
-    expect(screen.getByText(/12\+/)).toBeInTheDocument()
+    expect(screen.getByText("Split-Brain AI Architecture")).toBeInTheDocument()
+    expect(screen.getByText("Deterministic SQL Node")).toBeInTheDocument()
+    expect(screen.getByText("pgvector Semantic RAG")).toBeInTheDocument()
   })
 
   it("renders testimonials", () => {
@@ -46,7 +47,7 @@ describe("LandingPage", () => {
 
   it("renders CTA section", () => {
     render(<LandingPage />)
-    expect(screen.getByText("Ready to see what is coming?")).toBeInTheDocument()
+    expect(screen.getByText("Ready to secure your camp?")).toBeInTheDocument()
   })
 
   it("renders footer", () => {

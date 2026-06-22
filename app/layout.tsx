@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Instrument_Serif, DM_Sans } from "next/font/google"
+import { Instrument_Serif, DM_Sans, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
@@ -16,6 +16,11 @@ const body = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["400", "500", "600", "700"],
+})
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
 })
 
 export const metadata: Metadata = {
@@ -48,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${display.variable} ${body.variable} font-body antialiased`}
+        className={`${display.variable} ${body.variable} ${mono.variable} font-body antialiased`}
       >
         <ThemeProvider
           attribute="class"

@@ -1,0 +1,14 @@
+{
+  "id": "session-1781779537613",
+  "startedAt": "2026-06-18T10:45:37.613Z",
+  "cwd": "/Users/eugenius/Work/Ona-Analytics",
+  "context": {},
+  "metrics": {
+    "edits": 0,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-06-18T10:46:45.089Z",
+  "duration": 67477
+}

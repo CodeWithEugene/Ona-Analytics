@@ -42,18 +42,33 @@ function getPassword(): () => Promise<string> {
 
 function getPool(): Pool {
   if (!pool) {
-    pool = new Pool({
-      host: process.env.PGHOST,
-      user: process.env.PGUSER,
-      database: process.env.PGDATABASE || "postgres",
-      password: getPassword(),
-      port: Number(process.env.PGPORT) || 5432,
-      ssl: { rejectUnauthorized: true },
-      max: 3,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000,
-      statement_timeout: 30000,
-    })
+    const ssl = process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: true }
+      : false
+
+    if (process.env.DATABASE_URL) {
+      pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl,
+        max: 3,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+        statement_timeout: 30000,
+      })
+    } else {
+      pool = new Pool({
+        host: process.env.PGHOST,
+        user: process.env.PGUSER,
+        database: process.env.PGDATABASE || "postgres",
+        password: getPassword(),
+        port: Number(process.env.PGPORT) || 5432,
+        ssl,
+        max: 3,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
+        statement_timeout: 30000,
+      })
+    }
   }
   return pool
 }

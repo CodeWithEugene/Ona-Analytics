@@ -10,6 +10,9 @@ export async function POST(request: Request) {
   try {
     const session = await requireAuth()
     if (!session) return unauthorized()
+    if (session.user.mustChangePassword) {
+      return forbidden("Password change required")
+    }
 
     const rl = generateLimiter(rateLimitKey(request, `generate:${getUserId(session)}`))
     if (!rl.success) {
