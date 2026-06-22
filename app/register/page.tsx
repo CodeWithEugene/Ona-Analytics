@@ -100,7 +100,7 @@ export default function RegisterPage() {
         
         <div className="relative z-10">
           <Link href="/" className="hover:opacity-85 transition-opacity inline-block mb-12">
-            <img src="/logo.svg" alt="Ona Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
+            <img src="/logo.svg" alt="Ona Logo" className="h-12 w-auto dark:brightness-0 dark:invert" />
           </Link>
           
           <div className="space-y-6 mt-12">
@@ -154,7 +154,7 @@ export default function RegisterPage() {
           {/* Mobile Only Header */}
           <div className="text-center mb-8 flex flex-col items-center lg:hidden">
             <Link href="/" className="hover:opacity-85 transition-opacity mb-2 block">
-              <img src="/logo.svg" alt="Ona Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
+              <img src="/logo.svg" alt="Ona Logo" className="h-12 w-auto dark:brightness-0 dark:invert" />
             </Link>
             <p className="text-xs text-muted-foreground mt-1 font-mono">Set up your camp</p>
           </div>

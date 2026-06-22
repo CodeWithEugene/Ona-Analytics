@@ -26,16 +26,33 @@ export const metadata: Metadata = {
   title: "Ona Analytics — AI-Native Demand Radar for Safari Camps",
   description:
     "Predictive demand intelligence and supply chain optimization for remote safari camps and eco-lodges. Powered by AI.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://ona-analytics.vercel.app"),
   icons: {
     icon: "/favicon.svg",
     apple: "/favicon.svg",
   },
   openGraph: {
-    title: "Ona Analytics",
+    title: "Ona Analytics — See the surge. Secure the supply.",
     description:
-      "AI-native B2B demand radar and supply chain forecasting for remote safari camps",
+      "AI-native B2B demand radar and supply chain forecasting for remote safari camps and eco-lodges.",
+    url: "https://ona-analytics.vercel.app",
+    siteName: "Ona Analytics",
     type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Ona Analytics — AI-Native Demand Radar for Safari Camps",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ona Analytics — AI-Native Demand Radar for Safari Camps",
+    description:
+      "Predictive demand intelligence and supply chain optimization for remote safari camps and eco-lodges.",
+    images: ["/og-image.jpg"],
   },
 }
 

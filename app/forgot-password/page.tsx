@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
           <div className="rounded-[calc(2rem-0.375rem)] bg-card shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 border border-border">
             <div className="text-center mb-8 flex flex-col items-center">
               <Link href="/" className="hover:opacity-85 transition-opacity mb-2 block">
-                <img src="/logo.svg" alt="Ona Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
+                <img src="/logo.svg" alt="Ona Logo" className="h-12 w-auto dark:brightness-0 dark:invert" />
               </Link>
               <p className="text-xs text-muted-foreground mt-1 font-mono">Reset your password</p>
             </div>

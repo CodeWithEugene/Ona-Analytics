@@ -79,7 +79,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
           <Link href="/" className="hover:opacity-85 transition-opacity">
-            <img src="/logo.svg" alt="Ona Analytics Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
+            <img src="/logo.svg" alt="Ona Analytics Logo" className="h-10 w-auto dark:brightness-0 dark:invert" />
           </Link>
           
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
@@ -345,8 +345,8 @@ export default function LandingPage() {
                             <div 
                               className={`rounded-t-sm transition-all duration-300 relative ${
                                 i >= 13 
-                                  ? 'bg-gradient-to-t from-emerald-500/40 to-emerald-500/15 group-hover:from-emerald-500/60' 
-                                  : 'bg-gradient-to-t from-primary/40 to-primary/15 group-hover:from-primary/60'
+                                  ? 'bg-emerald-500/30 group-hover:bg-emerald-500/50' 
+                                  : 'bg-primary/30 group-hover:bg-primary/50'
                               }`}
                               style={{ height: `${val}%` }}
                             >
@@ -423,7 +423,7 @@ export default function LandingPage() {
       </FadeIn>
 
       {/* Section: The Logistical Isolation Problem */}
-      <section id="problem" className="py-24 md:py-32 px-6 bg-zinc-900 dark:bg-zinc-950 text-zinc-100 border-b border-zinc-800 relative overflow-hidden">
+      <section id="problem" className="py-24 md:py-32 px-6 bg-muted/30 border-b border-border relative overflow-hidden">
         <div className="absolute right-0 bottom-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -437,19 +437,19 @@ export default function LandingPage() {
                   Zero local supermarkets. <br />
                   Five hours from town.
                 </h2>
-                <p className="text-base md:text-lg text-zinc-300 leading-relaxed mb-8 max-w-xl">
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-8 max-w-xl">
                   Luxury safari camps of 10 to 25 tented suites operate in total logistical isolation. If an unexpected 40% occupancy surge occurs for the weekend, you cannot simply make a grocery run. 
                 </p>
-                <p className="text-base md:text-lg text-zinc-300 leading-relaxed mb-10 max-w-xl">
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl">
                   Supplies must be dispatched from hubs (like Nairobi or Arusha) days in advance. Under-forecasting translates to running out of clean linen and fresh produce mid-stay. Ona resolves this risk by coupling occupancy predictions with automatic procurement triggers.
                 </p>
-                <div className="grid grid-cols-2 gap-6 border-t border-zinc-800 pt-8">
+                <div className="grid grid-cols-2 gap-6 border-t border-border pt-8">
                   <div>
-                    <span className="text-xs text-zinc-500 font-mono block mb-1">AVERAGE LEAD TIME</span>
+                    <span className="text-xs text-muted-foreground font-mono block mb-1">AVERAGE LEAD TIME</span>
                     <span className="text-2xl font-bold font-sans text-primary">3 Days Minimum</span>
                   </div>
                   <div>
-                    <span className="text-xs text-zinc-500 font-mono block mb-1">EMERGENCY DISPATCH COST</span>
+                    <span className="text-xs text-muted-foreground font-mono block mb-1">EMERGENCY DISPATCH COST</span>
                     <span className="text-2xl font-bold font-sans text-destructive">4.5x Premium</span>
                   </div>
                 </div>
@@ -459,14 +459,14 @@ export default function LandingPage() {
             {/* Left Column: Timeline list */}
             <div className="lg:col-span-6">
               <FadeIn delay={150}>
-                <div className="rounded-[2.5rem] p-1.5 bg-white/5 ring-1 ring-white/10">
-                  <div className="bg-zinc-950 rounded-[calc(2.5rem-0.375rem)] shadow-2xl p-8 border border-white/[0.05]">
-                    <div className="flex items-center justify-between border-b border-white/[0.08] pb-5 mb-8">
-                      <span className="text-xs text-zinc-400 font-mono">SOP Playbook: The 5-Day Supply Loop</span>
-                      <span className="text-xs text-emerald-400 font-mono">Active Model</span>
+                <div className="rounded-[2.5rem] p-1.5 bg-foreground/5 ring-1 ring-foreground/5">
+                  <div className="bg-card shadow-2xl p-8 border border-border rounded-[calc(2.5rem-0.375rem)]">
+                    <div className="flex items-center justify-between border-b border-border pb-5 mb-8">
+                      <span className="text-xs text-muted-foreground font-mono">SOP Playbook: The 5-Day Supply Loop</span>
+                      <span className="text-xs text-emerald-500 font-mono">Active Model</span>
                     </div>
 
-                    <div className="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[1px] before:bg-white/[0.08]">
+                    <div className="space-y-8 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[1px] before:bg-border">
                       {[
                         { 
                           day: "Day -5", 
@@ -490,19 +490,19 @@ export default function LandingPage() {
                           day: "Day 0", 
                           title: "Lodge Peak Occupancy Begins", 
                           desc: "Supplies are arrived, organized, and prepared before guests check-in.", 
-                          color: "bg-zinc-800" 
+                          color: "bg-muted" 
                         }
                       ].map((step, idx) => (
                         <div key={idx} className="flex gap-6 relative group">
-                          <div className={`w-6 h-6 rounded-full ${step.color} border border-white/10 flex items-center justify-center text-[10px] font-bold z-10 text-white shrink-0`}>
+                          <div className={`w-6 h-6 rounded-full ${step.color} border border-border flex items-center justify-center text-[10px] font-bold z-10 shrink-0 ${step.color === "bg-muted" ? "text-muted-foreground" : "text-primary-foreground"}`}>
                             {idx + 1}
                           </div>
                           <div>
                             <div className="flex items-baseline gap-2 mb-1">
-                              <h4 className="text-sm font-semibold text-white">{step.title}</h4>
-                              <span className="text-[9px] font-mono text-zinc-500">({step.day})</span>
+                              <h4 className="text-sm font-semibold text-foreground">{step.title}</h4>
+                              <span className="text-[9px] font-mono text-muted-foreground">({step.day})</span>
                             </div>
-                            <p className="text-xs text-zinc-400 leading-relaxed">{step.desc}</p>
+                            <p className="text-xs text-muted-foreground leading-relaxed">{step.desc}</p>
                           </div>
                         </div>
                       ))}
@@ -733,7 +733,7 @@ export default function LandingPage() {
       </section>
 
       {/* Section: CTA / Trial Request */}
-      <section className="py-28 md:py-36 px-6 bg-zinc-900 dark:bg-zinc-950 text-zinc-100 border-t border-zinc-800 relative overflow-hidden">
+      <section className="py-28 md:py-36 px-6 bg-muted/30 border-t border-border relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <FadeIn>
@@ -741,7 +741,7 @@ export default function LandingPage() {
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-sans tracking-tight leading-[1.1] mb-8">
               Ready to secure your camp?
             </h2>
-            <p className="text-base md:text-lg text-zinc-300 mb-12 max-w-lg mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-muted-foreground mb-12 max-w-lg mx-auto leading-relaxed">
               Equip your camp with 14-day booking alerts, automate your supply chain sheets, and get operational context.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -753,7 +753,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/login"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 text-white px-8 py-4 rounded-lg font-semibold text-sm hover:bg-white/10 active:scale-[0.97] transition-all border border-white/10"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-muted text-muted-foreground px-8 py-4 rounded-lg font-semibold text-sm hover:bg-muted/80 active:scale-[0.97] transition-all border border-border"
               >
                 Access Command Center
               </Link>
@@ -768,7 +768,7 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-border pb-8 mb-8">
             <div>
               <Link href="/">
-                <img src="/logo.svg" alt="Ona Analytics Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
+                <img src="/logo.svg" alt="Ona Analytics Logo" className="h-10 w-auto dark:brightness-0 dark:invert" />
               </Link>
               <p className="text-xs text-muted-foreground mt-2 font-mono">Securing isolated camps since 2026</p>
             </div>

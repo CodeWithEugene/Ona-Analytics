@@ -402,7 +402,7 @@ export default function DashboardPage() {
         <div className="flex flex-col h-full">
           <div className="p-6">
             <Link href="/" className="hover:opacity-85 transition-opacity block mb-1">
-              <img src="/logo.svg" alt="Ona Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
+              <img src="/logo.svg" alt="Ona Logo" className="h-12 w-auto dark:brightness-0 dark:invert" />
             </Link>
             <p className="text-xs text-foreground/45 mt-2">{orgData?.name || "Safari Camp Operations"}</p>
           </div>
