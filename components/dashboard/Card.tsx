@@ -1,11 +1,14 @@
 "use client"
 
-export function Card({ children, className }: { children: React.ReactNode; className?: string }) {
+import React from "react"
+
+export function Card({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <div className={`rounded-[2rem] p-1.5 bg-[#1C1816]/5 ring-1 ring-[#1C1816]/5 dark:bg-white/5 dark:ring-white/5 ${className || ''}`}>
-      <div className="rounded-[calc(2rem-0.375rem)] bg-[#F4EDE2] dark:bg-[#0A0A0A] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-6">
-        {children}
-      </div>
+    <div 
+      id={id}
+      className={`bg-card text-card-foreground border border-border rounded-xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-200 ${className || ''}`}
+    >
+      {children}
     </div>
   )
 }

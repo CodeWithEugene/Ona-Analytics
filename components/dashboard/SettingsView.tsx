@@ -84,7 +84,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
   return (
     <div className="space-y-6 max-w-2xl">
       <Card>
-        <h3 className="text-lg font-display italic mb-6">Camp Profile</h3>
+        <h3 className="text-base font-semibold text-foreground mb-6">Camp Profile</h3>
         <form onSubmit={handleSaveOrg} className="space-y-5">
           <div className="space-y-2">
             <label className="text-sm text-foreground/40">Camp Name</label>
@@ -92,7 +92,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               type="text"
               value={campName}
               onChange={e => setCampName(e.target.value)}
-              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none placeholder:text-foreground/20"
             />
           </div>
           <div className="space-y-2">
@@ -101,7 +101,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               type="text"
               value={location}
               onChange={e => setLocation(e.target.value)}
-              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none placeholder:text-foreground/20"
             />
           </div>
           <div className="space-y-2">
@@ -109,7 +109,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
             <select
               value={timezone}
               onChange={e => setTimezone(e.target.value)}
-              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none"
             >
               <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
               <option value="Africa/Dar_es_Salaam">Africa/Dar es Salaam (EAT)</option>
@@ -123,7 +123,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
           <button
             type="submit"
             disabled={savingOrg}
-            className="flex items-center gap-2 bg-[#E67E22]/10 text-[#E67E22] px-5 py-2.5 rounded-full text-sm font-medium ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 bg-primary/10 text-primary px-5 py-2.5 rounded-lg text-sm font-semibold ring-1 ring-primary/20 hover:bg-primary/20 transition-all disabled:opacity-50"
           >
             {savingOrg ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save changes
@@ -132,7 +132,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
       </Card>
 
       <Card>
-        <h3 className="text-lg font-display italic mb-6">Profile</h3>
+        <h3 className="text-base font-semibold text-foreground mb-6">Profile</h3>
         <div className="space-y-4">
           <div className="py-3 border-b border-border">
             <p className="text-xs text-foreground/40 mb-1">Name</p>
@@ -146,7 +146,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
       </Card>
 
       <Card>
-        <h3 className="text-lg font-display italic mb-6">Change Password</h3>
+        <h3 className="text-base font-semibold text-foreground mb-6">Change Password</h3>
         <form onSubmit={handleChangePassword} className="space-y-5">
           <div className="space-y-2">
             <label className="text-sm text-foreground/40">Current Password</label>
@@ -157,7 +157,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
                 onChange={e => setCurrentPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="w-full bg-background border border-border rounded-lg px-4 py-3 pr-10 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none"
+                className="w-full bg-background border border-border rounded-lg px-4 py-3 pr-10 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none"
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/20 hover:text-foreground/40">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -173,7 +173,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none placeholder:text-foreground/20"
               placeholder="At least 8 characters"
             />
           </div>
@@ -186,13 +186,13 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
               required
               minLength={8}
               autoComplete="new-password"
-              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-[#E67E22]/50 outline-none placeholder:text-foreground/20"
+              className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none placeholder:text-foreground/20"
             />
           </div>
           <button
             type="submit"
             disabled={savingPassword}
-            className="flex items-center gap-2 bg-[#E67E22]/10 text-[#E67E22] px-5 py-2.5 rounded-full text-sm font-medium ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 bg-primary/10 text-primary px-5 py-2.5 rounded-lg text-sm font-semibold ring-1 ring-primary/20 hover:bg-primary/20 transition-all disabled:opacity-50"
           >
             {savingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Update password
@@ -201,7 +201,7 @@ export function SettingsView({ orgData, userName, userEmail, onSaved, onOrgUpdat
       </Card>
 
       <Card>
-        <h3 className="text-lg font-display italic mb-4">Organization</h3>
+        <h3 className="text-base font-semibold text-foreground mb-4">Organization</h3>
         <div className="space-y-3">
           <div className="py-3 border-b border-border">
             <p className="text-xs text-foreground/40 mb-1">Organization ID</p>

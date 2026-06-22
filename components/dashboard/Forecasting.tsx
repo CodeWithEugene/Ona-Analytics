@@ -9,7 +9,7 @@ export function Forecasting({ demandData, loading }: { demandData: any[]; loadin
   return (
     <div className="space-y-6">
       <Card>
-        <h3 className="text-lg font-display italic mb-4">14-Day Forecast</h3>
+        <h3 className="text-base font-semibold text-foreground mb-4">14-Day Forecast</h3>
         {loading ? (
           <div className="h-64 bg-foreground/5 rounded animate-pulse" />
         ) : (
@@ -34,7 +34,7 @@ export function Forecasting({ demandData, loading }: { demandData: any[]; loadin
         )}
       </Card>
       <Card>
-        <h3 className="text-lg font-display italic mb-4">AI-Generated Insights</h3>
+        <h3 className="text-base font-semibold text-foreground mb-4">AI-Generated Insights</h3>
         <div className="space-y-3">
           {peakVal !== null && peakVal > 0 ? (
             <div className="flex items-start gap-3 p-3 bg-foreground/5 rounded-lg">

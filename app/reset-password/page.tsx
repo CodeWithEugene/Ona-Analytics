@@ -65,11 +65,11 @@ function ResetPasswordForm() {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
         <div className="text-center">
-          <h2 className="text-xl font-display italic mb-2">Invalid reset link</h2>
+          <h2 className="text-xl font-bold font-sans mb-2">Invalid reset link</h2>
           <p className="text-sm text-foreground/45 mb-6">
             This password reset link is missing a token.
           </p>
-          <Link href="/forgot-password" className="text-sm text-[#E67E22] hover:underline">
+          <Link href="/forgot-password" className="text-sm text-primary hover:underline">
             Request a new reset link
           </Link>
         </div>
@@ -82,7 +82,7 @@ function ResetPasswordForm() {
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
         <div className="text-center">
           <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-          <h2 className="text-xl font-display italic mb-2">Password reset</h2>
+          <h2 className="text-xl font-bold font-sans mb-2">Password reset</h2>
           <p className="text-sm text-foreground/45">Redirecting to sign in...</p>
         </div>
       </div>
@@ -97,7 +97,7 @@ function ResetPasswordForm() {
           className="absolute top-4 right-4 p-2.5 rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground transition-all"
           aria-label="Toggle theme"
         >
-          {theme === "dark" ? <Sun className="w-4.5 h-4.5 text-[#E67E22]" /> : <Moon className="w-4.5 h-4.5 text-[#C0392B]" />}
+          {theme === "dark" ? <Sun className="w-4.5 h-4.5 text-yellow-500" /> : <Moon className="w-4.5 h-4.5 text-primary" />}
         </button>
       )}
 
@@ -146,7 +146,7 @@ function ResetPasswordForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
+                className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>
                   Reset Password <ArrowUpRight className="w-4 h-4" />
@@ -157,7 +157,7 @@ function ResetPasswordForm() {
             <div className="mt-6 text-center">
               <p className="text-xs text-foreground/40">
                 Remember your password?{" "}
-                <Link href="/login" className="text-[#E67E22] hover:underline">Sign in</Link>
+                <Link href="/login" className="text-primary hover:underline">Sign in</Link>
               </p>
             </div>
           </div>

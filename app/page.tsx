@@ -73,7 +73,7 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="bg-background text-foreground font-body min-h-[100dvh] selection:bg-[#C0392B]/20 selection:text-[#C0392B]">
+    <div className="bg-background text-foreground font-body min-h-[100dvh] selection:bg-primary/20 selection:text-primary">
       
       {/* Dynamic Nav Header */}
       <nav className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center bg-background/80 backdrop-blur-md border-b border-foreground/5">
@@ -96,13 +96,13 @@ export default function LandingPage() {
                 className="p-2 rounded-full hover:bg-foreground/5 text-foreground transition-colors"
                 aria-label="Toggle theme"
               >
-                {theme === "dark" ? <Sun className="w-4 h-4 text-[#E67E22]" /> : <Moon className="w-4 h-4 text-[#C0392B]" />}
+                {theme === "dark" ? <Sun className="w-4 h-4 text-yellow-500" /> : <Moon className="w-4 h-4 text-primary" />}
               </button>
             )}
             <Link href="/login" className="text-sm font-medium text-foreground/50 hover:text-foreground transition-colors">Sign in</Link>
             <Link
               href="/register"
-              className="inline-flex items-center gap-1 bg-foreground text-background px-5 py-2.5 rounded-full text-xs font-semibold hover:bg-foreground/90 active:scale-[0.97] transition-all duration-150 shadow-sm"
+              className="inline-flex items-center gap-1 bg-primary text-primary-foreground px-5 py-2 rounded-lg text-xs font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 shadow-sm"
             >
               Get started
             </Link>
@@ -112,34 +112,34 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="pt-32 pb-24 md:pt-40 md:pb-36 px-6 relative overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#C0392B]/3 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <div className="grid lg:grid-cols-12 gap-12 items-center mb-16">
             
             {/* Left Column: Hero Text */}
             <div className="lg:col-span-7">
               <FadeIn>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#C0392B]/20 bg-[#C0392B]/5 px-4 py-1 text-xs font-semibold text-[#C0392B] mb-8 font-mono">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1 text-xs font-semibold text-primary mb-8 font-mono">
                   ✦ SECURING REMOTE SUPPLY CHAINS
                 </div>
-                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display italic tracking-tight leading-[0.98] mb-8 text-foreground">
+                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-sans tracking-tight leading-[1.05] mb-8 text-foreground">
                   See what is coming <br />
-                  <span className="text-[#C0392B] relative inline-block">
+                  <span className="text-primary relative inline-block">
                     before
-                    <span className="absolute left-0 bottom-1 w-full h-[3px] bg-[#C0392B]/30 rounded" />
+                    <span className="absolute left-0 bottom-1 w-full h-[3px] bg-primary/30 rounded" />
                   </span> it arrives
                 </h1>
-                <p className="text-base md:text-xl text-[#3D3633]/80 dark:text-foreground/75 leading-relaxed max-w-2xl mb-12 font-body">
+                <p className="text-base md:text-xl text-foreground/70 dark:text-foreground/75 leading-relaxed max-w-2xl mb-12 font-body">
                   Ona Analytics is a serverless, AI-native demand radar built specifically for remote safari camps and eco-lodges to predict occupancy surges, prevent kitchen stockouts, and optimize isolated supply trucks days in advance.
                 </p>
                 <div className="flex flex-wrap items-center gap-5">
                   <Link
                     href="/register"
-                    className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-3.5 rounded-full font-medium hover:bg-foreground/95 active:scale-[0.97] transition-all duration-150 text-sm shadow-md"
+                    className="group inline-flex items-center gap-3 bg-primary text-primary-foreground px-7 py-3.5 rounded-lg font-semibold hover:bg-primary/95 active:scale-[0.97] transition-all duration-150 text-sm shadow-md"
                   >
                     Start 14-Day Trial 
-                    <span className="w-5 h-5 rounded-full bg-background/10 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
-                      <ArrowUpRight className="w-3.5 h-3.5 text-background" />
+                    <span className="w-5 h-5 rounded-full bg-primary-foreground/10 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+                      <ArrowUpRight className="w-3.5 h-3.5 text-primary-foreground" />
                     </span>
                   </Link>
                   <a 
@@ -159,7 +159,7 @@ export default function LandingPage() {
                   <div className="bg-[#0A0A0A] rounded-[calc(2.5rem-0.375rem)] shadow-2xl p-6 border border-white/[0.04] text-white">
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-4 mb-5">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-[#C0392B] animate-pulse" />
+                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                         <span className="text-[10px] text-white/40 font-mono uppercase tracking-wider">Live Supply Radar HUD</span>
                       </div>
                       <span className="text-[9px] font-mono text-white/35">MAASAI MARA • REGION 1</span>
@@ -172,13 +172,13 @@ export default function LandingPage() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
                             <div className="flex items-center gap-2.5">
-                              <Truck className="w-3.5 h-3.5 text-[#1B3621]" />
+                              <Truck className="w-3.5 h-3.5 text-emerald-500" />
                               <div>
                                 <div className="text-xs font-semibold text-white/90">Truck A (Fresh Produce)</div>
                                 <span className="text-[10px] text-white/40 block">Transit via Sekenani Gate bypass</span>
                               </div>
                             </div>
-                            <span className="text-[10px] bg-[#1B3621]/15 text-[#1B3621] border border-[#1B3621]/20 px-2 py-0.5 rounded font-mono">140km left</span>
+                            <span className="text-[10px] bg-emerald-500/15 text-emerald-500 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">140km left</span>
                           </div>
 
                           <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
@@ -206,8 +206,8 @@ export default function LandingPage() {
                             <span className="text-[10px] text-white/50 leading-tight block">Dispatch moved -12h to beat mud roads.</span>
                           </div>
                           
-                          <div className="p-2.5 rounded-lg bg-[#C0392B]/5 border border-[#C0392B]/15">
-                            <div className="flex items-center gap-2 text-[#C0392B] mb-1">
+                          <div className="p-2.5 rounded-lg bg-primary/5 border border-primary/15">
+                            <div className="flex items-center gap-2 text-primary mb-1">
                               <Zap className="w-3.5 h-3.5 animate-pulse" />
                               <span className="text-[10px] font-mono uppercase font-bold">Low Stocks</span>
                             </div>
@@ -221,9 +221,9 @@ export default function LandingPage() {
                         <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest block mb-2">Camp Reserve Gauges</span>
                         <div className="space-y-2 bg-white/[0.01] p-3 rounded-lg border border-white/[0.03]">
                           {[
-                            { name: "Generator Fuel", val: 84, color: "bg-[#1B3621]" },
-                            { name: "Fresh Produce Reserves", val: 22, color: "bg-[#C0392B]" },
-                            { name: "Linen Rotations", val: 100, color: "bg-[#1B3621]" }
+                            { name: "Generator Fuel", val: 84, color: "bg-emerald-500" },
+                            { name: "Fresh Produce Reserves", val: 22, color: "bg-red-500" },
+                            { name: "Linen Rotations", val: 100, color: "bg-emerald-500" }
                           ].map((gauge, idx) => (
                             <div key={idx} className="space-y-1">
                               <div className="flex justify-between text-[10px]">
@@ -246,16 +246,15 @@ export default function LandingPage() {
 
           </div>
 
-
           {/* Interactive Command Center Mockup (High Density Dark Theme) */}
           <FadeIn delay={200}>
             <div className="rounded-[2rem] p-2 bg-foreground/5 ring-1 ring-foreground/5 shadow-xl">
               <div className="rounded-[calc(2rem-0.375rem)] bg-[#0A0A0A] overflow-hidden text-white border border-white/[0.04]">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04] bg-[#0A0A0A]">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#C0392B]" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#E67E22]" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#1B3621]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                     <span className="text-xs text-white/40 font-mono ml-3">Ona Control Tower — Actively Syncing</span>
                   </div>
                   <div className="hidden sm:flex items-center gap-3 font-mono text-[10px] text-white/30">
@@ -269,20 +268,20 @@ export default function LandingPage() {
                   <div className="lg:col-span-5 border-b lg:border-b-0 lg:border-r border-white/[0.04] p-6 bg-[#0E0E0E] flex flex-col justify-between min-h-[380px]">
                     <div>
                       <div className="flex items-center gap-2 mb-6">
-                        <Terminal className="w-4 h-4 text-[#C0392B]" />
+                        <Terminal className="w-4 h-4 text-primary" />
                         <span className="text-xs font-mono text-white/50 uppercase tracking-wider">Ona Agent Trace</span>
                       </div>
                       
                       <div className="space-y-4">
                         <div className="text-xs">
-                          <span className="text-[#E67E22] font-mono">User: </span>
+                          <span className="text-primary font-mono">User: </span>
                           <span className="text-white/80">Analyze supply status for the upcoming weekend.</span>
                         </div>
 
                         {simStep >= 1 && (
                           <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04] animate-in fade-in duration-300">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <span className="text-[10px] bg-[#C0392B]/10 text-[#C0392B] px-1.5 py-0.5 rounded font-mono uppercase">Tool</span>
+                              <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono uppercase">Tool</span>
                               <span className="text-[10px] text-white/40 font-mono">query_demand_data</span>
                             </div>
                             <span className="text-xs text-white/60 font-mono">Executing SQL query against demand_logs table...</span>
@@ -293,18 +292,18 @@ export default function LandingPage() {
                         {simStep >= 2 && (
                           <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04] animate-in fade-in duration-300">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <span className="text-[10px] bg-[#1B3621]/15 text-[#1B3621] px-1.5 py-0.5 rounded font-mono uppercase">RAG</span>
+                              <span className="text-[10px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded font-mono uppercase">RAG</span>
                               <span className="text-[10px] text-white/40 font-mono">search_context_knowledge</span>
                             </div>
                             <span className="text-xs text-white/60 font-mono">Vector cosine-similarity lookup similarity &gt;= 0.88</span>
-                            <div className="text-[10px] text-[#E67E22] font-mono mt-1">&gt; Match: Fresh Supply SOP &quot;Occupied suite requires 4kg produce...&quot;</div>
+                            <div className="text-[10px] text-primary font-mono mt-1">&gt; Match: Fresh Supply SOP &quot;Occupied suite requires 4kg produce...&quot;</div>
                           </div>
                         )}
 
                         {simStep >= 3 && (
                           <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04] animate-in fade-in duration-300">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <span className="text-[10px] bg-[#C0392B]/10 text-[#C0392B] px-1.5 py-0.5 rounded font-mono uppercase">Write</span>
+                              <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-mono uppercase">Write</span>
                               <span className="text-[10px] text-white/40 font-mono">generate_procurement</span>
                             </div>
                             <span className="text-xs text-white/60 font-mono">Writing 3 items to procurement_items table...</span>
@@ -324,16 +323,16 @@ export default function LandingPage() {
                     <div>
                       <div className="flex items-center justify-between mb-8">
                         <div>
-                          <h4 className="text-lg font-semibold font-display italic">Weekend Demand Projection</h4>
+                          <h4 className="text-lg font-bold font-sans">Weekend Demand Projection</h4>
                           <p className="text-xs text-white/40">Olare Orok Eco-Lodge • Live occupancy rates</p>
                         </div>
                         <div className="flex items-center gap-4 text-xs font-mono">
                           <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded bg-[#C0392B]/30 border border-[#C0392B]" />
+                            <div className="w-2.5 h-2.5 rounded bg-primary/30 border border-primary" />
                             <span className="text-white/40">Actual</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded bg-[#E67E22]/30 border border-[#E67E22]" />
+                            <div className="w-2.5 h-2.5 rounded bg-emerald-500/30 border border-emerald-500" />
                             <span className="text-white/40">Forecast</span>
                           </div>
                         </div>
@@ -346,13 +345,13 @@ export default function LandingPage() {
                             <div 
                               className={`rounded-t-sm transition-all duration-300 relative ${
                                 i >= 13 
-                                  ? 'bg-gradient-to-t from-[#E67E22]/40 to-[#E67E22]/15 group-hover:from-[#E67E22]/60' 
-                                  : 'bg-gradient-to-t from-[#C0392B]/40 to-[#C0392B]/15 group-hover:from-[#C0392B]/60'
+                                  ? 'bg-gradient-to-t from-emerald-500/40 to-emerald-500/15 group-hover:from-emerald-500/60' 
+                                  : 'bg-gradient-to-t from-primary/40 to-primary/15 group-hover:from-primary/60'
                               }`}
                               style={{ height: `${val}%` }}
                             >
                               {i === 15 && (
-                                <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#C0392B] animate-ping" />
+                                <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-primary animate-ping" />
                               )}
                             </div>
                             <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 left-1/2 -translate-x-1/2 bg-white/10 text-[10px] font-mono px-1.5 py-0.5 rounded whitespace-nowrap z-10">
@@ -366,7 +365,7 @@ export default function LandingPage() {
                       <div className="flex justify-between text-[10px] text-white/20 font-mono mt-3">
                         <span>14 Days Ago</span>
                         <span>Today</span>
-                        <span className="text-[#E67E22]">Forecasted Spike</span>
+                        <span className="text-emerald-500">Forecasted Spike</span>
                         <span>+5 Days</span>
                       </div>
                     </div>
@@ -374,7 +373,7 @@ export default function LandingPage() {
                     <div className="mt-8 pt-6 border-t border-white/[0.04] grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
                         <span className="text-[10px] text-white/30 font-mono block mb-1">Peak Occupancy</span>
-                        <span className="text-xl font-bold text-[#E67E22]">95.0%</span>
+                        <span className="text-xl font-bold text-emerald-500">95.0%</span>
                         <span className="text-[9px] text-white/25 block mt-0.5">In 3 days</span>
                       </div>
                       <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
@@ -384,20 +383,19 @@ export default function LandingPage() {
                       </div>
                       <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
                         <span className="text-[10px] text-white/30 font-mono block mb-1">Supply Actions</span>
-                        <span className="text-xl font-bold text-[#C0392B]">3 Pending</span>
+                        <span className="text-xl font-bold text-primary">3 Pending</span>
                         <span className="text-[9px] text-white/25 block mt-0.5">Urgency: High</span>
                       </div>
                     </div>
-                  </div>
+                  </div>  </div>
                 </div>
               </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+            </FadeIn>
+          </div>
+        </section>
 
       {/* Social Proof Banner */}
-      <FadeIn className="py-14 px-6 border-t border-b border-foreground/5 bg-[#FDFBF7] dark:bg-[#0A0A0A]/30">
+      <FadeIn className="py-14 px-6 border-t border-b border-foreground/5 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <p className="text-[10px] uppercase tracking-widest text-foreground/35 text-center mb-8 font-mono">
             Securing supply lines across East African operations
@@ -411,41 +409,41 @@ export default function LandingPage() {
               "Okavango Delta Lodge", 
               "Ruaha Wilderness Camp"
             ].map((camp, i) => (
-              <span key={i} className="text-base text-foreground/45 font-display italic tracking-tight">{camp}</span>
+              <span key={i} className="text-base text-foreground/60 font-sans font-semibold tracking-tight">{camp}</span>
             ))}
           </div>
         </div>
       </FadeIn>
 
       {/* Section: The Logistical Isolation Problem */}
-      <section id="problem" className="py-24 md:py-32 px-6 bg-[#1C1816] text-[#F4EDE2] relative overflow-hidden">
-        <div className="absolute right-0 bottom-0 w-[400px] h-[400px] bg-[#C0392B]/5 rounded-full blur-[100px] pointer-events-none" />
+      <section id="problem" className="py-24 md:py-32 px-6 bg-slate-900 text-slate-100 relative overflow-hidden">
+        <div className="absolute right-0 bottom-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             <div className="lg:col-span-6">
               <FadeIn>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#C0392B]/35 bg-[#C0392B]/10 px-3.5 py-1 text-xs font-semibold text-[#C0392B] mb-6 font-mono">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary mb-6 font-mono">
                   THE HIGH-STAKES SUPPLY GAP
                 </div>
-                <h2 className="text-4xl md:text-6xl font-display italic tracking-tight leading-[1.04] mb-8">
+                <h2 className="text-4xl md:text-6xl font-bold font-sans tracking-tight leading-[1.1] mb-8">
                   Zero local supermarkets. <br />
                   Five hours from town.
                 </h2>
-                <p className="text-base md:text-lg text-[#F4EDE2]/70 leading-relaxed mb-8 max-w-xl">
+                <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-8 max-w-xl">
                   Luxury safari camps of 10 to 25 tented suites operate in total logistical isolation. If an unexpected 40% occupancy surge occurs for the weekend, you cannot simply make a grocery run. 
                 </p>
-                <p className="text-base md:text-lg text-[#F4EDE2]/70 leading-relaxed mb-10 max-w-xl">
+                <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-10 max-w-xl">
                   Supplies must be dispatched from hubs (like Nairobi or Arusha) days in advance. Under-forecasting translates to running out of clean linen and fresh produce mid-stay. Ona resolves this risk by coupling occupancy predictions with automatic procurement triggers.
                 </p>
                 <div className="grid grid-cols-2 gap-6 border-t border-white/[0.08] pt-8">
                   <div>
                     <span className="text-xs text-white/30 font-mono block mb-1">AVERAGE LEAD TIME</span>
-                    <span className="text-2xl font-bold font-display text-[#E67E22]">3 Days Minimum</span>
+                    <span className="text-2xl font-bold font-sans text-primary">3 Days Minimum</span>
                   </div>
                   <div>
                     <span className="text-xs text-white/30 font-mono block mb-1">EMERGENCY DISPATCH COST</span>
-                    <span className="text-2xl font-bold font-display text-[#C0392B]">4.5x Premium</span>
+                    <span className="text-2xl font-bold font-sans text-red-400">4.5x Premium</span>
                   </div>
                 </div>
               </FadeIn>
@@ -455,7 +453,7 @@ export default function LandingPage() {
             <div className="lg:col-span-6">
               <FadeIn delay={150}>
                 <div className="rounded-[2.5rem] p-1.5 bg-white/5 ring-1 ring-white/5">
-                  <div className="bg-[#171514] rounded-[calc(2.5rem-0.375rem)] shadow-2xl p-8 border border-white/[0.03]">
+                  <div className="bg-slate-900 rounded-[calc(2.5rem-0.375rem)] shadow-2xl p-8 border border-white/[0.03]">
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-5 mb-8">
                       <span className="text-xs text-white/40 font-mono">SOP Playbook: The 5-Day Supply Loop</span>
                       <span className="text-xs text-emerald-400 font-mono">Active Model</span>
@@ -468,21 +466,21 @@ export default function LandingPage() {
                           title: "Radar Prediction & Verification", 
                           desc: "Ona's ML models flags a 30%+ booking surge for the weekend, querying historical logs.", 
                           status: "completed",
-                          color: "bg-[#1B3621]" 
+                          color: "bg-emerald-500" 
                         },
                         { 
                           day: "Day -3", 
                           title: "Automated Procurement & Assembly", 
                           desc: "Ona Agent automatically aggregates demand rules from standard SOPs and generates a truck procurement dispatch sheet.", 
                           status: "active",
-                          color: "bg-[#E67E22]" 
+                          color: "bg-amber-500" 
                         },
                         { 
                           day: "Day -2", 
                           title: "Mud Buffer Warning (Weather RAG)", 
                           desc: "RAG checks weather database. Heavy rain warning triggers dispatch shift 12 hours earlier for the Sekenani Gate bypass road.", 
                           status: "pending",
-                          color: "bg-[#C0392B]" 
+                          color: "bg-red-500" 
                         },
                         { 
                           day: "Day 0", 
@@ -520,8 +518,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <FadeIn>
             <div className="text-center max-w-3xl mx-auto mb-20">
-              <span className="text-xs uppercase tracking-widest text-[#C0392B] font-mono font-bold block mb-4">THE DUAL-ENGINE BLUEPRINT</span>
-              <h2 className="text-4xl md:text-6xl font-display italic tracking-tight leading-[1.04] mb-6">
+              <span className="text-xs uppercase tracking-widest text-primary font-mono font-bold block mb-4">THE DUAL-ENGINE BLUEPRINT</span>
+              <h2 className="text-4xl md:text-6xl font-bold font-sans tracking-tight leading-[1.1] mb-6">
                 Split-Brain AI Architecture
               </h2>
               <p className="text-base md:text-lg text-foreground/65 leading-relaxed">
@@ -556,18 +554,18 @@ export default function LandingPage() {
             ].map((node, i) => (
               <FadeIn key={i} delay={i * 100}>
                 <div className="rounded-[2rem] p-1.5 bg-foreground/5 ring-1 ring-foreground/5 h-full">
-                  <div className="bg-[#FDFBF7] dark:bg-[#0E0E0E] rounded-[calc(2rem-0.375rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 h-full flex flex-col justify-between">
+                  <div className="bg-card rounded-[calc(2rem-0.375rem)] shadow-sm p-8 h-full flex flex-col justify-between">
                     <div>
-                      <div className="w-10 h-10 rounded-xl bg-[#C0392B]/5 flex items-center justify-center text-[#C0392B] mb-6">
+                      <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary mb-6">
                         <node.icon className="w-5 h-5" />
                       </div>
                       <h3 className="text-lg font-bold mb-1 text-foreground">{node.title}</h3>
-                      <span className="text-[10px] font-mono text-[#C0392B] block mb-4 uppercase tracking-wider">{node.tech}</span>
+                      <span className="text-[10px] font-mono text-primary block mb-4 uppercase tracking-wider">{node.tech}</span>
                       <p className="text-sm text-foreground/60 leading-relaxed mb-6">{node.desc}</p>
                     </div>
                     
                     <div className="rounded-lg bg-[#0A0A0A] p-4 text-[10px] font-mono text-white/55 border border-white/[0.04] select-all">
-                      <span className="text-[#C0392B] block mb-1">SQL_EXECUTE:</span>
+                      <span className="text-primary block mb-1">SQL_EXECUTE:</span>
                       <code className="break-all">{node.queries}</code>
                     </div>
                   </div>
@@ -579,12 +577,12 @@ export default function LandingPage() {
       </section>
 
       {/* Section: Bento Grid Features */}
-      <section id="bento" className="py-24 md:py-32 px-6 bg-[#FDFBF7] dark:bg-[#0A0A0A]/40 border-t border-b border-foreground/5">
+      <section id="bento" className="py-24 md:py-32 px-6 bg-muted/20 border-t border-b border-foreground/5">
         <div className="max-w-7xl mx-auto">
           <FadeIn>
             <div className="mb-16">
-              <span className="text-xs uppercase tracking-widest text-[#C0392B] font-mono font-bold block mb-3">SYSTEM CAPABILITIES</span>
-              <h2 className="text-4xl md:text-5xl font-display italic tracking-tight mb-4">Precision tools for the wild</h2>
+              <span className="text-xs uppercase tracking-widest text-primary font-mono font-bold block mb-3">SYSTEM CAPABILITIES</span>
+              <h2 className="text-4xl md:text-5xl font-bold font-sans tracking-tight mb-4">Precision tools for the wild</h2>
               <p className="text-base md:text-lg text-foreground/50 max-w-2xl leading-relaxed">
                 Four tightly coupled nodes built to secure supply chains, eliminate manual inventory spreadsheets, and log field protocols.
               </p>
@@ -596,9 +594,9 @@ export default function LandingPage() {
             {/* Bento 1: 14-Day Demand Radar */}
             <FadeIn className="md:col-span-4" delay={100}>
               <div className="rounded-[2rem] p-1.5 bg-foreground/5 ring-1 ring-foreground/5 h-full">
-                <div className="bg-[#F4EDE2] dark:bg-[#0A0A0A] rounded-[calc(2rem-0.375rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 h-full flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="bg-card rounded-[calc(2rem-0.375rem)] shadow-sm p-8 h-full flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 text-xs font-mono text-[#C0392B] font-semibold mb-3">
+                    <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold mb-3">
                       <TrendingUp className="w-3.5 h-3.5" />
                       <span>DEMAND RADAR</span>
                     </div>
@@ -608,7 +606,7 @@ export default function LandingPage() {
                     </p>
                   </div>
                   <div className="flex flex-col items-start sm:items-end justify-center pt-6 sm:pt-0 border-t sm:border-t-0 sm:border-l border-foreground/5 sm:pl-8 min-w-[155px]">
-                    <span className="text-4xl font-bold text-[#C0392B]">94.2%</span>
+                    <span className="text-4xl font-bold text-primary">94.2%</span>
                     <span className="text-xs text-foreground/45">Verified Accuracy</span>
                   </div>
                 </div>
@@ -618,9 +616,9 @@ export default function LandingPage() {
             {/* Bento 2: Auto Procurement */}
             <FadeIn className="md:col-span-2" delay={200}>
               <div className="rounded-[2rem] p-1.5 bg-foreground/5 ring-1 ring-foreground/5 h-full">
-                <div className="bg-[#F4EDE2] dark:bg-[#0A0A0A] rounded-[calc(2rem-0.375rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 h-full flex flex-col justify-between">
+                <div className="bg-card rounded-[calc(2rem-0.375rem)] shadow-sm p-8 h-full flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-[#C0392B] font-semibold mb-3">
+                    <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold mb-3">
                       <Truck className="w-3.5 h-3.5" />
                       <span>LOGISTICS WRITE</span>
                     </div>
@@ -630,7 +628,7 @@ export default function LandingPage() {
                     </p>
                   </div>
                   <div className="flex items-baseline gap-1.5 pt-6 border-t border-foreground/5">
-                    <span className="text-3xl font-bold text-[#C0392B]">73%</span>
+                    <span className="text-3xl font-bold text-primary">73%</span>
                     <span className="text-xs text-foreground/45">Fewer Stockouts</span>
                   </div>
                 </div>
@@ -640,9 +638,9 @@ export default function LandingPage() {
             {/* Bento 3: AI Operations Agent */}
             <FadeIn className="md:col-span-3" delay={300}>
               <div className="rounded-[2rem] p-1.5 bg-foreground/5 ring-1 ring-foreground/5 h-full">
-                <div className="bg-[#F4EDE2] dark:bg-[#0A0A0A] rounded-[calc(2rem-0.375rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 h-full flex flex-col justify-between gap-6">
+                <div className="bg-card rounded-[calc(2rem-0.375rem)] shadow-sm p-8 h-full flex flex-col justify-between gap-6">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-[#C0392B] font-semibold mb-3">
+                    <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold mb-3">
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>OPERATIONS INTELLIGENCE</span>
                     </div>
@@ -652,7 +650,7 @@ export default function LandingPage() {
                     </p>
                   </div>
                   <div className="flex items-baseline gap-1.5 pt-6 border-t border-foreground/5">
-                    <span className="text-3xl font-bold text-[#C0392B]">&lt;2s</span>
+                    <span className="text-3xl font-bold text-primary">&lt;2s</span>
                     <span className="text-xs text-foreground/45">Response Latency</span>
                   </div>
                 </div>
@@ -662,9 +660,9 @@ export default function LandingPage() {
             {/* Bento 4: Weather & Mud Warnings */}
             <FadeIn className="md:col-span-3" delay={400}>
               <div className="rounded-[2rem] p-1.5 bg-foreground/5 ring-1 ring-foreground/5 h-full">
-                <div className="bg-[#F4EDE2] dark:bg-[#0A0A0A] rounded-[calc(2rem-0.375rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 h-full flex flex-col justify-between gap-6">
+                <div className="bg-card rounded-[calc(2rem-0.375rem)] shadow-sm p-8 h-full flex flex-col justify-between gap-6">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-[#C0392B] font-semibold mb-3">
+                    <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold mb-3">
                       <CloudRain className="w-3.5 h-3.5" />
                       <span>WEATHER INTELLIGENCE</span>
                     </div>
@@ -674,7 +672,7 @@ export default function LandingPage() {
                     </p>
                   </div>
                   <div className="flex items-baseline gap-1.5 pt-6 border-t border-foreground/5">
-                    <span className="text-3xl font-bold text-[#C0392B]">12 Hours</span>
+                    <span className="text-3xl font-bold text-primary">12 Hours</span>
                     <span className="text-xs text-foreground/45">Early Dispatch Window</span>
                   </div>
                 </div>
@@ -690,8 +688,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <FadeIn>
             <div className="mb-16 text-center md:text-left">
-              <span className="text-xs uppercase tracking-widest text-[#C0392B] font-mono font-bold block mb-3">TESTIMONIALS</span>
-              <h2 className="text-4xl md:text-5xl font-display italic tracking-tight">Voices from the bush</h2>
+              <span className="text-xs uppercase tracking-widest text-primary font-mono font-bold block mb-3">TESTIMONIALS</span>
+              <h2 className="text-4xl md:text-5xl font-bold font-sans tracking-tight">Voices from the bush</h2>
             </div>
           </FadeIn>
           
@@ -712,10 +710,10 @@ export default function LandingPage() {
             ].map((t, i) => (
               <FadeIn key={i} delay={i * 150}>
                 <div className="rounded-[2rem] p-1.5 bg-foreground/5 ring-1 ring-foreground/5 h-full">
-                  <div className="bg-[#F4EDE2] dark:bg-[#0A0A0A] rounded-[calc(2rem-0.375rem)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 md:p-10 h-full flex flex-col justify-between">
+                  <div className="bg-card rounded-[calc(2rem-0.375rem)] shadow-sm p-8 md:p-10 h-full flex flex-col justify-between">
                     <p className="text-base md:text-lg leading-relaxed text-foreground/80 mb-8">&ldquo;{t.quote}&rdquo;</p>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#C0392B]/10 flex items-center justify-center text-xs font-bold text-[#C0392B]">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
                         {t.initials}
                       </div>
                       <div>
@@ -732,27 +730,27 @@ export default function LandingPage() {
       </section>
 
       {/* Section: CTA / Trial Request */}
-      <section className="py-28 md:py-36 px-6 bg-[#1C1816] text-[#F4EDE2] relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#C0392B]/5 rounded-full blur-[140px] pointer-events-none" />
+      <section className="py-28 md:py-36 px-6 bg-slate-900 text-slate-100 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <FadeIn>
-            <span className="text-xs uppercase tracking-widest text-[#C0392B] font-mono font-bold block mb-4">START MONITORING</span>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-display italic tracking-tight leading-[1.04] mb-8">
+            <span className="text-xs uppercase tracking-widest text-primary font-mono font-bold block mb-4">START MONITORING</span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-sans tracking-tight leading-[1.1] mb-8">
               Ready to secure your camp?
             </h2>
-            <p className="text-base md:text-lg text-[#F4EDE2]/60 mb-12 max-w-lg mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-slate-300 mb-12 max-w-lg mx-auto leading-relaxed">
               Equip your camp with 14-day booking alerts, automate your supply chain sheets, and get operational context.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#C0392B] text-[#F4EDE2] px-8 py-4 rounded-full font-medium text-sm hover:bg-[#C0392B]/90 active:scale-[0.97] transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold text-sm hover:bg-primary/90 active:scale-[0.97] transition-all"
               >
                 Create Account <ArrowUpRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/login"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 text-[#F4EDE2] px-8 py-4 rounded-full font-medium text-sm hover:bg-white/10 active:scale-[0.97] transition-all border border-white/10"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white/5 text-white px-8 py-4 rounded-lg font-semibold text-sm hover:bg-white/10 active:scale-[0.97] transition-all border border-white/10"
               >
                 Access Command Center
               </Link>
@@ -762,17 +760,17 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-[#1C1816]/10 bg-[#1C1816] text-[#F4EDE2]">
+      <footer className="py-12 px-6 border-t border-slate-800 bg-slate-950 text-slate-400">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/[0.05] pb-8 mb-8">
             <div>
               <Link href="/">
                 <img src="/logo.svg" alt="Ona Analytics Logo" className="h-8 w-auto brightness-0 invert" />
               </Link>
-              <p className="text-xs text-white/35 mt-2 font-mono">Securing isolated camps since 2026</p>
+              <p className="text-xs text-slate-500 mt-2 font-mono">Securing isolated camps since 2026</p>
             </div>
             
-            <div className="flex flex-wrap gap-8 text-xs text-white/45 font-mono">
+            <div className="flex flex-wrap gap-8 text-xs text-slate-400 font-mono">
               <a href="#radar" className="hover:text-white transition-colors">Radar</a>
               <a href="#problem" className="hover:text-white transition-colors">The Loop</a>
               <a href="#architecture" className="hover:text-white transition-colors">Core API</a>
@@ -781,7 +779,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-white/20 font-mono">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-slate-600 font-mono">
             <span>&copy; 2026 Ona Analytics. Built for Hack the Zero Stack (Vercel + AWS).</span>
             <span>Security • Terms of Operations • Local Playbook v1.2</span>
           </div>

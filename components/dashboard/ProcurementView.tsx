@@ -19,10 +19,10 @@ export function ProcurementView({ procurementData, loading, onGenerate, onFulfil
   return (
     <Card>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-display italic">Procurement List</h3>
+        <h3 className="text-base font-bold text-foreground">Procurement List</h3>
         <button
           onClick={onGenerate}
-          className="text-xs bg-[#E67E22]/10 text-[#E67E22] px-3 py-1.5 rounded-full ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all"
+          className="text-xs bg-primary/10 text-primary px-3.5 py-1.5 rounded-lg ring-1 ring-primary/20 hover:bg-primary/20 transition-all font-semibold"
         >
           Generate from Forecast
         </button>
@@ -50,19 +50,19 @@ export function ProcurementView({ procurementData, loading, onGenerate, onFulfil
                   <td className="py-3 px-4 text-foreground/50">{item.requiredAmount}</td>
                   <td className="py-3 px-4 text-foreground/50">{item.action}</td>
                   <td className="py-3 px-4">
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      item.urgency === "High" || item.urgency === "high" ? "bg-red-400/10 text-red-400" :
-                      item.urgency === "Medium" || item.urgency === "medium" ? "bg-[#E67E22]/10 text-[#E67E22]" :
-                      "bg-emerald-400/10 text-emerald-400"
+                    <span className={`text-xs px-2 py-1 rounded-md font-medium ${
+                      item.urgency === "High" || item.urgency === "high" ? "bg-red-500/10 text-red-500" :
+                      item.urgency === "Medium" || item.urgency === "medium" ? "bg-amber-500/10 text-amber-500" :
+                      "bg-emerald-500/10 text-emerald-500"
                     }`}>{item.urgency}</span>
                   </td>
                   <td className="py-3 px-4 text-right">
                     <button
                       onClick={() => handleFulfill(item.id)}
                       disabled={fulfilling === item.id}
-                      className="text-xs bg-emerald-400/10 text-emerald-400 px-2.5 py-1 rounded-full ring-1 ring-emerald-400/20 hover:bg-emerald-400/20 transition-all disabled:opacity-50"
+                      className="text-xs bg-emerald-500/10 text-emerald-500 px-3 py-1.5 rounded-lg ring-1 ring-emerald-500/20 hover:bg-emerald-500/20 transition-all disabled:opacity-50 font-semibold"
                     >
-                      {fulfilling === item.id ? <Loader2 className="w-3 h-3 animate-spin inline" /> : <CheckCircle className="w-3 h-3 inline" />}
+                      {fulfilling === item.id ? <Loader2 className="w-3 h-3 animate-spin inline" /> : <CheckCircle className="w-3.5 h-3.5 inline" />}
                       <span className="ml-1">Mark done</span>
                     </button>
                   </td>

@@ -11,7 +11,7 @@ export function Demand({ demandData, loading }: { demandData: any[]; loading: bo
   return (
     <div className="space-y-6">
       <Card>
-        <h3 className="text-lg font-display italic mb-4">Demand Radar</h3>
+        <h3 className="text-base font-semibold text-foreground mb-4">Demand Radar</h3>
         {loading ? (
           <div className="grid grid-cols-3 gap-4">
             {[1,2,3].map(i => <div key={i} className="h-24 bg-foreground/5 rounded-xl animate-pulse" />)}
@@ -34,7 +34,7 @@ export function Demand({ demandData, loading }: { demandData: any[]; loading: bo
         )}
       </Card>
       <Card>
-        <h3 className="text-lg font-display italic mb-4">Booking Velocity</h3>
+        <h3 className="text-base font-semibold text-foreground mb-4">Booking Velocity</h3>
         {loading ? (
           <div className="h-32 bg-foreground/5 rounded animate-pulse" />
         ) : (

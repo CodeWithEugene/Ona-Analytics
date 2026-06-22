@@ -416,8 +416,8 @@ export default function DashboardPage() {
                   onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false) }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? "bg-[#E67E22]/10 text-[#E67E22] ring-1 ring-[#E67E22]/20"
-                      : "text-foreground/50 hover:text-foreground hover:bg-[#1C1816]/5 dark:hover:bg-white/5"
+                      ? "bg-primary/10 text-primary font-semibold ring-1 ring-primary/20"
+                      : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -431,35 +431,35 @@ export default function DashboardPage() {
               onClick={() => setChatOpen(!chatOpen)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-500 ${
                 showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "agent"
-                  ? "ring-2 ring-[#E67E22] ring-offset-2 dark:ring-offset-card scale-[1.03] shadow-[0_0_15px_rgba(230,126,34,0.35)] text-[#E67E22] bg-[#E67E22]/10"
-                  : "text-foreground/50 hover:text-foreground hover:bg-[#1C1816]/5 dark:hover:bg-white/5"
+                  ? "ring-2 ring-primary ring-offset-2 dark:ring-offset-card scale-[1.03] shadow-[0_0_15px_rgba(25,118,210,0.35)] text-primary bg-primary/10"
+                  : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
               }`}
             >
-              <Sparkles className="w-4 h-4 text-[#E67E22]" />
+              <Sparkles className="w-4 h-4 text-primary" />
               <span>Ona Agent</span>
             </button>
             {mounted && (
               <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground/50 hover:text-foreground hover:bg-[#1C1816]/5 dark:hover:bg-white/5 transition-all duration-200"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-all duration-200"
               >
-                {theme === "dark" ? <Sun className="w-4 h-4 text-[#E67E22]" /> : <Moon className="w-4 h-4 text-[#C0392B]" />}
+                {theme === "dark" ? <Sun className="w-4 h-4 text-primary" /> : <Moon className="w-4 h-4 text-primary" />}
                 <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
               </button>
             )}
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground/50 hover:text-foreground hover:bg-[#1C1816]/5 dark:hover:bg-white/5 transition-all duration-200"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-all duration-200"
               >
-                <div className="w-6 h-6 rounded-full bg-[#E67E22]/20 flex items-center justify-center">
-                  <span className="text-[10px] font-medium text-[#E67E22]">{initials}</span>
+                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-[10px] font-medium text-primary">{initials}</span>
                 </div>
                 <span className="flex-1 text-left truncate">{userName}</span>
                 <ChevronDown className="w-3 h-3" />
               </button>
               {userMenuOpen && (
-                <div className="absolute bottom-full left-3 right-3 mb-1 bg-[#F4EDE2] dark:bg-[#0A0A0A] border border-border z-50 rounded-xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-1 duration-200">
+                <div className="absolute bottom-full left-3 right-3 mb-1 bg-card border border-border z-50 rounded-lg overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-1 duration-200">
                   <button
                     onClick={() => { setUserMenuOpen(false); setActiveTab("settings") }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
@@ -483,7 +483,7 @@ export default function DashboardPage() {
                     }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
                   >
-                    <RefreshCw className="w-3.5 h-3.5 text-[#E67E22]" />
+                    <RefreshCw className="w-3.5 h-3.5 text-primary" />
                     Restart Tour
                   </button>
                   <div className="border-t border-border" />
@@ -501,30 +501,30 @@ export default function DashboardPage() {
         </div>
       </aside>
 
-      <main className="flex-1 min-h-screen p-6 pt-20 md:p-8">
+      <main className="flex-1 min-h-screen p-6 pt-20 md:p-8 bg-background">
         <div className="max-w-7xl mx-auto">
-          <div id="onboarding-header" className={`mb-8 flex items-center justify-between p-4 rounded-2xl transition-all duration-500 ${
+          <div id="onboarding-header" className={`mb-8 flex items-center justify-between p-4 rounded-xl transition-all duration-500 ${
             showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "header"
-              ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] bg-[#E67E22]/5 shadow-[0_0_25px_rgba(230,126,34,0.25)] scale-[1.01]"
+              ? "ring-2 ring-primary ring-offset-4 dark:ring-offset-background bg-primary/5 shadow-[0_0_25px_rgba(25,118,210,0.25)] scale-[1.01]"
               : ""
           }`}>
             <div>
-              <h1 className="text-2xl font-display italic mb-1">{orgData?.name || "Operations Command Center"}</h1>
-              <p className="text-sm text-foreground/40">Real-time demand intelligence</p>
+              <h1 className="text-2xl font-sans font-bold tracking-tight mb-1 text-foreground">{orgData?.name || "Operations Command Center"}</h1>
+              <p className="text-sm text-foreground/50">Real-time demand intelligence</p>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => { fetchDashboard(); fetchOrg() }}
-                className="p-2 text-foreground/30 hover:text-foreground hover:bg-[#1C1816]/5 dark:hover:bg-white/5 rounded-lg transition-all"
+                className="p-2 text-foreground/30 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-all"
                 title="Refresh data"
               >
                 <RefreshCw className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setChatOpen(!chatOpen)}
-                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#E67E22]/10 text-[#E67E22] text-sm ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 transition-all duration-500 ${
+                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm ring-1 ring-primary/20 hover:bg-primary/20 transition-all duration-500 ${
                   showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "agent"
-                    ? "ring-2 ring-[#E67E22] ring-offset-2 dark:ring-offset-[#0A0A0A] scale-[1.03] shadow-[0_0_15px_rgba(230,126,34,0.35)]"
+                    ? "ring-2 ring-primary ring-offset-2 dark:ring-offset-[#0A0A0A] scale-[1.03] shadow-[0_0_15px_rgba(25,118,210,0.35)]"
                     : ""
                 }`}
               >
@@ -648,31 +648,31 @@ export default function DashboardPage() {
           role="dialog" 
           aria-labelledby="onboarding-title" 
           style={tooltipStyle}
-          className="z-50 bg-[#F4EDE2] dark:bg-[#0A0A0A] border border-[#D6CFC5] dark:border-white/10 rounded-2xl shadow-2xl p-5 flex flex-col gap-4 text-foreground shadow-[0_0_30px_rgba(230,126,34,0.15)] animate-in fade-in zoom-in-95 duration-300"
+          className="z-50 bg-card border border-border rounded-xl shadow-2xl p-5 flex flex-col gap-4 text-foreground shadow-[0_4px_24px_rgba(0,0,0,0.15)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.4)] animate-in fade-in zoom-in-95 duration-300"
         >
           {ONBOARDING_STEPS[onboardingStep].position === "bottom-center" && (
-            <div className="hidden md:block absolute -top-2.5 left-1/2 -translate-x-1/2 w-5 h-2.5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[0_-1px_1px_rgba(0,0,0,0.05)]">
+            <div className="hidden md:block absolute -top-2.5 left-1/2 -translate-x-1/2 w-5 h-2.5 text-card fill-current drop-shadow-[0_-1px_1px_rgba(0,0,0,0.05)]">
               <svg viewBox="0 0 20 10" className="w-full h-full">
                 <path d="M0,10 L10,0 L20,10 Z" />
               </svg>
             </div>
           )}
           {ONBOARDING_STEPS[onboardingStep].position === "top-center" && (
-            <div className="hidden md:block absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-2.5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+            <div className="hidden md:block absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-2.5 text-card fill-current drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
               <svg viewBox="0 0 20 10" className="w-full h-full">
                 <path d="M0,0 L10,10 L20,0 Z" />
               </svg>
             </div>
           )}
           {ONBOARDING_STEPS[onboardingStep].position === "right-center" && (
-            <div className="hidden md:block absolute -left-2.5 top-1/2 -translate-y-1/2 w-2.5 h-5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[-1px_0_1px_rgba(0,0,0,0.05)]">
+            <div className="hidden md:block absolute -left-2.5 top-1/2 -translate-y-1/2 w-2.5 h-5 text-card fill-current drop-shadow-[-1px_0_1px_rgba(0,0,0,0.05)]">
               <svg viewBox="0 0 10 20" className="w-full h-full">
                 <path d="M10,0 L0,10 L10,20 Z" />
               </svg>
             </div>
           )}
           {ONBOARDING_STEPS[onboardingStep].position === "left-center" && (
-            <div className="hidden md:block absolute -right-2.5 top-1/2 -translate-y-1/2 w-2.5 h-5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[1px_0_1px_rgba(0,0,0,0.05)]">
+            <div className="hidden md:block absolute -right-2.5 top-1/2 -translate-y-1/2 w-2.5 h-5 text-card fill-current drop-shadow-[1px_0_1px_rgba(0,0,0,0.05)]">
               <svg viewBox="0 0 10 20" className="w-full h-full">
                 <path d="M0,0 L10,10 L0,20 Z" />
               </svg>
@@ -680,7 +680,7 @@ export default function DashboardPage() {
           )}
 
           <div className="flex items-center justify-between">
-            <h2 id="onboarding-title" className="font-display italic text-xl text-[#1C1816] dark:text-white">
+            <h2 id="onboarding-title" className="font-sans font-bold text-base text-foreground">
               {ONBOARDING_STEPS[onboardingStep].title}
             </h2>
             <button 
@@ -688,13 +688,13 @@ export default function DashboardPage() {
                 setShowOnboarding(false)
                 localStorage.setItem("ona_onboarding_completed", "true")
               }}
-              className="p-1 hover:bg-foreground/5 rounded text-[#1C1816]/40 dark:text-white/40 hover:text-[#1C1816] dark:hover:text-white transition-colors"
+              className="p-1 hover:bg-foreground/5 rounded text-foreground/45 hover:text-foreground transition-colors"
               aria-label="Close onboarding tour"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
-          <p className="text-sm text-[#1C1816]/75 dark:text-white/70 leading-relaxed font-body">
+          <p className="text-xs text-foreground/70 leading-relaxed font-sans">
             {ONBOARDING_STEPS[onboardingStep].description}
           </p>
           <div className="flex items-center justify-between pt-2">
@@ -703,7 +703,7 @@ export default function DashboardPage() {
                 <div 
                   key={i} 
                   className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    i === onboardingStep ? "bg-[#E67E22] w-4" : "bg-[#D6CFC5] dark:bg-white/20"
+                    i === onboardingStep ? "bg-primary w-4" : "bg-border dark:bg-white/10"
                   }`} 
                 />
               ))}
@@ -712,7 +712,7 @@ export default function DashboardPage() {
               {onboardingStep > 0 ? (
                 <button
                   onClick={() => setOnboardingStep(prev => prev - 1)}
-                  className="text-xs text-[#1C1816]/50 dark:text-white/40 hover:text-[#1C1816] dark:hover:text-white font-medium px-3 py-1.5 rounded-full transition-all"
+                  className="text-xs text-foreground/50 hover:text-foreground font-medium px-3 py-1.5 rounded-lg transition-all"
                 >
                   Back
                 </button>
@@ -722,7 +722,7 @@ export default function DashboardPage() {
                     setShowOnboarding(false)
                     localStorage.setItem("ona_onboarding_completed", "true")
                   }}
-                  className="text-xs text-[#1C1816]/40 dark:text-white/30 hover:text-[#1C1816] dark:hover:text-white font-medium px-3 py-1.5 rounded-full transition-all"
+                  className="text-xs text-foreground/50 hover:text-foreground font-medium px-3 py-1.5 rounded-lg transition-all"
                 >
                   Skip
                 </button>
@@ -737,7 +737,7 @@ export default function DashboardPage() {
                     localStorage.setItem("ona_onboarding_completed", "true")
                   }
                 }}
-                className="text-xs bg-[#E67E22]/10 text-[#E67E22] ring-1 ring-[#E67E22]/20 hover:bg-[#E67E22]/20 px-4 py-1.5 rounded-full font-semibold transition-all"
+                className="text-xs bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-1.5 rounded-lg font-semibold transition-all shadow-sm"
               >
                 {onboardingStep === ONBOARDING_STEPS.length - 1 ? "Finish" : "Next"}
               </button>

@@ -94,11 +94,11 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
         <div id="onboarding-chart" className="md:col-span-2">
           <Card className={`transition-all duration-500 ${
             activeOnboardingTarget === "chart"
-              ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] scale-[1.01] shadow-[0_0_25px_rgba(230,126,34,0.25)] bg-[#E67E22]/5"
+              ? "ring-2 ring-primary ring-offset-4 dark:ring-offset-background scale-[1.01] shadow-[0_0_25px_rgba(25,118,210,0.25)] bg-primary/5"
               : ""
           }`}>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-display italic">14-Day Demand Forecast</h3>
+              <h3 className="text-base font-bold text-foreground">14-Day Demand Forecast</h3>
               <button onClick={onRefresh} className="text-xs text-foreground/30 hover:text-foreground p-1">
                 <RefreshCw className="w-3 h-3" />
               </button>
@@ -170,7 +170,7 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
         </div>
         <div>
           <Card>
-            <h3 className="text-lg font-display italic mb-6">Action Items</h3>
+            <h3 className="text-base font-bold text-foreground mb-6">Action Items</h3>
             {loading ? (
               <div className="space-y-4">
                 {[1,2,3,4].map(i => <div key={i} className="h-10 bg-foreground/5 rounded animate-pulse" />)}
