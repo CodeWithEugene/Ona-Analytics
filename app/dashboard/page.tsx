@@ -31,21 +31,29 @@ const ONBOARDING_STEPS = [
     title: "Safari Operations Command Center",
     description: "Welcome to Ona Analytics. This command center coordinates remote safari camp demand and supply. Let's walk through how to predict occupancy surges and optimize isolated logistics.",
     target: "header",
+    targetId: "onboarding-header",
+    position: "bottom-center",
   },
   {
     title: "14-Day Demand Forecast",
     description: "This radar displays your camp's predicted occupancy (dotted lines) versus actual check-ins (solid lines) computed by our serverless demand intelligence model. Watch for high-demand spikes to prepare kitchen supplies and staff.",
     target: "chart",
+    targetId: "onboarding-chart",
+    position: "right-center",
   },
   {
     title: "Automated Procurement Recommendations",
     description: "Here, our AI estimates the diesel, fresh produce, dry ingredients, and linen supplies required to sustain the predicted surges, proposing bulk orders that sync with the next isolated truck schedule.",
     target: "procurement_view",
+    targetId: "onboarding-procurement-view",
+    position: "top-center",
   },
   {
     title: "Ona Intelligent Field Agent",
     description: "Meet the Ona AI Agent. It is trained on camp operation logs, standard operating procedures, and local supplier lead times. Ask it to generate orders, assess inventory risk, or answer questions directly.",
     target: "agent",
+    targetId: "onboarding-agent-drawer",
+    position: "left-center",
   },
 ]
 
@@ -92,6 +100,88 @@ export default function DashboardPage() {
   const abortRef = useRef<AbortController | null>(null)
   const chatAbortRef = useRef<AbortController | null>(null)
 
+  const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({
+    position: "fixed",
+    bottom: "24px",
+    right: "24px",
+    zIndex: 50,
+  })
+
+  const updateTooltipPosition = useCallback(() => {
+    if (!showOnboarding) return
+
+    const step = ONBOARDING_STEPS[onboardingStep]
+    if (!step) return
+
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setTooltipStyle({
+        position: "fixed",
+        bottom: "24px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "calc(100% - 2rem)",
+        maxWidth: "380px",
+        zIndex: 50,
+      })
+      return
+    }
+
+    const targetEl = document.getElementById(step.targetId)
+    if (!targetEl) {
+      setTooltipStyle({
+        position: "fixed",
+        bottom: "24px",
+        right: "24px",
+        width: "380px",
+        zIndex: 50,
+      })
+      return
+    }
+
+    const rect = targetEl.getBoundingClientRect()
+    const tooltipWidth = 380
+    const tooltipHeight = 220
+
+    let top = 0
+    let left = 0
+
+    switch (step.position) {
+      case "bottom-center":
+        top = rect.bottom + 16
+        left = rect.left + rect.width / 2 - tooltipWidth / 2
+        break
+      case "right-center":
+        top = rect.top + rect.height / 2 - tooltipHeight / 2
+        left = rect.right + 16
+        break
+      case "left-center":
+        top = rect.top + rect.height / 2 - tooltipHeight / 2
+        left = rect.left - tooltipWidth - 16
+        break
+      case "top-center":
+        top = rect.top - tooltipHeight - 16
+        left = rect.left + rect.width / 2 - tooltipWidth / 2
+        break
+      default:
+        top = rect.bottom + 16
+        left = rect.left + rect.width / 2 - tooltipWidth / 2
+    }
+
+    if (typeof window !== "undefined") {
+      left = Math.max(20, Math.min(left, window.innerWidth - tooltipWidth - 20))
+      top = Math.max(20, Math.min(top, window.innerHeight - tooltipHeight - 20))
+    }
+
+    setTooltipStyle({
+      position: "fixed",
+      top: `${top}px`,
+      left: `${left}px`,
+      width: `${tooltipWidth}px`,
+      zIndex: 50,
+      transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+    })
+  }, [onboardingStep, showOnboarding])
+
   useEffect(() => {
     if (status === "unauthenticated") {
       window.location.href = "/login"
@@ -127,6 +217,27 @@ export default function DashboardPage() {
       setChatOpen(false)
     }
   }, [onboardingStep, showOnboarding])
+
+  useEffect(() => {
+    updateTooltipPosition()
+    const timer = setTimeout(() => {
+      updateTooltipPosition()
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [onboardingStep, showOnboarding, activeTab, chatOpen, updateTooltipPosition])
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", updateTooltipPosition)
+      window.addEventListener("scroll", updateTooltipPosition, true)
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", updateTooltipPosition)
+        window.removeEventListener("scroll", updateTooltipPosition, true)
+      }
+    }
+  }, [updateTooltipPosition])
 
   useEffect(() => {
     if (showOnboarding) {
@@ -392,7 +503,7 @@ export default function DashboardPage() {
 
       <main className="flex-1 min-h-screen p-6 pt-20 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className={`mb-8 flex items-center justify-between p-4 rounded-2xl transition-all duration-500 ${
+          <div id="onboarding-header" className={`mb-8 flex items-center justify-between p-4 rounded-2xl transition-all duration-500 ${
             showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "header"
               ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] bg-[#E67E22]/5 shadow-[0_0_25px_rgba(230,126,34,0.25)] scale-[1.01]"
               : ""
@@ -436,7 +547,7 @@ export default function DashboardPage() {
           )}
           {activeTab === "demand" && <Demand demandData={demandData} loading={loading} />}
           {activeTab === "procurement" && (
-            <div className={`transition-all duration-500 rounded-2xl ${
+            <div id="onboarding-procurement-view" className={`transition-all duration-500 rounded-2xl ${
               showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "procurement_view"
                 ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] scale-[1.01] shadow-[0_0_25px_rgba(230,126,34,0.25)] bg-[#E67E22]/5"
                 : ""
@@ -536,8 +647,38 @@ export default function DashboardPage() {
         <div 
           role="dialog" 
           aria-labelledby="onboarding-title" 
-          className="fixed bottom-6 right-6 z-50 max-w-sm w-[calc(100vw-3rem)] md:w-96 bg-[#F4EDE2] dark:bg-[#0A0A0A] border border-[#D6CFC5] dark:border-white/10 rounded-2xl shadow-2xl p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_0_30px_rgba(230,126,34,0.15)] text-foreground"
+          style={tooltipStyle}
+          className="z-50 bg-[#F4EDE2] dark:bg-[#0A0A0A] border border-[#D6CFC5] dark:border-white/10 rounded-2xl shadow-2xl p-5 flex flex-col gap-4 text-foreground shadow-[0_0_30px_rgba(230,126,34,0.15)] animate-in fade-in zoom-in-95 duration-300"
         >
+          {ONBOARDING_STEPS[onboardingStep].position === "bottom-center" && (
+            <div className="hidden md:block absolute -top-2.5 left-1/2 -translate-x-1/2 w-5 h-2.5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[0_-1px_1px_rgba(0,0,0,0.05)]">
+              <svg viewBox="0 0 20 10" className="w-full h-full">
+                <path d="M0,10 L10,0 L20,10 Z" />
+              </svg>
+            </div>
+          )}
+          {ONBOARDING_STEPS[onboardingStep].position === "top-center" && (
+            <div className="hidden md:block absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-2.5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
+              <svg viewBox="0 0 20 10" className="w-full h-full">
+                <path d="M0,0 L10,10 L20,0 Z" />
+              </svg>
+            </div>
+          )}
+          {ONBOARDING_STEPS[onboardingStep].position === "right-center" && (
+            <div className="hidden md:block absolute -left-2.5 top-1/2 -translate-y-1/2 w-2.5 h-5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[-1px_0_1px_rgba(0,0,0,0.05)]">
+              <svg viewBox="0 0 10 20" className="w-full h-full">
+                <path d="M10,0 L0,10 L10,20 Z" />
+              </svg>
+            </div>
+          )}
+          {ONBOARDING_STEPS[onboardingStep].position === "left-center" && (
+            <div className="hidden md:block absolute -right-2.5 top-1/2 -translate-y-1/2 w-2.5 h-5 text-[#F4EDE2] dark:text-[#0A0A0A] fill-current drop-shadow-[1px_0_1px_rgba(0,0,0,0.05)]">
+              <svg viewBox="0 0 10 20" className="w-full h-full">
+                <path d="M0,0 L10,10 L0,20 Z" />
+              </svg>
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
             <h2 id="onboarding-title" className="font-display italic text-xl text-[#1C1816] dark:text-white">
               {ONBOARDING_STEPS[onboardingStep].title}

@@ -91,7 +91,7 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
+        <div id="onboarding-chart" className="md:col-span-2">
           <Card className={`transition-all duration-500 ${
             activeOnboardingTarget === "chart"
               ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] scale-[1.01] shadow-[0_0_25px_rgba(230,126,34,0.25)] bg-[#E67E22]/5"
