@@ -1,18 +1,17 @@
 import type { Metadata, Viewport } from "next"
-import { Instrument_Serif, DM_Sans, JetBrains_Mono } from "next/font/google"
+import { Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 
-const display = Instrument_Serif({
+const display = Inter({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["400"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
 })
 
-const body = DM_Sans({
+const body = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["400", "500", "600", "700"],

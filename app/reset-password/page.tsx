@@ -94,26 +94,26 @@ function ResetPasswordForm() {
       {mounted && (
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="absolute top-4 right-4 p-2.5 rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground transition-all"
+          className="absolute top-4 right-4 p-2.5 rounded-full bg-muted hover:bg-muted/80 text-foreground transition-all border border-border"
           aria-label="Toggle theme"
         >
-          {theme === "dark" ? <Sun className="w-4.5 h-4.5 text-yellow-500" /> : <Moon className="w-4.5 h-4.5 text-primary" />}
+          {theme === "dark" ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-primary" />}
         </button>
       )}
 
       <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-2 duration-300">
         <div className="p-1.5 rounded-[2rem] bg-foreground/5 ring-1 ring-foreground/5">
-          <div className="rounded-[calc(2rem-0.375rem)] bg-card shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8">
+          <div className="rounded-[calc(2rem-0.375rem)] bg-card shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] p-8 border border-border">
             <div className="text-center mb-8 flex flex-col items-center">
               <Link href="/" className="hover:opacity-85 transition-opacity mb-2 block">
-                <img src="/logo.svg" alt="Ona Logo" className="h-10 w-auto dark:brightness-0 dark:invert" />
+                <img src="/logo.svg" alt="Ona Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
               </Link>
-              <p className="text-sm text-foreground/40 mt-1">Choose a new password</p>
+              <p className="text-xs text-muted-foreground mt-1 font-mono">Choose a new password</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm text-foreground/50">New Password</label>
+              <div className="space-y-1.5">
+                <label htmlFor="password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">New Password</label>
                 <input
                   id="password"
                   type="password"
@@ -123,11 +123,11 @@ function ResetPasswordForm() {
                   autoComplete="new-password"
                   required
                   minLength={8}
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none placeholder:text-foreground/20"
+                  className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-muted-foreground/40 transition-all font-sans"
                 />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm text-foreground/50">Confirm Password</label>
+              <div className="space-y-1.5">
+                <label htmlFor="confirmPassword" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Confirm Password</label>
                 <input
                   id="confirmPassword"
                   type="password"
@@ -137,16 +137,16 @@ function ResetPasswordForm() {
                   autoComplete="new-password"
                   required
                   minLength={8}
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-primary/50 outline-none placeholder:text-foreground/20"
+                  className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-muted-foreground/40 transition-all font-sans"
                 />
               </div>
 
-              {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
+              {error && <p role="alert" className="text-sm text-destructive font-medium bg-destructive/10 p-2.5 rounded border border-destructive/20">{error}</p>}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
+                className="w-full bg-primary text-primary-foreground py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/95 active:scale-[0.98] transition-all disabled:opacity-50 shadow-sm"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>
                   Reset Password <ArrowUpRight className="w-4 h-4" />
@@ -155,9 +155,9 @@ function ResetPasswordForm() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-xs text-foreground/40">
+              <p className="text-xs text-muted-foreground">
                 Remember your password?{" "}
-                <Link href="/login" className="text-primary hover:underline">Sign in</Link>
+                <Link href="/login" className="text-primary hover:underline font-semibold">Sign in</Link>
               </p>
             </div>
           </div>

@@ -45,60 +45,60 @@ export default function LoginPage() {
       {mounted && (
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-foreground/5 hover:bg-foreground/10 text-foreground transition-all"
+          className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-muted hover:bg-muted/80 text-foreground transition-all border border-border"
           aria-label="Toggle theme"
         >
-          {theme === "dark" ? <Sun className="w-4.5 h-4.5 text-primary" /> : <Moon className="w-4.5 h-4.5 text-primary" />}
+          {theme === "dark" ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-primary" />}
         </button>
       )}
 
-      {/* Left Column: MUI Gradient & Visual Storytelling */}
-      <div className="hidden lg:flex lg:col-span-5 bg-[#0B0F19] dark:bg-[#070A13] text-white p-12 flex-col justify-between relative overflow-hidden border-r border-border/10">
-        {/* MUI Inspired Radial Glow */}
-        <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Left Column: Theme-aware visual dashboard panel */}
+      <div className="hidden lg:flex lg:col-span-5 bg-muted/30 dark:bg-muted/10 text-foreground p-12 flex-col justify-between relative overflow-hidden border-r border-border">
+        {/* Subtle Brand Background Grid Pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
         
         <div className="relative z-10">
           <Link href="/" className="hover:opacity-85 transition-opacity inline-block mb-12">
-            <img src="/logo.svg" alt="Ona Logo" className="h-9 w-auto dark:brightness-0 dark:invert" />
+            <img src="/logo.svg" alt="Ona Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
           </Link>
           
           <div className="space-y-6 mt-12">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary font-mono">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary font-mono">
               ✦ DEMAND RADAR & LOGISTICS CONTROL
             </div>
-            <h2 className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-white leading-tight">
+            <h2 className="text-3xl md:text-4xl font-sans font-bold tracking-tight text-foreground leading-tight">
               Securing supply lines in the wild.
             </h2>
-            <p className="text-sm text-white/70 leading-relaxed max-w-sm font-sans">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm font-sans">
               Ona Analytics connects occupancy forecasts with automatic procurement triggers. Prevent kitchen stockouts and optimize isolated supply trucks days before check-in.
             </p>
           </div>
         </div>
 
-        {/* Dynamic visual representation: HUD simulation card */}
-        <div className="relative z-10 my-8 p-4 rounded-xl bg-white/5 border border-white/10 shadow-xl max-w-sm">
-          <div className="rounded-lg p-2 text-white space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        {/* Dynamic visual representation: Clean Material UI status card */}
+        <div className="relative z-10 my-8 p-1.5 rounded-[2rem] bg-foreground/5 ring-1 ring-foreground/5 shadow-sm max-w-sm">
+          <div className="bg-card text-card-foreground border border-border rounded-[calc(2rem-0.375rem)] p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-[9px] text-white/50 font-mono tracking-wider">SUPPLY ROUTE ACTIVE</span>
+                <span className="text-[10px] text-muted-foreground font-mono tracking-wider">SUPPLY ROUTE ACTIVE</span>
               </div>
-              <span className="text-[8px] font-mono text-white/40">SEKENANI GATE BYPASS</span>
+              <span className="text-[9px] font-mono text-muted-foreground">SEKENANI GATE BYPASS</span>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[10px] bg-white/[0.03] p-2.5 rounded border border-white/[0.04]">
-                <span className="text-white/70">Truck A (Produce)</span>
-                <span className="text-primary font-mono">140km left</span>
+              <div className="flex items-center justify-between text-[11px] bg-muted/50 p-2.5 rounded border border-border">
+                <span className="text-foreground/80 font-medium">Truck A (Fresh Produce)</span>
+                <span className="text-primary font-mono font-semibold">140km left</span>
               </div>
-              <div className="flex items-center justify-between text-[10px] bg-white/[0.03] p-2.5 rounded border border-white/[0.04]">
-                <span className="text-white/70">Rain Alert Buffer</span>
-                <span className="text-red-400 font-mono">-12h Dispatch</span>
+              <div className="flex items-center justify-between text-[11px] bg-muted/50 p-2.5 rounded border border-border">
+                <span className="text-foreground/80 font-medium">Rain Alert Buffer</span>
+                <span className="text-destructive font-mono font-semibold">-12h Dispatch</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="relative z-10 text-[10px] font-mono text-white/30">
+        <div className="relative z-10 text-[10px] font-mono text-muted-foreground">
           &copy; 2026 Ona Analytics • Active operations across East Africa.
         </div>
       </div>
@@ -109,21 +109,21 @@ export default function LoginPage() {
           {/* Mobile Only Header */}
           <div className="text-center mb-8 flex flex-col items-center lg:hidden">
             <Link href="/" className="hover:opacity-85 transition-opacity mb-2 block">
-              <img src="/logo.svg" alt="Ona Logo" className="h-9 w-auto dark:brightness-0 dark:invert" />
+              <img src="/logo.svg" alt="Ona Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
             </Link>
-            <p className="text-xs text-foreground/50 mt-1">Operations Command Center</p>
+            <p className="text-xs text-muted-foreground mt-1 font-mono">Operations Command Center</p>
           </div>
 
-          <div className="bg-card text-card-foreground border border-border rounded-xl shadow-lg p-8">
+          <div className="bg-card text-card-foreground border border-border rounded-xl shadow-sm p-8">
             {/* Desktop Header */}
             <div className="hidden lg:block mb-8">
               <h3 className="text-2xl font-sans font-bold tracking-tight mb-1 text-foreground">Welcome back</h3>
-              <p className="text-sm text-foreground/50">Operations Command Center</p>
+              <p className="text-sm text-muted-foreground font-mono">Operations Command Center</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <label htmlFor="email" className="text-xs font-semibold text-foreground/60">Email Address</label>
+                <label htmlFor="email" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email Address</label>
                 <input
                   id="email"
                   type="email"
@@ -132,14 +132,14 @@ export default function LoginPage() {
                   placeholder="camp@ona-analytics.com"
                   autoComplete="email"
                   required
-                  className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/25 outline-none placeholder:text-foreground/30 transition-all"
+                  className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-muted-foreground/40 transition-all font-sans"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-xs font-semibold text-foreground/60">Password</label>
-                  <Link href="/forgot-password" className="text-xs text-primary hover:underline transition-colors font-medium">
+                  <label htmlFor="password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Password</label>
+                  <Link href="/forgot-password" className="text-xs text-primary hover:underline transition-colors font-semibold">
                     Forgot Password?
                   </Link>
                 </div>
@@ -151,16 +151,16 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   required
-                  className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/25 outline-none placeholder:text-foreground/30 transition-all"
+                  className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none placeholder:text-muted-foreground/40 transition-all font-sans"
                 />
               </div>
 
-              {error && <p role="alert" className="text-sm text-destructive font-medium">{error}</p>}
+              {error && <p role="alert" className="text-sm text-destructive font-medium bg-destructive/10 p-2.5 rounded border border-destructive/20">{error}</p>}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50"
+                className="w-full bg-primary text-primary-foreground py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/95 active:scale-[0.98] transition-all disabled:opacity-50 shadow-sm"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>
                   Sign In <ArrowUpRight className="w-4 h-4" />
@@ -169,7 +169,7 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-xs text-foreground/50">
+              <p className="text-xs text-muted-foreground">
                 {"Don't have an account? "}
                 <Link href="/register" className="text-primary hover:underline font-semibold">Create one</Link>
               </p>

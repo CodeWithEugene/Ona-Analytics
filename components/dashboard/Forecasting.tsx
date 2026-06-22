@@ -1,10 +1,36 @@
 "use client"
 
+import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 import { Sparkles } from "lucide-react"
 import { Card } from "./Card"
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts"
 
 export function Forecasting({ demandData, loading }: { demandData: any[]; loading: boolean }) {
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const peakVal = demandData.length > 0 ? Math.round(Math.max(...demandData.map(d => d.predicted_value ?? 0))) : null
+
+  const chartData = demandData.slice(-14).map((d: any) => {
+    const dateObj = new Date(d.log_date)
+    return {
+      date: dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      forecast: d.predicted_value !== null ? Math.round(parseFloat(d.predicted_value)) : 0,
+    }
+  })
 
   return (
     <div className="space-y-6">
@@ -12,25 +38,47 @@ export function Forecasting({ demandData, loading }: { demandData: any[]; loadin
         <h3 className="text-base font-semibold text-foreground mb-4">14-Day Forecast</h3>
         {loading ? (
           <div className="h-64 bg-foreground/5 rounded animate-pulse" />
-        ) : (
-          <div className="h-64 flex items-end gap-2">
-            {demandData.length > 0 ? demandData.slice(-14).map((d: any, i: number) => {
-              const val = d.predicted_value ?? d.actual_value ?? 0
-              return (
-                <div key={i} className="flex-1 relative group cursor-pointer">
-                  <div
-                    className="bg-gradient-to-t from-[#E67E22]/40 to-[#E67E22]/10 rounded-t-sm transition-all duration-200 hover:from-[#E67E22]/60 hover:to-[#E67E22]/20"
-                    style={{ height: Math.min(val, 100) + "%" }}
-                  />
-                  <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground/10 text-foreground text-xs px-2 py-1 rounded whitespace-nowrap transition-opacity">
-                    {Math.round(val)}%
-                  </div>
-                </div>
-              )
-            }) : (
-              <div className="flex items-center justify-center w-full h-full text-foreground/20 text-sm">No forecast data</div>
-            )}
+        ) : demandData.length > 0 && mounted ? (
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.15)" vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  stroke="rgba(128,128,128,0.5)"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="rgba(128,128,128,0.5)"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                  domain={[0, 100]}
+                  tickFormatter={(value) => `${value}%`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: theme === "dark" ? "#0A0A0A" : "#FFFFFF",
+                    borderColor: "rgba(128,128,128,0.2)",
+                    borderRadius: "0.75rem",
+                    color: "var(--foreground)",
+                    fontSize: "12px",
+                  }}
+                />
+                <Bar
+                  dataKey="forecast"
+                  name="Forecasted Occupancy"
+                  fill="hsl(var(--primary))"
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={45}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
+        ) : (
+          <div className="flex items-center justify-center h-64 text-foreground/20 text-sm">No forecast data available</div>
         )}
       </Card>
       <Card>
@@ -38,7 +86,7 @@ export function Forecasting({ demandData, loading }: { demandData: any[]; loadin
         <div className="space-y-3">
           {peakVal !== null && peakVal > 0 ? (
             <div className="flex items-start gap-3 p-3 bg-foreground/5 rounded-lg">
-              <Sparkles className="w-5 h-5 text-[#E67E22] mt-0.5" />
+              <Sparkles className="w-5 h-5 text-primary mt-0.5" />
               <div>
                 <p className="text-sm font-medium">Spike Detected</p>
                 <p className="text-xs text-foreground/40">
@@ -48,7 +96,7 @@ export function Forecasting({ demandData, loading }: { demandData: any[]; loadin
             </div>
           ) : (
             <div className="flex items-start gap-3 p-3 bg-foreground/5 rounded-lg">
-              <Sparkles className="w-5 h-5 text-[#E67E22] mt-0.5" />
+              <Sparkles className="w-5 h-5 text-primary mt-0.5" />
               <div>
                 <p className="text-sm font-medium">Insufficient Data</p>
                 <p className="text-xs text-foreground/40">Collect more demand data to generate AI insights.</p>

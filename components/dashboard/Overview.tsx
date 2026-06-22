@@ -43,7 +43,7 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
         <Card>
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-foreground/40">Current Occupancy</span>
-            <TrendingUp className="w-4 h-4 text-[#E67E22]" />
+            <TrendingUp className="w-4 h-4 text-primary" />
           </div>
           {loading ? (
             <div className="h-10 w-16 bg-foreground/5 rounded animate-pulse" />
@@ -61,13 +61,13 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
         <Card>
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-foreground/40">Peak Forecast (14d)</span>
-            <TrendingUp className="w-4 h-4 text-red-400" />
+            <TrendingUp className="w-4 h-4 text-destructive" />
           </div>
           {loading ? (
             <div className="h-10 w-16 bg-foreground/5 rounded animate-pulse" />
           ) : peak !== null ? (
             <>
-              <div className={`text-3xl font-bold mb-1 ${peak > 85 ? 'text-red-400' : 'text-[#E67E22]'}`}>{peak}%</div>
+              <div className={`text-3xl font-bold mb-1 ${peak > 85 ? 'text-destructive' : 'text-primary'}`}>{peak}%</div>
               <p className="text-xs text-foreground/30">{peak > 85 ? 'High demand alert' : 'Normal range'}</p>
             </>
           ) : (
@@ -77,13 +77,13 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
         <Card>
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-foreground/40">Urgent Procurement</span>
-            <Truck className="w-4 h-4 text-[#E67E22]" />
+            <Truck className="w-4 h-4 text-primary" />
           </div>
           {loading ? (
             <div className="h-10 w-16 bg-foreground/5 rounded animate-pulse" />
           ) : (
             <>
-              <div className={`text-3xl font-bold mb-1 ${urgentCount > 0 ? 'text-red-400' : 'text-emerald-400'}`}>{urgentCount > 0 ? urgentCount : 0}</div>
+              <div className={`text-3xl font-bold mb-1 ${urgentCount > 0 ? 'text-destructive' : 'text-emerald-500'}`}>{urgentCount > 0 ? urgentCount : 0}</div>
               <p className="text-xs text-foreground/30">{urgentCount > 0 ? 'Requires immediate action' : 'All items fulfilled'}</p>
             </>
           )}
@@ -126,9 +126,9 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: theme === "dark" ? "#0A0A0A" : "#F4EDE2",
+                      backgroundColor: theme === "dark" ? "#0A0A0A" : "#FFFFFF",
                       borderColor: "rgba(128,128,128,0.2)",
-                      borderRadius: "1rem",
+                      borderRadius: "0.75rem",
                       color: "var(--foreground)",
                       fontSize: "12px",
                     }}
@@ -144,8 +144,8 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
                     type="monotone"
                     dataKey="actual"
                     name="Actual"
-                    stroke="#C0392B"
-                    strokeWidth={3}
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2.5}
                     dot={{ r: 3, strokeWidth: 1 }}
                     activeDot={{ r: 5 }}
                     connectNulls
@@ -154,8 +154,8 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
                     type="monotone"
                     dataKey="forecast"
                     name="Forecast"
-                    stroke="#E67E22"
-                    strokeWidth={3}
+                    stroke="hsl(var(--muted-foreground))"
+                    strokeWidth={2.5}
                     strokeDasharray="5 5"
                     dot={{ r: 3, strokeWidth: 1 }}
                     activeDot={{ r: 5 }}
@@ -181,9 +181,9 @@ export function Overview({ demandData, procurementData, loading, occupancy, peak
                   <div key={i} className="flex justify-between py-3 border-b border-foreground/5 last:border-0">
                     <span className="text-sm">{item.item}</span>
                     <span className={`text-xs ${
-                      item.urgency === "High" || item.urgency === "high" ? "text-red-400" :
-                      item.urgency === "Medium" || item.urgency === "medium" ? "text-[#E67E22]" :
-                      "text-emerald-400"
+                      item.urgency === "High" || item.urgency === "high" ? "text-destructive" :
+                      item.urgency === "Medium" || item.urgency === "medium" ? "text-amber-500" :
+                      "text-emerald-500"
                     }`}>{item.urgency}</span>
                   </div>
                 ))}

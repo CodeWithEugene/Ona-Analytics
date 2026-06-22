@@ -549,7 +549,7 @@ export default function DashboardPage() {
           {activeTab === "procurement" && (
             <div id="onboarding-procurement-view" className={`transition-all duration-500 rounded-2xl ${
               showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "procurement_view"
-                ? "ring-2 ring-[#E67E22] ring-offset-4 dark:ring-offset-[#0A0A0A] scale-[1.01] shadow-[0_0_25px_rgba(230,126,34,0.25)] bg-[#E67E22]/5"
+                ? "ring-2 ring-primary ring-offset-4 dark:ring-offset-[#0A0A0A] scale-[1.01] shadow-[0_0_25px_rgba(25,118,210,0.25)] bg-primary/5"
                 : ""
             }`}>
               <ProcurementView
@@ -576,12 +576,12 @@ export default function DashboardPage() {
       {chatOpen && (
         <div className={`fixed inset-y-0 right-0 z-50 w-96 bg-card border-l border-border flex flex-col shadow-2xl transition-all duration-500 ${
           showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "agent"
-            ? "ring-2 ring-[#E67E22] ring-inset"
+            ? "ring-2 ring-primary ring-inset"
             : ""
         }`}>
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-5 h-5 text-[#E67E22]" />
+              <Sparkles className="w-5 h-5 text-primary" />
               <span className="font-medium">Ona Agent</span>
             </div>
             <button onClick={() => setChatOpen(false)} className="p-1 hover:bg-foreground/5 rounded">
@@ -591,7 +591,7 @@ export default function DashboardPage() {
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {chatMessages.length === 0 && (
               <div className="text-center mt-8">
-                <Sparkles className="w-8 h-8 text-[#E67E22]/30 mx-auto mb-3" />
+                <Sparkles className="w-8 h-8 text-primary/30 mx-auto mb-3" />
                 <p className="text-sm text-foreground/40">Ask about occupancy, forecasts, or camp operations.</p>
                 <div className="mt-4 space-y-2">
                   {[
@@ -613,7 +613,7 @@ export default function DashboardPage() {
             {chatMessages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                  msg.role === "user" ? "bg-[#E67E22]/10 text-[#E67E22] ring-1 ring-[#E67E22]/20" : "bg-foreground/5 text-foreground/80"
+                  msg.role === "user" ? "bg-primary/10 text-primary ring-1 ring-primary/20" : "bg-foreground/5 text-foreground/80"
                 }`}>
                   {msg.content}
                 </div>
@@ -633,9 +633,9 @@ export default function DashboardPage() {
                 value={chatInput}
                 onChange={e => setChatInput(e.target.value)}
                 placeholder="Ask Ona..."
-                className="flex-1 bg-background border border-border rounded-xl px-4 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-[#E67E22]/50 placeholder:text-foreground/20"
+                className="flex-1 bg-background border border-border rounded-xl px-4 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-foreground/20"
               />
-              <button type="submit" disabled={chatLoading || !chatInput.trim()} className="p-2 bg-[#E67E22] rounded-xl disabled:opacity-50 text-white">
+              <button type="submit" disabled={chatLoading || !chatInput.trim()} className="p-2 bg-primary hover:bg-primary/90 rounded-xl disabled:opacity-50 text-primary-foreground">
                 <Send className="w-4 h-4" />
               </button>
             </div>
