@@ -400,16 +400,22 @@ export default function LandingPage() {
           <p className="text-[10px] uppercase tracking-widest text-foreground/35 text-center mb-8 font-mono">
             Securing supply lines across East African operations
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-16 gap-y-8">
             {[
-              "Olare Orok Eco-Lodge", 
-              "Serengeti Migration Camp", 
-              "Samburu Intrepids Lodge", 
-              "Selous Riverside Camp", 
-              "Okavango Delta Lodge", 
-              "Ruaha Wilderness Camp"
+              { name: "Olare Orok Eco-Lodge", path: "/logos/olare-orok.svg" },
+              { name: "Serengeti Migration Camp", path: "/logos/serengeti.png" },
+              { name: "Samburu Intrepids Lodge", path: "/logos/samburu.png" },
+              { name: "Selous Riverside Camp", path: "/logos/selous.png" },
+              { name: "Okavango Delta Lodge", path: "/logos/okavango.svg" },
+              { name: "Ruaha Wilderness Camp", path: "/logos/ruaha.png" }
             ].map((camp, i) => (
-              <span key={i} className="text-base text-foreground/60 font-sans font-semibold tracking-tight">{camp}</span>
+              <img
+                key={i}
+                src={camp.path}
+                alt={camp.name}
+                title={camp.name}
+                className="h-8 max-w-[140px] w-auto object-contain opacity-55 grayscale brightness-0 dark:brightness-0 dark:invert hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+              />
             ))}
           </div>
         </div>

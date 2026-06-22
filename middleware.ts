@@ -27,8 +27,9 @@ function addSecurityHeaders(response: NextResponse) {
 
 export default function middleware(request: Request) {
   const { pathname } = new URL(request.url)
+  console.log("MIDDLEWARE PATH:", pathname)
 
-  if (pathname.startsWith("/api/") || pathname.startsWith("/_next/")) {
+  if (pathname.startsWith("/api/") || pathname.startsWith("/_next/") || pathname.startsWith("/logos/")) {
     return addSecurityHeaders(NextResponse.next())
   }
 
