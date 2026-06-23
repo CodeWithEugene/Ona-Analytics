@@ -1,0 +1,228 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 950" font-family="Inter, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="vercelGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="auroraGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a3a5c"/>
+      <stop offset="100%" stop-color="#0c2440"/>
+    </linearGradient>
+    <linearGradient id="aiGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2d1b69"/>
+      <stop offset="100%" stop-color="#1a0a3e"/>
+    </linearGradient>
+    <linearGradient id="sdkGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a3a1a"/>
+      <stop offset="100%" stop-color="#0a2a0a"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="glowStrong">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <!-- AWS Orange accent -->
+    <linearGradient id="awsBadge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FF9900"/>
+      <stop offset="100%" stop-color="#FF6600"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1300" height="950" fill="url(#bg)" rx="16"/>
+
+  <!-- Header -->
+  <text x="650" y="45" text-anchor="middle" fill="#f8fafc" font-size="24" font-weight="700" letter-spacing="1">Ona Analytics — Split-Brain AI Architecture</text>
+  <text x="650" y="70" text-anchor="middle" fill="#64748b" font-size="13">H0: Hack the Zero Stack — Vercel + AWS Aurora PostgreSQL + pgvector + NVIDIA Nemotron</text>
+
+  <!-- ===== Vercel Badge ===== -->
+  <rect x="50" y="92" width="50" height="20" rx="4" fill="url(#vercelGrad)" stroke="#475569" stroke-width="0.5"/>
+  <text x="75" y="106" text-anchor="middle" fill="#fff" font-size="8" font-weight="600">VERCEL</text>
+
+  <!-- AWS Badge -->
+  <rect x="110" y="92" width="40" height="20" rx="4" fill="url(#awsBadge)" stroke="#CC6600" stroke-width="0.5"/>
+  <text x="130" y="106" text-anchor="middle" fill="#000" font-size="7" font-weight="700">AWS</text>
+
+  <!-- NVIDIA Badge -->
+  <rect x="160" y="92" width="55" height="20" rx="4" fill="#1a0a3e" stroke="#7c3aed" stroke-width="0.5"/>
+  <text x="187" y="106" text-anchor="middle" fill="#a78bfa" font-size="7" font-weight="600">NVIDIA</text>
+
+  <!-- pgvector Badge -->
+  <rect x="225" y="92" width="55" height="20" rx="4" fill="#0c2440" stroke="#1d4ed8" stroke-width="0.5"/>
+  <text x="252" y="106" text-anchor="middle" fill="#60a5fa" font-size="7" font-weight="600">pgvector</text>
+
+  <!-- ===== LAYER 1: Vercel Edge Network ===== -->
+  <rect x="50" y="125" width="1200" height="150" fill="url(#vercelGrad)" rx="12" stroke="#334155" stroke-width="1.5"/>
+  <text x="650" y="152" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="2">VERCEL EDGE NETWORK</text>
+
+  <!-- Next.js Frontend -->
+  <rect x="80" y="170" width="260" height="85" fill="#1e293b" rx="8" stroke="#475569" stroke-width="1" filter="url(#glow)"/>
+  <text x="210" y="196" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Next.js App Router</text>
+  <text x="210" y="216" text-anchor="middle" fill="#94a3b8" font-size="10">React · Tailwind · Recharts</text>
+  <text x="210" y="234" text-anchor="middle" fill="#64748b" font-size="9">Landing · Auth · Dashboard · Agent UI</text>
+  <text x="210" y="248" text-anchor="middle" fill="#475569" font-size="8">Responsive mobile-first design</text>
+
+  <!-- Vercel AI SDK (highlighted) -->
+  <rect x="390" y="170" width="280" height="85" fill="url(#sdkGrad)" rx="8" stroke="#22c55e" stroke-width="1.5" filter="url(#glowStrong)"/>
+  <text x="530" y="196" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">🤖 Vercel AI SDK</text>
+  <text x="530" y="216" text-anchor="middle" fill="#86efac" font-size="10">generateText · tool() · embed()</text>
+  <text x="530" y="234" text-anchor="middle" fill="#94a3b8" font-size="9">maxSteps: 5 multi-turn reasoning</text>
+  <text x="530" y="248" text-anchor="middle" fill="#64748b" font-size="8">NVIDIA Nemotron-3 550B model</text>
+
+  <!-- API Routes -->
+  <rect x="720" y="170" width="240" height="85" fill="#1e293b" rx="8" stroke="#475569" stroke-width="1" filter="url(#glow)"/>
+  <text x="840" y="196" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Next.js API Routes</text>
+  <text x="840" y="216" text-anchor="middle" fill="#94a3b8" font-size="10">/api/agent · /api/demand</text>
+  <text x="840" y="234" text-anchor="middle" fill="#94a3b8" font-size="10">/api/forecast · /api/procurement</text>
+  <text x="840" y="248" text-anchor="middle" fill="#64748b" font-size="9">NextAuth v5 · Rate Limited</text>
+
+  <!-- Auth Layer -->
+  <rect x="1010" y="170" width="210" height="85" fill="#1e293b" rx="8" stroke="#475569" stroke-width="1" filter="url(#glow)"/>
+  <text x="1115" y="196" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">NextAuth v5 + JWT</text>
+  <text x="1115" y="216" text-anchor="middle" fill="#94a3b8" font-size="10">Credentials provider</text>
+  <text x="1115" y="234" text-anchor="middle" fill="#94a3b8" font-size="10">bcrypt password hashing</text>
+  <text x="1115" y="248" text-anchor="middle" fill="#64748b" font-size="9">SameSite=Strict · 7-day expiry</text>
+
+  <!-- Arrows between layer 1 components -->
+  <line x1="340" y1="212" x2="390" y2="212" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="385,208 395,212 385,216" fill="#22c55e"/>
+
+  <line x1="670" y1="212" x2="720" y2="212" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="715,208 725,212 715,216" fill="#475569"/>
+
+  <line x1="960" y1="212" x2="1010" y2="212" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="1005,208 1015,212 1005,216" fill="#475569"/>
+
+  <!-- ===== LAYER 2: Split-Brain AI Pipeline (the core differentiator) ===== -->
+  <rect x="50" y="300" width="1200" height="180" fill="url(#aiGrad)" rx="12" stroke="#7c3aed" stroke-width="2"/>
+  <text x="650" y="330" text-anchor="middle" fill="#c084fc" font-size="12" font-weight="700" letter-spacing="2">🧠 THE SPLIT-BRAIN AI PIPELINE — KEY DIFFERENTIATOR</text>
+
+  <!-- Hemisphere 1: Deterministic SQL -->
+  <rect x="90" y="350" width="340" height="110" fill="#2d1b69" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <rect x="90" y="350" width="340" height="28" rx="8" fill="#4c1d95"/>
+  <text x="260" y="369" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">🧮 Hemisphere 1: Deterministic SQL</text>
+  <text x="260" y="396" text-anchor="middle" fill="#a78bfa" font-size="10">Tool: query_demand_data</text>
+  <text x="110" y="415" fill="#94a3b8" font-size="9">• Executes raw SQL against demand_logs table</text>
+  <text x="110" y="432" fill="#94a3b8" font-size="9">• Returns exact occupancy %, ADR, RevPAR</text>
+  <text x="110" y="449" fill="#94a3b8" font-size="9">• ZERO hallucination — numbers are real query results</text>
+
+  <!-- Brain Split visual -->
+  <line x1="470" y1="340" x2="470" y2="490" stroke="#7c3aed" stroke-width="2" stroke-dasharray="6,4"/>
+  <circle cx="470" cy="415" r="20" fill="#2d1b69" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="470" y="420" text-anchor="middle" fill="#c084fc" font-size="14" font-weight="700">⚡</text>
+
+  <!-- Hemisphere 2: Vector RAG -->
+  <rect x="510" y="350" width="340" height="110" fill="#2d1b69" rx="8" stroke="#7c3aed" stroke-width="1.5"/>
+  <rect x="510" y="350" width="340" height="28" rx="8" fill="#4c1d95"/>
+  <text x="680" y="369" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">🔍 Hemisphere 2: Vector RAG</text>
+  <text x="680" y="396" text-anchor="middle" fill="#a78bfa" font-size="10">Tool: search_context_knowledge</text>
+  <text x="530" y="415" fill="#94a3b8" font-size="9">• Embeds user query via NVIDIA embed-qa-4</text>
+  <text x="530" y="432" fill="#94a3b8" font-size="9">• pgvector cosine similarity search on 1536-dim</text>
+  <text x="530" y="449" fill="#94a3b8" font-size="9">• HNSW index for sub-50ms semantic lookup</text>
+
+  <!-- Synthesis Output -->
+  <rect x="890" y="350" width="330" height="110" fill="#2d1b69" rx="8" stroke="#22c55e" stroke-width="1.5"/>
+  <rect x="890" y="350" width="330" height="28" rx="8" fill="#166534"/>
+  <text x="1055" y="369" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">🧬 Synthesis: Nemotron-3 550B</text>
+  <text x="1055" y="396" text-anchor="middle" fill="#86efac" font-size="10">Combines SQL + RAG → Action</text>
+  <text x="910" y="415" fill="#94a3b8" font-size="9">• Synthesizes exact numbers + context</text>
+  <text x="910" y="432" fill="#94a3b8" font-size="9">• Generates procurement items if needed</text>
+  <text x="910" y="449" fill="#94a3b8" font-size="9">• Tool: generate_procurement writes to DB</text>
+
+  <!-- Arrows between hemispheres -->
+  <line x1="430" y1="405" x2="470" y2="415" stroke="#a78bfa" stroke-width="1.5"/>
+  <line x1="470" y1="425" x2="510" y2="405" stroke="#a78bfa" stroke-width="1.5"/>
+  <line x1="680" y1="405" x2="890" y2="405" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="885,401 895,405 885,409" fill="#22c55e"/>
+
+  <!-- ===== LAYER 3: AWS Aurora PostgreSQL ===== -->
+  <rect x="50" y="510" width="1200" height="220" fill="url(#auroraGrad)" rx="12" stroke="#1d4ed8" stroke-width="2"/>
+  <!-- AWS badge inside -->
+  <rect x="1135" y="522" width="100" height="22" rx="4" fill="#FF9900"/>
+  <text x="1185" y="537" text-anchor="middle" fill="#000" font-size="9" font-weight="700">AWS Aurora</text>
+  <text x="650" y="540" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="600" letter-spacing="2">AMAZON AURORA POSTGRESQL SERVERLESS V2 + PGVECTOR</text>
+
+  <!-- demand_logs table -->
+  <rect x="80" y="558" width="340" height="155" fill="#0c2440" rx="8" stroke="#1d4ed8" stroke-width="1"/>
+  <rect x="80" y="558" width="340" height="28" rx="8" fill="#1e3a5f"/>
+  <text x="250" y="576" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">📊 demand_logs</text>
+  <text x="250" y="596" text-anchor="middle" fill="#94a3b8" font-size="10">Relational occupancy metrics store</text>
+  <text x="100" y="618" fill="#64748b" font-size="9">org_id UUID · log_date DATE · metric_type VARCHAR</text>
+  <text x="100" y="636" fill="#64748b" font-size="9">actual_value DECIMAL · predicted_value DECIMAL</text>
+  <text x="100" y="654" fill="#60a5fa" font-size="9">B-tree indexes: (org_id, log_date), (org_id, metric_type)</text>
+  <text x="100" y="672" fill="#60a5fa" font-size="9">Unique index: (org_id, log_date, metric_type)</text>
+  <text x="100" y="690" fill="#64748b" font-size="9">Used by: Deterministic SQL Hemisphere</text>
+  <rect x="100" y="698" width="70" height="14" rx="3" fill="#22c55e" opacity="0.3"/>
+  <text x="135" y="709" text-anchor="middle" fill="#86efac" font-size="7" font-weight="600">SQL TOOL</text>
+
+  <!-- context_knowledge table (highlighted - pgvector) -->
+  <rect x="470" y="558" width="360" height="155" fill="#0c2440" rx="8" stroke="#22c55e" stroke-width="1.5"/>
+  <rect x="470" y="558" width="360" height="28" rx="8" fill="#1e3a5f"/>
+  <text x="650" y="576" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">🧠 context_knowledge</text>
+  <text x="650" y="596" text-anchor="middle" fill="#86efac" font-size="10">Vector embeddings — RAG knowledge base</text>
+  <text x="490" y="618" fill="#94a3b8" font-size="9">content TEXT (camp SOPs)</text>
+  <text x="490" y="636" fill="#94a3b8" font-size="9">embedding VECTOR(1536)</text>
+  <text x="490" y="654" fill="#22c55e" font-size="9">HNSW Index — vector_cosine_ops</text>
+  <text x="490" y="672" fill="#60a5fa" font-size="9">Cosine distance (embedding &lt;=&gt; query)</text>
+  <text x="490" y="690" fill="#64748b" font-size="9">Used by: Vector RAG Hemisphere</text>
+  <rect x="490" y="698" width="80" height="14" rx="3" fill="#7c3aed" opacity="0.5"/>
+  <text x="530" y="709" text-anchor="middle" fill="#c084fc" font-size="7" font-weight="600">RAG TOOL</text>
+
+  <!-- procurement_items table -->
+  <rect x="880" y="558" width="340" height="155" fill="#0c2440" rx="8" stroke="#1d4ed8" stroke-width="1"/>
+  <rect x="880" y="558" width="340" height="28" rx="8" fill="#1e3a5f"/>
+  <text x="1050" y="576" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">📦 procurement_items</text>
+  <text x="1050" y="596" text-anchor="middle" fill="#94a3b8" font-size="10">Agent-generated supply truck lists</text>
+  <text x="900" y="618" fill="#64748b" font-size="9">item_name VARCHAR · required_amount DECIMAL</text>
+  <text x="900" y="636" fill="#64748b" font-size="9">unit VARCHAR · urgency (high|medium|low)</text>
+  <text x="900" y="654" fill="#64748b" font-size="9">reason TEXT · fulfilled_at TIMESTAMPTZ</text>
+  <text x="900" y="672" fill="#60a5fa" font-size="9">B-tree: (org_id, urgency) for fast queries</text>
+  <text x="900" y="690" fill="#64748b" font-size="9">Used by: Procurement Generation</text>
+  <rect x="900" y="698" width="80" height="14" rx="3" fill="#22c55e" opacity="0.3"/>
+  <text x="940" y="709" text-anchor="middle" fill="#86efac" font-size="7" font-weight="600">WRITE TOOL</text>
+
+  <!-- Flow arrows from AI SDK to DB layer -->
+  <line x1="260" y1="460" x2="250" y2="510" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="248,505 252,515 256,505" fill="#a78bfa"/>
+  <text x="190" y="490" fill="#a78bfa" font-size="9">SQL Queries</text>
+
+  <line x1="680" y1="460" x2="650" y2="510" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="646,505 652,515 656,505" fill="#22c55e"/>
+  <text x="580" y="490" fill="#22c55e" font-size="9">Vector Search</text>
+
+  <line x1="1055" y1="460" x2="1050" y2="510" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polygon points="1046,505 1052,515 1056,505" fill="#60a5fa"/>
+  <text x="970" y="490" fill="#60a5fa" font-size="9">Write Procurement</text>
+
+  <!-- ===== DATA FLOW (Layer 4) ===== -->
+  <rect x="50" y="760" width="1200" height="70" fill="url(#vercelGrad)" rx="12" stroke="#334155" stroke-width="1.5"/>
+  <text x="650" y="788" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600" letter-spacing="1">END-TO-END DATA FLOW</text>
+
+  <text x="150" y="812" fill="#64748b" font-size="10">1. User asks: &ldquo;What&rsquo;s our weekend occupancy?&rdquo;</text>
+  <text x="580" y="812" fill="#64748b" font-size="10">2. Nemotron calls SQL tool → exact data</text>
+  <text x="950" y="812" fill="#64748b" font-size="10">3. RAG checks SOPs → contextual advice</text>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="50" y="855" width="1200" height="70" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+
+  <rect x="80" y="877" width="14" height="14" rx="3" fill="#2d1b69" stroke="#7c3aed" stroke-width="1"/>
+  <text x="103" y="889" fill="#94a3b8" font-size="10">Vercel AI SDK + NVIDIA Nemotron</text>
+
+  <rect x="360" y="877" width="14" height="14" rx="3" fill="#0c2440" stroke="#22c55e" stroke-width="1"/>
+  <text x="383" y="889" fill="#94a3b8" font-size="10">Aurora pgvector (HNSW)</text>
+
+  <rect x="570" y="877" width="14" height="14" rx="3" fill="#0c2440" stroke="#1d4ed8" stroke-width="1"/>
+  <text x="593" y="889" fill="#94a3b8" font-size="10">Aurora Relational Tables</text>
+
+  <rect x="800" y="877" width="14" height="14" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="823" y="889" fill="#94a3b8" font-size="10">Next.js App Router + Auth</text>
+
+  <text x="80" y="915" fill="#64748b" font-size="9">Built for H0: Hack the Zero Stack — June 2026 · Track 2: Monetizable B2B App</text>
+  <text x="1100" y="915" text-anchor="end" fill="#64748b" font-size="9">Ona Analytics — See the surge. Secure the supply.</text>
+</svg>

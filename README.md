@@ -49,8 +49,9 @@ Managers of remote luxury camps (10-25 tented suites in places like the Maasai M
 ## 🚀 Prerequisites
 
 - Node.js 18+ 
-- An **OpenAI API key** (for the Ona Agent)
+- A **NVIDIA API key** for the Ona Agent (get one at https://build.nvidia.com/)
 - An **Amazon Aurora PostgreSQL** database with pgvector enabled
+- A **Resend API key** for password reset emails (optional for local dev)
 
 ## 🚀 Local Deployment
 
@@ -66,7 +67,7 @@ Then edit `.env` with your credentials:
 | Variable | Description |
 |---|---|
 | `DATABASE_URL` | Your Aurora PostgreSQL connection string |
-| `OPENAI_API_KEY` | OpenAI API key for the Ona Agent |
+| `NVIDIA_API_KEY` | NVIDIA API key for the Ona Agent (Nemotron) |
 | `AUTH_SECRET` | Run `openssl rand -base64 32` to generate |
 | `AUTH_URL` | `http://localhost:3000` for local dev |
 
@@ -91,8 +92,10 @@ npm run dev
 
 ### Demo Credentials
 
-- **Email:** manager@ona-analytics.com
-- **Password:** ona-demo-2026
+| Role | Email | Password | Notes |
+|------|-------|----------|-------|
+| **Camp Manager** | `manager@ona-analytics.com` | `ona-demo-2026` | Ready to use — jump straight to the dashboard |
+| **Admin** | `admin@ona-analytics.com` | `admin123` | Required to change password on first login |
 
 ## ☁️ Deploy to Vercel
 
@@ -102,10 +105,24 @@ npm run dev
 4. Deploy
 5. Run `curl -X POST https://your-app.vercel.app/api/migrate` to initialize the database
 
-## 📹 Submission Checklist
+## 📹 Submission Checklist (for H0: Hack the Zero Stack)
 
-- [ ] Deployed Vercel project link
-- [ ] Architecture diagram included above
+- [x] Deployed Vercel project link — https://ona-analytics.vercel.app
+- [x] Architecture diagram — `public/architecture-submission.svg`
+- [x] Architecture diagram (README version) — `public/architecture.svg`
 - [ ] AWS Console screenshot showing Aurora PostgreSQL resource
-- [ ] Demo video (<3 min) showing: dashboard, spike forecast, Ona Agent query
+- [ ] Demo video (<3 min) with script at `docs/VIDEO-SCRIPT.md`
+- [x] Devpost submission text at `docs/DEVPOST-SUBMISSION.md`
 - [ ] Blog post on dev.to/medium using #H0Hackathon (bonus +0.6 points)
+
+### Key Deliverables Location
+
+| Item | File |
+|------|------|
+| Demo video script | `docs/VIDEO-SCRIPT.md` |
+| Devpost submission text | `docs/DEVPOST-SUBMISSION.md` |
+| Architecture diagram (submission) | `public/architecture-submission.svg` |
+| Embedding generator script | `scripts/generate-real-embeddings.mjs` |
+| ML forecasting API | `app/api/forecast/predict/route.ts` |
+| Data ingestion API | `app/api/demand/ingest/route.ts` |
+| Email integration | `lib/email.ts` |

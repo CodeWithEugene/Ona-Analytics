@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import crypto from "crypto"
 import { query, querySingle } from "@/lib/db"
 import { createRateLimiter, rateLimitKey, rateLimitHeaders } from "@/lib/rate-limit"
+import { sendPasswordResetEmail } from "@/lib/email"
 import { logger } from "@/lib/log"
 
 const forgotLimiter = createRateLimiter({ interval: 60000, maxRequests: 3 })
@@ -45,11 +46,13 @@ export async function POST(request: Request) {
 
       logger.info("password_reset_token_created", { userId: user.id })
 
-      // In production, send email with: ${appUrl}/reset-password?token=${token}
-      // For now, log the token (dev-only convenience)
-      if (process.env.NODE_ENV !== "production") {
-        logger.info("password_reset_token_dev", { token, email: email.trim().toLowerCase() })
-      }
+      // Send email via Resend (or fall back to logging in dev)
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      await sendPasswordResetEmail({
+        email: email.trim().toLowerCase(),
+        token,
+        appUrl,
+      })
     }
 
     return NextResponse.json({

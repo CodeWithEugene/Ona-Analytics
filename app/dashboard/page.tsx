@@ -545,7 +545,14 @@ export default function DashboardPage() {
               activeOnboardingTarget={showOnboarding ? ONBOARDING_STEPS[onboardingStep]?.target : undefined}
             />
           )}
-          {activeTab === "demand" && <Demand demandData={demandData} loading={loading} />}
+          {activeTab === "demand" && (
+            <Demand
+              demandData={demandData}
+              loading={loading}
+              onRefresh={fetchDashboard}
+              showToast={showToast}
+            />
+          )}
           {activeTab === "procurement" && (
             <div id="onboarding-procurement-view" className={`transition-all duration-500 rounded-2xl ${
               showOnboarding && ONBOARDING_STEPS[onboardingStep]?.target === "procurement_view"
@@ -560,7 +567,14 @@ export default function DashboardPage() {
               />
             </div>
           )}
-          {activeTab === "forecasting" && <Forecasting demandData={demandData} loading={loading} />}
+          {activeTab === "forecasting" && (
+            <Forecasting
+              demandData={demandData}
+              loading={loading}
+              onRefresh={fetchDashboard}
+              showToast={showToast}
+            />
+          )}
           {activeTab === "settings" && (
             <SettingsView
               orgData={orgData}

@@ -47,7 +47,10 @@ When a spike is detected, generate procurement recommendations and persist them.
 - When confirming a spike >50%, proactively generate procurement
 - Be concise, direct, like an experienced camp ops manager
 - Never hallucinate numbers — always use real data
-- After getting tool results, synthesize a final answer`
+- After getting tool results, synthesize a final answer
+- If a database query returns empty results, clearly say "No data available" rather than guessing
+- If the RAG search finds no relevant SOPs, suggest the manager upload SOP documents
+- If procurement generation succeeds, confirm what was created`
 
 async function queryDemandData(metricType: string, limit: number, daysBack: number, orgId: string) {
   try {
@@ -61,6 +64,9 @@ async function queryDemandData(metricType: string, limit: number, daysBack: numb
        LIMIT $4`,
       [orgId, metricType, Math.min(daysBack, 365), Math.min(limit, 100)]
     )
+    if (rows.length === 0) {
+      return { success: true, data: [], message: `No ${metricType} data found for this camp in the last ${daysBack} days.` }
+    }
     return { success: true, data: rows }
   } catch (err: any) {
     return { success: false, error: err.message }
@@ -104,13 +110,26 @@ async function searchContext(searchTerm: string, orgId: string) {
       [orgId, vectorStr]
     )
     if (rows.length === 0) {
+      // Try ILIKE fallback
       const fallback = await query<any>(
         `SELECT content FROM context_knowledge WHERE org_id = $1 AND content ILIKE $2 LIMIT 3`,
         [orgId, `%${searchTerm}%`]
       )
-      return { success: true, results: fallback.map((r: any) => ({ content: r.content })) }
+      if (fallback.length > 0) {
+        return { success: true, results: fallback.map((r: any) => ({ content: r.content })) }
+      }
+      // No SOPs found at all
+      const countResult = await query<any>(
+        `SELECT COUNT(*) as count FROM context_knowledge WHERE org_id = $1`,
+        [orgId]
+      )
+      const totalSops = parseInt(countResult[0]?.count || "0")
+      if (totalSops === 0) {
+        return { success: true, results: [], message: "No SOP documents found for this camp. A camp admin can upload SOPs to enable semantic search." }
+      }
+      return { success: true, results: [], message: `No SOPs matched "${searchTerm}". Try rephrasing or searching for a different topic.` }
     }
-    return { success: true, results: rows.map((r: any) => ({ content: r.content })) }
+    return { success: true, results: rows.map((r: any) => ({ content: r.content, distance: r.distance })) }
   } catch (err: any) {
     return { success: false, error: err.message }
   }
@@ -118,6 +137,20 @@ async function searchContext(searchTerm: string, orgId: string) {
 
 async function generateProcurement(items: any[], orgId: string) {
   try {
+    if (!items || items.length === 0) {
+      return { success: true, count: 0, message: "No procurement needed at this time." }
+    }
+
+    // Validate each item before inserting
+    for (const item of items) {
+      if (!item.item_name || !item.unit || !item.urgency) {
+        return { success: false, error: "Invalid item: item_name, unit, and urgency are required" }
+      }
+      if (!["high", "medium", "low"].includes(item.urgency)) {
+        return { success: false, error: `Invalid urgency: ${item.urgency}. Must be high, medium, or low.` }
+      }
+    }
+
     for (const item of items) {
       await query(
         `INSERT INTO procurement_items (org_id, item_name, required_amount, unit, urgency, reason)
