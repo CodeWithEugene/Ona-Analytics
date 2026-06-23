@@ -42,7 +42,7 @@ VALUES (
   gen_random_uuid(),
   '11111111-1111-1111-1111-111111111111',
   'admin@ona-analytics.com',
-  '$2b$12$LJ3m4ys3Lg3YOCwLTI3tYe3VqZ5wYKGzKmR0GqBnKLMnXKJx8jQy.',
+  '$2b$12$tiVY4wmODfAjqqpfKlcUbep.Xp1EaUBur2OsHt9mtgj685Qdsj8pm',
   'Admin User',
   'admin',
   TRUE
