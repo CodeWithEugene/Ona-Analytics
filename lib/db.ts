@@ -33,7 +33,7 @@ function getSigner(): Signer {
 }
 
 function getPassword(): () => Promise<string> {
-  if (process.env.VERCEL_OIDC_TOKEN) {
+  if (process.env.VERCEL) {
     return () => getSigner().getAuthToken()
   }
   const localPassword = process.env.PGPASSWORD || ""
