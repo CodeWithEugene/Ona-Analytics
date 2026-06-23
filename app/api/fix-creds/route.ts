@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS demand_logs (id UUID PRIMARY KEY DEFAULT gen_random_u
 CREATE INDEX IF NOT EXISTS idx_demand_logs_org_date ON demand_logs(org_id, log_date DESC);
 CREATE INDEX IF NOT EXISTS idx_demand_logs_org_metric ON demand_logs(org_id, metric_type);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_demand_logs_unique ON demand_logs(org_id, log_date, metric_type);
+ALTER TABLE camp_users ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE camp_users ADD COLUMN IF NOT EXISTS role VARCHAR(20) NOT NULL DEFAULT 'manager';
 CREATE TABLE IF NOT EXISTS context_knowledge (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), org_id UUID NOT NULL REFERENCES org_profiles(id) ON DELETE CASCADE, content TEXT NOT NULL, embedding VECTOR(1536) NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW());
 CREATE INDEX IF NOT EXISTS idx_context_knowledge_org ON context_knowledge(org_id);
 CREATE TABLE IF NOT EXISTS procurement_items (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), org_id UUID NOT NULL REFERENCES org_profiles(id) ON DELETE CASCADE, item_name VARCHAR(255) NOT NULL, required_amount DECIMAL(12, 2) NOT NULL, unit VARCHAR(50) NOT NULL DEFAULT 'units', urgency VARCHAR(20) NOT NULL DEFAULT 'medium' CHECK (urgency IN ('high', 'medium', 'low')), reason TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), fulfilled_at TIMESTAMPTZ);
